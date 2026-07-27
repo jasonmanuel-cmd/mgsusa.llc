@@ -25,4 +25,19 @@
   document.querySelectorAll('[data-lead-form]').forEach(form => form.addEventListener('submit', () => {
     window.dispatchEvent(new CustomEvent('mgs:lead-submit', { detail: { service: form.querySelector('[name="service"]')?.value || '', page: location.pathname } }));
   }));
+
+  // Glass Doors Opening Entrance Controller
+  const doorOverlay = document.getElementById('glassDoorsOverlay');
+  if (doorOverlay) {
+    const openDoors = () => {
+      doorOverlay.classList.add('doors-opened');
+      setTimeout(() => {
+        doorOverlay.style.display = 'none';
+      }, 1500);
+    };
+    // Auto-open doors after short visual beat
+    setTimeout(openDoors, 350);
+    // Instant open if user taps/clicks doors overlay
+    doorOverlay.addEventListener('click', openDoors);
+  }
 })();

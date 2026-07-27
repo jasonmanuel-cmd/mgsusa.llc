@@ -87,8 +87,15 @@ def footer():
 <div><p class="footer-label">Explore</p><a href="residential-glass.html">Residential glass</a><a href="commercial-glass.html">Commercial glass</a><a href="storefront-glass.html">Storefront glass</a><a href="custom-glass.html">Custom glass</a></div>
 <div><p class="footer-label">Resources</p><a href="emergency-glass-repair.html">Emergency glass repair</a><a href="gallery.html">Project showcase</a><a href="faq.html">Frequently asked questions</a><a href="contact.html">Contact & directions</a></div>
 <div><p class="footer-label">Visit / contact</p><address>{ADDRESS}</address><a href="mailto:{EMAIL}">{EMAIL}</a><a href="service-areas.html">Serving Boerne & San Antonio, TX</a></div>
-</div><div class="shell footer-bottom"><span>© <span data-year></span> Master Glass Solutions. All rights reserved.</span><span>Built with clarity, accessibility & local search in mind.</span></div></footer>
+</div><div class="shell footer-bottom"><span>© <span data-year></span> Master Glass Solutions. All rights reserved.</span><span>Powered by Chaotically Organized AI</span></div></footer>
 <a class="mobile-call-fab" href="tel:{PHONE_LINK}" aria-label="Call Master Glass Solutions now">{icon("phone")}<span>Call now</span></a>'''
+
+def glass_doors_overlay():
+    return '''<div class="glass-doors-overlay" id="glassDoorsOverlay" aria-hidden="true">
+<div class="glass-door glass-door-left"><div class="glass-door-glare"></div><div class="glass-door-handle"></div></div>
+<div class="glass-door glass-door-right"><div class="glass-door-handle"></div><div class="glass-door-glare"></div></div>
+<div class="glass-doors-brand"><span class="brand-mark"><i></i><i></i><i></i></span><span>MASTER <b>GLASS</b><em>SOLUTIONS</em></span></div>
+</div>'''
 
 def layout(title, description, filename, body, active="", crumbs=None, service=None, faqs=None, noindex=False):
     canonical=slug_url(filename)
@@ -100,7 +107,7 @@ def layout(title, description, filename, body, active="", crumbs=None, service=N
 <title>{escape(title)}</title><meta name="description" content="{escape(description)}"><link rel="canonical" href="{canonical}">
 <meta property="og:type" content="website"><meta property="og:title" content="{escape(title)}"><meta property="og:description" content="{escape(description)}"><meta property="og:url" content="{canonical}"><meta property="og:image" content="{SITE}/assets/hero-storefront.jpg"><meta name="twitter:card" content="summary_large_image">{robot}
 <link rel="stylesheet" href="assets/styles.css">{schema}</head>
-<body>{nav(active)}<main id="main">{body}</main>{footer()}<script src="assets/scripts.js" defer></script></body></html>'''
+<body>{glass_doors_overlay()}{nav(active)}<main id="main">{body}</main>{footer()}<script src="assets/scripts.js" defer></script></body></html>'''
 
 def eyebrow(txt): return f'<p class="eyebrow"><span></span>{txt}</p>'
 def cta_quote(label="Request a quote", cls="btn btn-light"): return f'<a class="{cls}" href="request-quote.html">{label} {icon("arrow")}</a>'
