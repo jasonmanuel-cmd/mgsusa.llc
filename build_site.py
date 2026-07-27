@@ -50,10 +50,25 @@ def org_schema():
       "areaServed":[
         {"@type":"City","name":"Boerne"},
         {"@type":"City","name":"San Antonio"},
-        {"@type":"City","name":"Cordillera Ranch"},
-        {"@type":"City","name":"Fair Oaks Ranch"},
-        {"@type":"City","name":"The Dominion"},
-        {"@type":"City","name":"Alamo Heights"}
+        {"@type":"City","name":"Alamo Heights"},
+        {"@type":"City","name":"Leon Valley"},
+        {"@type":"City","name":"Helotes"},
+        {"@type":"City","name":"Converse"},
+        {"@type":"City","name":"Schertz"},
+        {"@type":"City","name":"Comfort"},
+        {"@type":"City","name":"Timberwood Park"},
+        {"@type":"City","name":"Canyon Lake"},
+        {"@type":"City","name":"Wimberley"},
+        {"@type":"City","name":"Blanco"},
+        {"@type":"City","name":"New Braunfels"},
+        {"@type":"City","name":"Seguin"},
+        {"@type":"City","name":"La Vernia"},
+        {"@type":"City","name":"Stockdale"},
+        {"@type":"City","name":"Lakehills"},
+        {"@type":"City","name":"Castroville"},
+        {"@type":"City","name":"Lytle"},
+        {"@type":"City","name":"Natalia"},
+        {"@type":"City","name":"Somerset"}
       ],
       "sameAs":[
         "https://maps.google.com/?q=Master+Glass+Solutions+Boerne+TX",
@@ -309,12 +324,108 @@ def contact_page():
     return layout("Contact Master Glass Solutions | Boerne, TX","Contact Master Glass Solutions in Boerne, TX for residential, commercial, custom, storefront, and emergency glass support.","contact.html",body,"",[("Contact","contact.html")])
 
 def service_areas_page():
-    faqs=[("Does Master Glass Solutions serve Boerne, Texas?","Yes. Master Glass Solutions is located in San Antonio, Texas at 4949 N Loop 1604 West, Suite 501, San Antonio, TX 78249."),("Does Master Glass Solutions serve San Antonio, Texas?","San Antonio is presented as a core service area. Send the property location with your project request so the team can discuss the next step."),("How do I know whether my project is within the service area?","Call 210-370-3700 or share the full property location in your quote request. A specific service radius should only be published when the business confirms it.")]
-    cities='''<a class="city-card" href="boerne-tx.html"><p>CORE SERVICE AREA</p><h2>Boerne, TX</h2><span>Residential, commercial, custom, storefront, and emergency glass support {icon("arrow")}</span></a><a class="city-card" href="san-antonio-tx.html"><p>CORE SERVICE AREA</p><h2>San Antonio, TX</h2><span>Residential, commercial, custom, storefront, and emergency glass support {icon("arrow")}</span></a>'''
-    body=f'''{inner_hero("SERVICE AREAS","Glass services with a clear local focus.","Master Glass Solutions is based in Boerne and presents Boerne and San Antonio as core local service areas for commercial and residential glass work.","hero-storefront.jpg")}
-<section class="section areas"><div class="shell"><div class="section-heading centered">{eyebrow("WHERE WE WORK")}<h2>Boerne and San Antonio, Texas.</h2><p>Every service-area page should be useful on its own—answering how the service applies locally rather than repeating the same city name around a generic page.</p></div><div class="city-grid">{cities}</div><div class="service-area-note"><h3>Outside these areas?</h3><p>Do not assume. Send the property address or call <a href="tel:{PHONE_LINK}">{PHONE_DISPLAY}</a> to discuss the project location directly.</p></div></div></section>
+    faqs=[
+        ("Does Master Glass Solutions serve my city?",
+            f"Master Glass Solutions serves communities across the greater San Antonio metro and Texas Hill Country. Call {PHONE_DISPLAY} or submit your property address to confirm service availability."),
+        ("What glass services are available in my area?",
+            "All service paths — residential glass, commercial glass, storefront systems, custom glass, shower enclosures, mirrors, window glass replacement, and 24/7 emergency repair — are available across the service area."),
+        ("How do I request a glass quote for my city?",
+            f"Call {PHONE_DISPLAY} or use the quote request form. Include the property address, glass service needed, timing, photos, and approximate dimensions if available."),
+        ("Is emergency glass support available outside Boerne?",
+            f"Master Glass Solutions provides 24/7 emergency glass support across the service area. Call {PHONE_DISPLAY} to explain the damaged opening, location, and immediate safety or security needs."),
+    ]
+    regions = [
+        ("SAN ANTONIO METRO", [
+            ("San Antonio", "san-antonio-tx.html", "San Antonio is a core service area for Master Glass Solutions. From downtown storefronts to residential neighborhoods across the metro, we provide commercial and residential glass installation, fabrication, custom glass, and 24/7 emergency glass repair."),
+            ("Alamo Heights", "alamo-heights-tx.html", "Master Glass Solutions serves Alamo Heights with premium residential and commercial glass services. Just minutes from our Boerne headquarters, we handle everything from luxury shower enclosures and custom mirrors to storefront systems and window glass replacement."),
+            ("Leon Valley", "leon-valley-tx.html", "Leon Valley properties benefit from Master Glass Solutions' full-service glass capabilities. We provide residential glass installation, commercial storefront systems, custom glass features, and responsive emergency glass repair throughout the Leon Valley community."),
+            ("Helotes", "helotes-tx.html", "Master Glass Solutions brings Hill Country glass expertise to Helotes. From custom residential glass and shower enclosures to commercial storefront installation and 24/7 emergency repair, we serve Helotes homes and businesses with precision."),
+            ("Converse", "converse-tx.html", "Converse property owners and businesses trust Master Glass Solutions for reliable glass services. We handle residential window replacement, commercial glass systems, custom installations, and emergency glass repair across the Converse area."),
+            ("Schertz", "schertz-tx.html", "Master Glass Solutions provides comprehensive glass services to Schertz, TX. From new construction glass installation to commercial storefront systems and emergency repair, our team delivers quality workmanship for Schertz homes and businesses."),
+        ]),
+        ("HILL COUNTRY / NORTH", [
+            ("Boerne", "boerne-tx.html", "Master Glass Solutions is headquartered in Boerne, Texas. As our home base, Boerne receives our full attention for residential glass, commercial glass, custom glass, storefront systems, and 24/7 emergency glass support."),
+            ("Comfort", "comfort-tx.html", "Comfort, TX properties are served by Master Glass Solutions with residential and commercial glass installation, custom shower enclosures, mirror services, and emergency glass repair. Our Boerne location provides quick access to the Comfort community."),
+            ("Timberwood Park", "timberwood-park-tx.html", "Timberwood Park homeowners rely on Master Glass Solutions for custom residential glass, frameless shower enclosures, window glass replacement, and commercial glass services. Our proximity means fast response for both planned projects and emergency repairs."),
+            ("Canyon Lake", "canyon-lake-tx.html", "Master Glass Solutions serves Canyon Lake with residential and commercial glass services tailored to lakefront and Hill Country properties. From custom shower glass to storefront systems and emergency repair, we keep Canyon Lake properties secure and beautiful."),
+            ("Wimberley", "wimberley-tx.html", "Wimberley properties receive dedicated glass services from Master Glass Solutions. We handle residential glass installation, custom mirrors, commercial glass systems, and emergency repair for homes and businesses throughout the Wimberley area."),
+            ("Blanco", "blanco-tx.html", "Master Glass Solutions extends Hill Country glass expertise to Blanco, TX. From residential window glass and shower enclosures to commercial storefront installation and emergency repair, Blanco properties are within our service reach."),
+        ]),
+        ("I-35 CORRIDOR / EAST", [
+            ("New Braunfels", "new-braunfels-tx.html", "New Braunfels is a key growth market for Master Glass Solutions. We provide residential glass, commercial storefront systems, custom glass features, and 24/7 emergency glass repair for the expanding New Braunfels community."),
+            ("Seguin", "seguin-tx.html", "Master Glass Solutions serves Seguin with full-service residential and commercial glass capabilities. From new construction glass installation to emergency storefront repair, Seguin properties receive the same quality workmanship as our Boerne and San Antonio projects."),
+            ("La Vernia", "la-vernia-tx.html", "La Vernia homes and businesses benefit from Master Glass Solutions' comprehensive glass services. We handle custom residential glass, commercial installations, window replacement, and emergency glass repair for the La Vernia community."),
+            ("Stockdale", "stockdale-tx.html", "Master Glass Solutions provides reliable glass services to Stockdale, TX. From residential window glass and shower enclosures to commercial storefront systems and 24/7 emergency repair, Stockdale properties are within our service area."),
+        ]),
+        ("SOUTH / WEST", [
+            ("Lakehills", "lakehills-tx.html", "Lakehills properties near Medina Lake receive attentive glass services from Master Glass Solutions. We handle residential glass installation, custom shower enclosures, commercial glass, and emergency repair for the Lakehills community."),
+            ("Castroville", "castroville-tx.html", "Master Glass Solutions brings quality glass work to Castroville, TX. From historic district residential glass to commercial storefront systems and emergency repair, Castroville homes and businesses receive our full-service glass capabilities."),
+            ("Lytle", "lytle-tx.html", "Lytle, TX is served by Master Glass Solutions for residential and commercial glass needs. We provide window glass replacement, shower enclosures, custom glass installations, storefront systems, and 24/7 emergency glass repair."),
+            ("Natalia", "natalia-tx.html", "Master Glass Solutions extends glass services to Natalia, TX. From residential window and shower glass to commercial storefront installation and emergency repair, Natalia properties receive quality workmanship from our nearby Boerne headquarters."),
+            ("Somerset", "somerset-tx.html", "Somerset homes and businesses trust Master Glass Solutions for dependable glass services. We handle residential glass, commercial installations, custom glass features, window replacement, and emergency glass repair across the Somerset area."),
+        ]),
+    ]
+
+    region_html = ""
+    for region_name, cities in regions:
+        cards = ""
+        for city, filename, desc in cities:
+            cards += f'<a class="city-card" href="{filename}"><p>{region_name}</p><h2>{city}, TX</h2><span>{desc[:80]}... {icon("arrow")}</span></a>'
+        region_html += f'<div class="region-group"><h2 class="region-heading">{region_name}</h2><div class="city-grid">{cards}</div></div>'
+
+    all_cities = [(c[0], c[1], c[2]) for _, cities in regions for c in cities]
+    city_paragraphs = ""
+    for city, filename, desc in all_cities:
+        city_paragraphs += f'<div class="city-detail"><h3>{city}, TX</h3><p>{desc}</p><a class="text-link" href="{filename}">Glass services in {city} {icon("arrow")}</a></div>'
+
+    body=f'''{inner_hero("PROUDLY SERVING SAN ANTONIO & THE TEXAS HILL COUNTRY","Glass services with a clear local focus across the greater San Antonio metro and surrounding Hill Country communities.","Master Glass Solutions is based in Boerne, TX and provides residential glass, commercial glass, storefront systems, and 24/7 emergency glass repair to communities throughout the region.","hero-storefront.jpg")}
+
+<section class="section service-regions" id="service-areas">
+<div class="shell">
+<div class="section-heading centered">{eyebrow("WHERE WE WORK")}<h2>Every community. Every service path.</h2><p>From our Boerne headquarters, Master Glass Solutions serves homes and businesses across the greater San Antonio metro and Texas Hill Country with the full range of glass installation, fabrication, and repair services.</p></div>
+
+<div class="emergency-band-inline">
+<a class="btn btn-alert" href="tel:{PHONE_LINK}">{icon("phone")} 24/7 Emergency Glass Repair — Call {PHONE_DISPLAY}</a>
+</div>
+
+{region_html}
+
+{city_paragraphs}
+
+<div class="service-area-cta">
+<h3>Don't see your city listed?</h3>
+<p>Call <a href="tel:{PHONE_LINK}">{PHONE_DISPLAY}</a> — we may still serve your area.</p>
+<a class="btn btn-dark" href="tel:{PHONE_LINK}">{icon("phone")} Call {PHONE_DISPLAY}</a>
+</div>
+</div>
+</section>
+
+<section class="section section-cream service-area-schema">
+<div class="shell split-info">
+<div>{eyebrow("FULL COVERAGE")}<h2>Serving {len(all_cities)}+ communities across the region.</h2><p>Master Glass Solutions provides residential glass, commercial glass, storefront systems, custom glass, shower enclosures, mirrors, window glass replacement, and 24/7 emergency repair throughout the greater San Antonio metro and Texas Hill Country.</p></div>
+<div>{eyebrow("YOUR NEXT STEP")}<h2>Start with the property.</h2><p>Share the city, address, and glass need. Whether it is a home, business, or urgent situation, the right conversation begins with the right details.</p><a class="btn btn-dark" href="request-quote.html">Request a quote {icon("arrow")}</a><a class="btn btn-ghost" href="tel:{PHONE_LINK}">{icon("phone")} Call {PHONE_DISPLAY}</a></div>
+</div>
+</section>
+
 {faq_section(faqs,"Service-area questions, answered.")}{mini_cta("Bring the property location into the conversation.","A full address or city helps the team understand the project context and guide the next step.")}'''
-    return layout("Glass Services in Boerne & San Antonio, TX | Master Glass Solutions","Master Glass Solutions serves Boerne and San Antonio, Texas with commercial, residential, custom, storefront and emergency glass support.","service-areas.html",body,"Service Areas",[("Service Areas","service-areas.html")],None,faqs)
+
+    schema = {
+        "@context":"https://schema.org",
+        "@type":"HomeAndConstructionBusiness",
+        "@id": SITE + "/#business",
+        "name":"Master Glass Solutions",
+        "url":SITE + "/",
+        "telephone":"+12103703700",
+        "email":EMAIL,
+        "image": SITE + "/assets/hero-storefront.jpg",
+        "address":{"@type":"PostalAddress","streetAddress":"4949 N Loop 1604 West, Suite 501","addressLocality":"San Antonio","addressRegion":"TX","postalCode":"78249","addressCountry":"US"},
+        "areaServed":[{"@type":"City","name":c[0],"containedInPlace":{"@type":"State","name":"Texas"}} for c in all_cities],
+        "priceRange":"$$",
+        "description":f"Commercial and residential glass installation, fabrication, repair, storefront, shower enclosure, custom glass, and emergency glass services across {len(all_cities)}+ communities in the greater San Antonio metro and Texas Hill Country.",
+        "knowsAbout":["Residential glass","Commercial glass","Emergency glass repair","Storefront glass","Custom glass","Shower enclosures","Mirrors","Window glass replacement","Architectural Glazing"]
+    }
+
+    return layout("Glass Services in Boerne, San Antonio & Texas Hill Country | Master Glass Solutions",f"Master Glass Solutions serves {len(all_cities)}+ communities across the greater San Antonio metro and Texas Hill Country with commercial, residential, custom, storefront and emergency glass support.","service-areas.html",body,"Service Areas",[("Service Areas","service-areas.html")],jsonld(schema),faqs)
 
 def city_page(city, filename, local_detail):
     faqs=[(f"Does Master Glass Solutions provide glass services in {city}, TX?",f"{local_detail} Master Glass Solutions provides residential and commercial glass service paths including storefront, custom, shower enclosure, mirror, window glass replacement, and emergency support."),(f"How do I request a glass quote in {city}?",f"Call {PHONE_DISPLAY} or use the quote request form. Include the {city} property address, glass service needed, timing, photos, and approximate dimensions if available."),(f"Is emergency glass support available in {city}?",f"Master Glass Solutions states 24/7 emergency glass support. Call {PHONE_DISPLAY} to explain the damaged opening, location, and immediate safety or security needs.")]
@@ -385,8 +496,27 @@ for f,d in SERVICE_DATA.items(): write(f,service_page(f,d))
 write("about.html",about_page())
 write("contact.html",contact_page())
 write("service-areas.html",service_areas_page())
-write("boerne-tx.html",city_page("Boerne","boerne-tx.html","Master Glass Solutions is based in Boerne, Texas and provides a local starting point for commercial and residential glass installation, fabrication, custom glass, storefront work, and emergency glass support."))
-write("san-antonio-tx.html",city_page("San Antonio","san-antonio-tx.html","San Antonio is a core service-area signal for Master Glass Solutions. Commercial and residential customers can start with the glass need, the property context, and a clear request for the next step."))
+write("boerne-tx.html",city_page("Boerne","boerne-tx.html","Master Glass Solutions is headquartered in Boerne, Texas, providing a full-service starting point for residential glass, commercial glass, custom glass, storefront systems, and 24/7 emergency glass support."))
+write("san-antonio-tx.html",city_page("San Antonio","san-antonio-tx.html","San Antonio is a core service area for Master Glass Solutions. From downtown storefronts to residential neighborhoods across the metro, we provide commercial and residential glass installation, fabrication, custom glass, and emergency glass repair."))
+write("alamo-heights-tx.html",city_page("Alamo Heights","alamo-heights-tx.html","Master Glass Solutions serves Alamo Heights with premium residential and commercial glass services. Just minutes from our Boerne headquarters, we handle everything from luxury shower enclosures and custom mirrors to storefront systems and window glass replacement."))
+write("leon-valley-tx.html",city_page("Leon Valley","leon-valley-tx.html","Leon Valley properties benefit from Master Glass Solutions' full-service glass capabilities. We provide residential glass installation, commercial storefront systems, custom glass features, and responsive emergency glass repair throughout the Leon Valley community."))
+write("helotes-tx.html",city_page("Helotes","helotes-tx.html","Master Glass Solutions brings Hill Country glass expertise to Helotes. From custom residential glass and shower enclosures to commercial storefront installation and 24/7 emergency repair, we serve Helotes homes and businesses with precision."))
+write("converse-tx.html",city_page("Converse","converse-tx.html","Converse property owners and businesses trust Master Glass Solutions for reliable glass services. We handle residential window replacement, commercial glass systems, custom installations, and emergency glass repair across the Converse area."))
+write("schertz-tx.html",city_page("Schertz","schertz-tx.html","Master Glass Solutions provides comprehensive glass services to Schertz, TX. From new construction glass installation to commercial storefront systems and emergency repair, our team delivers quality workmanship for Schertz homes and businesses."))
+write("comfort-tx.html",city_page("Comfort","comfort-tx.html","Comfort, TX properties are served by Master Glass Solutions with residential and commercial glass installation, custom shower enclosures, mirror services, and emergency glass repair. Our Boerne location provides quick access to the Comfort community."))
+write("timberwood-park-tx.html",city_page("Timberwood Park","timberwood-park-tx.html","Timberwood Park homeowners rely on Master Glass Solutions for custom residential glass, frameless shower enclosures, window glass replacement, and commercial glass services. Our proximity means fast response for both planned projects and emergency repairs."))
+write("canyon-lake-tx.html",city_page("Canyon Lake","canyon-lake-tx.html","Master Glass Solutions serves Canyon Lake with residential and commercial glass services tailored to lakefront and Hill Country properties. From custom shower glass to storefront systems and emergency repair, we keep Canyon Lake properties secure and beautiful."))
+write("wimberley-tx.html",city_page("Wimberley","wimberley-tx.html","Wimberley properties receive dedicated glass services from Master Glass Solutions. We handle residential glass installation, custom mirrors, commercial glass systems, and emergency repair for homes and businesses throughout the Wimberley area."))
+write("blanco-tx.html",city_page("Blanco","blanco-tx.html","Master Glass Solutions extends Hill Country glass expertise to Blanco, TX. From residential window glass and shower enclosures to commercial storefront installation and emergency repair, Blanco properties are within our service reach."))
+write("new-braunfels-tx.html",city_page("New Braunfels","new-braunfels-tx.html","New Braunfels is a key growth market for Master Glass Solutions. We provide residential glass, commercial storefront systems, custom glass features, and 24/7 emergency glass repair for the expanding New Braunfels community."))
+write("seguin-tx.html",city_page("Seguin","seguin-tx.html","Master Glass Solutions serves Seguin with full-service residential and commercial glass capabilities. From new construction glass installation to emergency storefront repair, Seguin properties receive the same quality workmanship as our Boerne and San Antonio projects."))
+write("la-vernia-tx.html",city_page("La Vernia","la-vernia-tx.html","La Vernia homes and businesses benefit from Master Glass Solutions' comprehensive glass services. We handle custom residential glass, commercial installations, window replacement, and emergency glass repair for the La Vernia community."))
+write("stockdale-tx.html",city_page("Stockdale","stockdale-tx.html","Master Glass Solutions provides reliable glass services to Stockdale, TX. From residential window glass and shower enclosures to commercial storefront systems and 24/7 emergency repair, Stockdale properties are within our service area."))
+write("lakehills-tx.html",city_page("Lakehills","lakehills-tx.html","Lakehills properties near Medina Lake receive attentive glass services from Master Glass Solutions. We handle residential glass installation, custom shower enclosures, commercial glass, and emergency repair for the Lakehills community."))
+write("castroville-tx.html",city_page("Castroville","castroville-tx.html","Master Glass Solutions brings quality glass work to Castroville, TX. From historic district residential glass to commercial storefront systems and emergency repair, Castroville homes and businesses receive our full-service glass capabilities."))
+write("lytle-tx.html",city_page("Lytle","lytle-tx.html","Lytle, TX is served by Master Glass Solutions for residential and commercial glass needs. We provide window glass replacement, shower enclosures, custom glass installations, storefront systems, and 24/7 emergency glass repair."))
+write("natalia-tx.html",city_page("Natalia","natalia-tx.html","Master Glass Solutions extends glass services to Natalia, TX. From residential window and shower glass to commercial storefront installation and emergency repair, Natalia properties receive quality workmanship from our nearby Boerne headquarters."))
+write("somerset-tx.html",city_page("Somerset","somerset-tx.html","Somerset homes and businesses trust Master Glass Solutions for dependable glass services. We handle residential glass, commercial installations, custom glass features, window replacement, and emergency glass repair across the Somerset area."))
 write("gallery.html",gallery_page())
 write("reviews.html",reviews_page())
 write("faq.html",faq_page())

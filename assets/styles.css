@@ -300,6 +300,32 @@ details[open] summary span { transform: rotate(45deg); }
 .city-card h2 { font-size:clamp(2.6rem,4vw,4rem); margin:3.5rem 0 1.5rem; }
 .city-card span { display:flex; justify-content:space-between; align-items:center; gap:2rem; color:#d5dfda; font-size:.85rem; max-width:430px; }
 .city-card svg { width:18px; height:18px; flex:0 0 auto; fill:none; stroke:currentColor; stroke-width:1.6; }
+
+/* Service Areas — region-grouped layout */
+.region-group { margin-top:4rem; }
+.region-heading { font-size:.7rem; font-weight:800; letter-spacing:.15em; color:var(--metal); text-transform:uppercase; padding-bottom:1rem; border-bottom:2px solid var(--metal); margin-bottom:0; }
+.region-group .city-grid { margin-top:1.5rem; }
+.region-group .city-card { min-height:220px; }
+.region-group .city-card h2 { font-size:clamp(1.8rem,3vw,2.8rem); margin:2rem 0 1rem; }
+.region-group .city-card span { font-size:.8rem; line-height:1.5; }
+
+.emergency-band-inline { margin:3rem 0; padding:1.5rem 2rem; background:var(--metal); display:flex; justify-content:center; align-items:center; }
+.emergency-band-inline .btn { font-size:.85rem; letter-spacing:.04em; }
+.emergency-band-inline svg { width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.8; }
+
+.city-detail { padding:2.5rem 0; border-bottom:1px solid var(--stone-dark); }
+.city-detail:last-of-type { border-bottom:none; }
+.city-detail h3 { font-size:1.3rem; font-weight:800; margin:0 0 .75rem; }
+.city-detail p { color:var(--ink-soft); line-height:1.7; margin:0 0 1rem; font-size:.92rem; }
+.city-detail .text-link { font-size:.82rem; font-weight:700; color:var(--metal); text-decoration:none; border-bottom:1px solid var(--metal); transition:color .2s; }
+.city-detail .text-link:hover { color:var(--ink); }
+.city-detail .text-link svg { width:14px; height:14px; fill:none; stroke:currentColor; stroke-width:1.8; vertical-align:middle; margin-left:.3rem; }
+
+.service-area-cta { margin-top:4rem; padding:3rem; background:var(--stone); text-align:center; }
+.service-area-cta h3 { font-size:1.5rem; margin:0 0 .5rem; }
+.service-area-cta p { color:var(--ink-soft); margin:0 0 1.5rem; font-size:.95rem; }
+.service-area-cta a { color:var(--ink); font-weight:700; text-decoration:none; border-bottom:1px solid var(--ink); }
+.service-area-cta .btn { margin-top:.5rem; }
 .service-area-note { padding:2rem; background:var(--paper); display:flex; justify-content:space-between; align-items:center; gap:2rem; }
 .service-area-note h3,.service-area-note p { margin:0; }
 .service-area-note p { color:#536168; font-size:.85rem; }
@@ -471,6 +497,13 @@ a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visibl
   .city-grid { grid-template-columns:1fr; }
   .city-card { min-height:250px; }
   .city-card h2 { margin:2rem 0 1rem; }
+  .region-group .city-grid { grid-template-columns:1fr; }
+  .region-group .city-card { min-height:180px; }
+  .emergency-band-inline { flex-direction:column; text-align:center; gap:1rem; }
+  .emergency-band-inline .btn { font-size:.78rem; width:100%; }
+  .city-detail h3 { font-size:1.1rem; }
+  .city-detail p { font-size:.85rem; }
+  .service-area-cta { padding:2rem 1.5rem; }
   .gallery-grid { grid-template-columns:1fr; grid-template-rows:280px 280px 230px 230px; }
   .gallery-large { grid-row:auto; }
   .article-grid .article-card:last-child { grid-column:auto; }
