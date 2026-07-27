@@ -11,7 +11,7 @@
 | **Address** | 4949 N Loop 1604 West, Suite 501, San Antonio, TX 78249 |
 | **Phone** | 210-370-3700 |
 | **Email** | contact@masterglasssolutionsusa.com |
-| **Website** | https://mgsusa-llc.vercel.app |
+| **Website** | https://www.mgsusa.llc |
 | **Hours** | 24/7 Emergency Support. Office: Mon-Fri 8AM-6PM |
 | **Founded** | 20+ years of glass industry experience |
 | **License** | Licensed, Insured & Bonded ($2M+ COI) |
@@ -72,7 +72,7 @@ Broken window? Shattered storefront? Damaged glass opening? We provide around-th
 - Serving 21+ Communities Across San Antonio & Hill Country
 - 24/7 Emergency Support
 
-Call 210-370-3700 or visit https://mgsusa-llc.vercel.app for a free estimate.
+Call 210-370-3700 or visit https://www.mgsusa.llc for a free estimate.
 
 ---
 
@@ -120,7 +120,7 @@ Local glass experts serving Boerne and San Antonio. Shower enclosures, storefron
 ## PROFILE PRIORITY ORDER
 
 Do these first (Tier 1 — biggest impact):
-1. Google Search Console — submit sitemap: https://mgsusa-llc.vercel.app/sitemap.xml
+1. Google Search Console — submit sitemap: https://www.mgsusa.llc/sitemap.xml
 2. Google Business Profile — use MEDIUM description
 3. Bing Webmaster Tools — submit sitemap
 4. Yelp Business — use MEDIUM description

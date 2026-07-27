@@ -34,23 +34,23 @@ Master Glass Solutions is a glass contractor based in San Antonio, TX, serving B
 
 ## Key Pages
 
-- Home: https://mgsusa-llc.vercel.app/
-- Residential Glass: https://mgsusa-llc.vercel.app/residential-glass
-- Commercial Glass: https://mgsusa-llc.vercel.app/commercial-glass
-- Emergency Glass Repair: https://mgsusa-llc.vercel.app/emergency-glass-repair
-- Storefront Glass: https://mgsusa-llc.vercel.app/storefront-glass
-- Custom Glass: https://mgsusa-llc.vercel.app/custom-glass
-- Shower Enclosures: https://mgsusa-llc.vercel.app/shower-enclosures
-- Mirrors: https://mgsusa-llc.vercel.app/mirrors
-- Window Glass Replacement: https://mgsusa-llc.vercel.app/window-glass-replacement
-- Service Areas: https://mgsusa-llc.vercel.app/service-areas
-- About: https://mgsusa-llc.vercel.app/about
-- Contact: https://mgsusa-llc.vercel.app/contact
-- FAQ: https://mgsusa-llc.vercel.app/faq
-- Gallery: https://mgsusa-llc.vercel.app/gallery
-- Resources: https://mgsusa-llc.vercel.app/resources
-- Request a Quote: https://mgsusa-llc.vercel.app/request-quote
-- Quote Process: https://mgsusa-llc.vercel.app/quote-process
+- Home: https://www.mgsusa.llc/
+- Residential Glass: https://www.mgsusa.llc/residential-glass
+- Commercial Glass: https://www.mgsusa.llc/commercial-glass
+- Emergency Glass Repair: https://www.mgsusa.llc/emergency-glass-repair
+- Storefront Glass: https://www.mgsusa.llc/storefront-glass
+- Custom Glass: https://www.mgsusa.llc/custom-glass
+- Shower Enclosures: https://www.mgsusa.llc/shower-enclosures
+- Mirrors: https://www.mgsusa.llc/mirrors
+- Window Glass Replacement: https://www.mgsusa.llc/window-glass-replacement
+- Service Areas: https://www.mgsusa.llc/service-areas
+- About: https://www.mgsusa.llc/about
+- Contact: https://www.mgsusa.llc/contact
+- FAQ: https://www.mgsusa.llc/faq
+- Gallery: https://www.mgsusa.llc/gallery
+- Resources: https://www.mgsusa.llc/resources
+- Request a Quote: https://www.mgsusa.llc/request-quote
+- Quote Process: https://www.mgsusa.llc/quote-process
 
 ## How to Get a Quote
 

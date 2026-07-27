@@ -8,9 +8,9 @@ import json
 
 OUT = Path(__file__).parent
 # ─── DOMAIN CONFIG ──────────────────────────────────────────────────────────
-# Live now:   https://mgsusa-llc.vercel.app
+# Live now:   https://www.mgsusa.llc
 # Switch to:  https://mgsusa.llc  once DNS is connected in Vercel dashboard.
-SITE = "https://mgsusa-llc.vercel.app"
+SITE = "https://www.mgsusa.llc"
 PHONE_DISPLAY = "210-370-3700"
 PHONE_LINK = "2103703700"
 EMAIL = "contact@masterglasssolutionsusa.com"
