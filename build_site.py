@@ -107,7 +107,7 @@ def layout(title, description, filename, body, active="", crumbs=None, service=N
 <title>{escape(title)}</title><meta name="description" content="{escape(description)}"><link rel="canonical" href="{canonical}">
 <meta property="og:type" content="website"><meta property="og:title" content="{escape(title)}"><meta property="og:description" content="{escape(description)}"><meta property="og:url" content="{canonical}"><meta property="og:image" content="{SITE}/assets/hero-storefront.jpg"><meta name="twitter:card" content="summary_large_image">{robot}
 <link rel="stylesheet" href="assets/styles.css">{schema}</head>
-<body>{glass_doors_overlay()}{nav(active)}<main id="main">{body}</main>{footer()}<script src="assets/scripts.js" defer></script></body></html>'''
+<body>{glass_doors_overlay()}{nav(active)}<main id="main">{body}</main>{footer()}<script src="assets/scripts.js" defer></script><script>window.va=window.va||function(){{(window.vaq=window.vaq||[]).push(arguments)}};</script><script defer src="https://cdn.vercel-insights.com/v1/script.js"></script></body></html>'''
 
 def eyebrow(txt): return f'<p class="eyebrow"><span></span>{txt}</p>'
 def cta_quote(label="Request a quote", cls="btn btn-light"): return f'<a class="{cls}" href="request-quote.html">{label} {icon("arrow")}</a>'
