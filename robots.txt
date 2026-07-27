@@ -1,3 +1,3 @@
 User-agent: *
 Allow: /
-Sitemap: https://www.masterglasssolutionsusa.com/sitemap.xml
+Sitemap: https://mgsusa-llc.vercel.app/sitemap.xml
