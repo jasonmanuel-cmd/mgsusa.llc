@@ -1,11 +1,8 @@
-# Python build artifacts
-__pycache__/
-*.py[cod]
-
-# OS/editor noise
-.DS_Store
-.vscode/
-.idea/
-
-# Local server / logs
-*.log
+# Working/scratch files
+assets/candidate-*.jpg
+assets/*-real.jpg
+assets/*-stock.jpg
+temp-*.html
+*-AUDIT-REPORT.md
+*-AUDIT.md
+*-REVIEW.md
