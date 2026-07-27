@@ -26,18 +26,45 @@
     window.dispatchEvent(new CustomEvent('mgs:lead-submit', { detail: { service: form.querySelector('[name="service"]')?.value || '', page: location.pathname } }));
   }));
 
-  // Glass Doors Opening Entrance Controller
+  // Glass Doors Password Gate
   const doorOverlay = document.getElementById('glassDoorsOverlay');
   if (doorOverlay) {
+    const STORAGE_KEY = 'mgs_gate_auth';
+    const PASSCODE = 'Glass2026';
+    const gateForm = document.getElementById('gateForm');
+    const gateInput = document.getElementById('gatePassword');
+    const gateError = document.getElementById('gateError');
+
     const openDoors = () => {
       doorOverlay.classList.add('doors-opened');
-      setTimeout(() => {
-        doorOverlay.style.display = 'none';
-      }, 1500);
+      document.body.style.overflow = '';
+      setTimeout(() => { doorOverlay.style.display = 'none'; }, 1500);
     };
-    // Auto-open doors after short visual beat
-    setTimeout(openDoors, 350);
-    // Instant open if user taps/clicks doors overlay
-    doorOverlay.addEventListener('click', openDoors);
+
+    // If already authenticated, open immediately
+    if (localStorage.getItem(STORAGE_KEY) === '1') {
+      doorOverlay.style.display = 'none';
+    } else {
+      // Lock scroll while gate is showing
+      document.body.style.overflow = 'hidden';
+    }
+
+    if (gateForm) {
+      gateForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const val = gateInput.value.trim();
+        if (val === PASSCODE) {
+          localStorage.setItem(STORAGE_KEY, '1');
+          gateError.classList.remove('visible');
+          openDoors();
+        } else {
+          gateError.classList.add('visible');
+          gateInput.classList.add('gate-shake');
+          gateInput.value = '';
+          gateInput.focus();
+          setTimeout(() => gateInput.classList.remove('gate-shake'), 450);
+        }
+      });
+    }
   }
 })();

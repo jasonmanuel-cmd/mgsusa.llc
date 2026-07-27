@@ -35,7 +35,7 @@ button { cursor: pointer; }
 .utility span, .utility a { display: inline-flex; align-items: center; gap: .45rem; }
 .utility a { color: var(--metal-light); font-weight: 800; }
 .utility svg { width: 13px; height: 13px; }
-.site-header { position: sticky; top: 0; z-index: 100; background: rgba(252,250,245,.97); border-bottom: 1px solid rgba(9,22,31,.09); backdrop-filter: blur(12px); }
+.site-header { position: sticky; top: 0; z-index: 100; background: rgba(252,250,245,.97); border-bottom: 1px solid rgba(9,22,31,.09); }
 .nav-wrap { height: 80px; display: flex; align-items: center; justify-content: space-between; gap: 1.2rem; }
 .brand { display: inline-flex; align-items: center; gap: .7rem; color: var(--ink); font-size: .87rem; line-height: .86; letter-spacing: .13em; font-weight: 600; white-space: nowrap; }
 .brand > span:last-child { display: grid; }
@@ -479,8 +479,6 @@ a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visibl
   .emergency-landing-grid { padding:5rem 0 3rem; }
   .emergency-landing h1 { font-size:clamp(3rem,13vw,4.2rem); }
 }
-}
-}
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior:auto; } *, *::before, *::after { transition-duration:.01ms!important; animation-duration:.01ms!important; scroll-behavior:auto!important; } }
 
 /* COI Badge & Form Trust Enhancements */
@@ -500,7 +498,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visibl
 .coi-badge b { color: var(--gold); }
 
 
-/* Glass Doors Opening Entrance Overlay */
+/* Glass Doors Password Gate Overlay */
 .glass-doors-overlay {
   position: fixed;
   top: 0;
@@ -568,7 +566,9 @@ a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visibl
   background: linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.06) 45%, rgba(0,229,255,0.12) 50%, transparent 55%);
   pointer-events: none;
 }
-.glass-doors-brand {
+
+/* Password Gate — center content */
+.glass-doors-gate {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -577,12 +577,28 @@ a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visibl
   display: flex;
   flex-direction: column;
   align-items: center;
+  text-align: center;
+  gap: 0;
+  width: min(420px, calc(100vw - 48px));
+  transition: opacity 0.6s ease, transform 0.8s cubic-bezier(0.77, 0, 0.175, 1);
+  pointer-events: auto;
+}
+.glass-doors-overlay.doors-opened .glass-doors-gate {
+  opacity: 0;
+  transform: translate(-50%, -60%) scale(1.08);
+  pointer-events: none;
+}
+
+/* Brand mark on gate */
+.glass-doors-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   gap: 12px;
   color: #fff;
   font-family: var(--serif, serif);
   letter-spacing: 0.15em;
-  transition: opacity 0.5s ease, transform 0.8s cubic-bezier(0.77, 0, 0.175, 1);
-  pointer-events: none;
+  margin-bottom: 2rem;
 }
 .glass-doors-brand .brand-mark {
   width: 44px;
@@ -602,9 +618,100 @@ a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visibl
   text-transform: uppercase;
 }
 .glass-doors-brand span b { color: #00E5FF; }
-.glass-doors-brand span em { color: var(--gold); font-style: normal; }
-.glass-doors-overlay.doors-opened .glass-doors-brand {
-  opacity: 0;
-  transform: translate(-50%, -60%) scale(1.15);
+.glass-doors-brand span em { color: #D4AF37; font-style: normal; }
+
+/* Gate text */
+.gate-status {
+  color: #00E5FF;
+  font-size: 0.68rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-weight: 800;
+  margin: 0 0 1rem;
 }
+.gate-heading {
+  color: #fff;
+  font-family: var(--serif, serif);
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  margin: 0 0 0.75rem;
+  max-width: 380px;
+}
+.gate-sub {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.82rem;
+  margin: 0 0 1.8rem;
+}
+
+/* Gate form */
+.gate-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  max-width: 320px;
+}
+.gate-input {
+  width: 100%;
+  min-height: 52px;
+  padding: 0 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 0;
+  background: rgba(255, 255, 255, 0.07);
+  color: #fff;
+  font-size: 0.95rem;
+  letter-spacing: 0.04em;
+  text-align: center;
+  outline: none;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+.gate-input::placeholder { color: rgba(255, 255, 255, 0.4); }
+.gate-input:focus {
+  border-color: #00E5FF;
+  box-shadow: 0 0 0 3px rgba(0, 229, 255, 0.15);
+}
+.gate-input.gate-shake {
+  animation: gateShake 0.4s ease;
+  border-color: var(--alert);
+}
+@keyframes gateShake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(8px); }
+  60% { transform: translateX(-5px); }
+  80% { transform: translateX(5px); }
+}
+.gate-btn {
+  width: 100%;
+  min-height: 52px;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+.gate-error {
+  color: #ff6b5a;
+  font-size: 0.72rem;
+  margin: 0;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+}
+.gate-error.visible {
+  opacity: 1;
+}
+
+/* Gate footer link */
+.gate-contact {
+  margin-top: 2rem;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.72rem;
+}
+.gate-contact a {
+  color: var(--metal-light);
+  border-bottom: 1px solid rgba(216, 187, 143, 0.5);
+  font-weight: 700;
+}
+.gate-contact a:hover { color: #fff; }
 

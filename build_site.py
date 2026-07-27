@@ -7,11 +7,14 @@ from html import escape
 import json
 
 OUT = Path(__file__).parent
-SITE = "https://www.masterglasssolutionsusa.com"
+# ─── DOMAIN CONFIG ──────────────────────────────────────────────────────────
+# Live now:   https://mgsusa-llc.vercel.app
+# Switch to:  https://mgsusa.llc  once DNS is connected in Vercel dashboard.
+SITE = "https://mgsusa-llc.vercel.app"
 PHONE_DISPLAY = "210-370-3700"
 PHONE_LINK = "2103703700"
 EMAIL = "contact@masterglasssolutionsusa.com"
-ADDRESS = "108 Scheele Rd Unit 4, Boerne, TX 78015"
+ADDRESS = "4949 N Loop 1604 West, Suite 501, San Antonio, TX 78249"
 
 NAV = [
     ("Residential", "residential-glass.html"),
@@ -43,7 +46,7 @@ def org_schema():
       "@context":"https://schema.org", "@type":"HomeAndConstructionBusiness", "@id": SITE + "/#business",
       "name":"Master Glass Solutions", "url":SITE + "/", "telephone":"+12103703700", "email":EMAIL,
       "image": SITE + "/assets/hero-storefront.jpg",
-      "address":{"@type":"PostalAddress","streetAddress":"108 Scheele Rd Unit 4","addressLocality":"Boerne","addressRegion":"TX","postalCode":"78015","addressCountry":"US"},
+      "address":{"@type":"PostalAddress","streetAddress":"4949 N Loop 1604 West, Suite 501","addressLocality":"San Antonio","addressRegion":"TX","postalCode":"78249","addressCountry":"US"},
       "areaServed":[
         {"@type":"City","name":"Boerne"},
         {"@type":"City","name":"San Antonio"},
@@ -103,10 +106,21 @@ def footer():
 <a class="mobile-call-fab" href="tel:{PHONE_LINK}" aria-label="Call Master Glass Solutions now">{icon("phone")}<span>Call now</span></a>'''
 
 def glass_doors_overlay():
-    return '''<div class="glass-doors-overlay" id="glassDoorsOverlay" aria-hidden="true">
+    return '''<div class="glass-doors-overlay" id="glassDoorsOverlay">
 <div class="glass-door glass-door-left"><div class="glass-door-glare"></div><div class="glass-door-handle"></div></div>
 <div class="glass-door glass-door-right"><div class="glass-door-handle"></div><div class="glass-door-glare"></div></div>
+<div class="glass-doors-gate" id="glassGate">
 <div class="glass-doors-brand"><span class="brand-mark"><i></i><i></i><i></i></span><span>MASTER <b>GLASS</b><em>SOLUTIONS</em></span></div>
+<p class="gate-status">WEBSITE COMING SOON</p>
+<h2 class="gate-heading">We're building something worth the wait.</h2>
+<p class="gate-sub">Enter the access code to preview the site.</p>
+<form class="gate-form" id="gateForm" autocomplete="off">
+<input type="password" id="gatePassword" class="gate-input" placeholder="Enter access code" aria-label="Access code" required>
+<button type="submit" class="btn btn-light gate-btn">Enter</button>
+<p class="gate-error" id="gateError" role="alert">Incorrect code. Please try again.</p>
+</form>
+<p class="gate-contact">Need help now? <a href="tel:2103703700">Call 210-370-3700</a></p>
+</div>
 </div>'''
 
 def layout(title, description, filename, body, active="", crumbs=None, service=None, faqs=None, noindex=False):
@@ -123,7 +137,7 @@ def layout(title, description, filename, body, active="", crumbs=None, service=N
 
 def eyebrow(txt): return f'<p class="eyebrow"><span></span>{txt}</p>'
 def cta_quote(label="Request a quote", cls="btn btn-light"): return f'<a class="{cls}" href="request-quote.html">{label} {icon("arrow")}</a>'
-def cta_call(label="Call {PHONE_DISPLAY}", cls="btn btn-ghost"): return f'<a class="{cls}" href="tel:{PHONE_LINK}">{icon("phone")} {label}</a>'
+def cta_call(label=f"Call {PHONE_DISPLAY}", cls="btn btn-ghost"): return f'<a class="{cls}" href="tel:{PHONE_LINK}">{icon("phone")} {label}</a>'
 
 def inner_hero(eyebrow_text, h1, intro, image="hero-storefront.jpg", actions=None):
     if not actions: actions=cta_quote()+cta_call()
@@ -295,7 +309,7 @@ def contact_page():
     return layout("Contact Master Glass Solutions | Boerne, TX","Contact Master Glass Solutions in Boerne, TX for residential, commercial, custom, storefront, and emergency glass support.","contact.html",body,"",[("Contact","contact.html")])
 
 def service_areas_page():
-    faqs=[("Does Master Glass Solutions serve Boerne, Texas?","Yes. Master Glass Solutions is located in Boerne, Texas at 108 Scheele Rd Unit 4, Boerne, TX 78015."),("Does Master Glass Solutions serve San Antonio, Texas?","San Antonio is presented as a core service area. Send the property location with your project request so the team can discuss the next step."),("How do I know whether my project is within the service area?","Call 210-370-3700 or share the full property location in your quote request. A specific service radius should only be published when the business confirms it.")]
+    faqs=[("Does Master Glass Solutions serve Boerne, Texas?","Yes. Master Glass Solutions is located in San Antonio, Texas at 4949 N Loop 1604 West, Suite 501, San Antonio, TX 78249."),("Does Master Glass Solutions serve San Antonio, Texas?","San Antonio is presented as a core service area. Send the property location with your project request so the team can discuss the next step."),("How do I know whether my project is within the service area?","Call 210-370-3700 or share the full property location in your quote request. A specific service radius should only be published when the business confirms it.")]
     cities='''<a class="city-card" href="boerne-tx.html"><p>CORE SERVICE AREA</p><h2>Boerne, TX</h2><span>Residential, commercial, custom, storefront, and emergency glass support {icon("arrow")}</span></a><a class="city-card" href="san-antonio-tx.html"><p>CORE SERVICE AREA</p><h2>San Antonio, TX</h2><span>Residential, commercial, custom, storefront, and emergency glass support {icon("arrow")}</span></a>'''
     body=f'''{inner_hero("SERVICE AREAS","Glass services with a clear local focus.","Master Glass Solutions is based in Boerne and presents Boerne and San Antonio as core local service areas for commercial and residential glass work.","hero-storefront.jpg")}
 <section class="section areas"><div class="shell"><div class="section-heading centered">{eyebrow("WHERE WE WORK")}<h2>Boerne and San Antonio, Texas.</h2><p>Every service-area page should be useful on its own—answering how the service applies locally rather than repeating the same city name around a generic page.</p></div><div class="city-grid">{cities}</div><div class="service-area-note"><h3>Outside these areas?</h3><p>Do not assume. Send the property address or call <a href="tel:{PHONE_LINK}">{PHONE_DISPLAY}</a> to discuss the project location directly.</p></div></div></section>
