@@ -26,6 +26,17 @@
     window.dispatchEvent(new CustomEvent('mgs:lead-submit', { detail: { service: form.querySelector('[name="service"]')?.value || '', page: location.pathname } }));
   }));
 
+  // Scroll-reveal animation
+  const revealEls = document.querySelectorAll('.reveal');
+  if (revealEls.length && 'IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('revealed'); io.unobserve(e.target); } });
+    }, { threshold: 0.12 });
+    revealEls.forEach(el => io.observe(el));
+  } else {
+    revealEls.forEach(el => el.classList.add('revealed'));
+  }
+
   // Glass Doors Password Gate
   const doorOverlay = document.getElementById('glassDoorsOverlay');
   if (doorOverlay) {
