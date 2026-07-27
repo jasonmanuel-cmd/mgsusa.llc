@@ -568,10 +568,10 @@ a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visibl
   pointer-events: none;
 }
 
-/* Password Gate — center content */
+/* Password Gate — centered above door handles */
 .glass-doors-gate {
   position: absolute;
-  top: 50%;
+  top: 38%;
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 1000000;
@@ -586,7 +586,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visibl
 }
 .glass-doors-overlay.doors-opened .glass-doors-gate {
   opacity: 0;
-  transform: translate(-50%, -60%) scale(1.08);
+  transform: translate(-50%, -70%) scale(1.08);
   pointer-events: none;
 }
 
