@@ -30,8 +30,8 @@ button { cursor: pointer; }
 .shell { width: var(--shell); margin-inline: auto; }
 .skip-link { position: fixed; left: 12px; top: -80px; background: var(--metal); color: var(--ink); padding: .75rem 1rem; z-index: 1000; font-weight: 750; }
 .skip-link:focus { top: 12px; }
-.utility { background: var(--ink); color: var(--paper); font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; }
-.utility-inner { min-height: 34px; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.utility { background: var(--ink); color: var(--paper); font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; }
+.utility-inner { min-height: 38px; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
 .utility span, .utility a { display: inline-flex; align-items: center; gap: .45rem; }
 .utility-right { display: inline-flex; align-items: center; gap: .8rem; }
 .utility-right a { color: rgba(255,255,255,.65); transition: color .2s ease; }
@@ -40,12 +40,12 @@ button { cursor: pointer; }
 .utility a { color: var(--metal-light); font-weight: 800; }
 .utility svg { width: 13px; height: 13px; }
 .site-header { position: sticky; top: 0; z-index: 100; background: rgba(255,255,255,.97); border-bottom: 1px solid rgba(10,10,10,.09); }
-.nav-wrap { height: 80px; display: flex; align-items: center; justify-content: space-between; gap: 1.2rem; }
-.brand { display: inline-flex; align-items: center; gap: .7rem; color: var(--ink); white-space: nowrap; }
-.brand-logo { height: 50px; width: auto; object-fit: contain; }
-.brand-footer .brand-logo { height: 50px; }
+.nav-wrap { height: 110px; display: flex; align-items: center; justify-content: space-between; gap: 1.2rem; }
+.brand { display: inline-flex; align-items: center; gap: .9rem; color: var(--ink); white-space: nowrap; }
+.brand-logo { height: 75px; width: auto; object-fit: contain; }
+.brand-footer .brand-logo { height: 65px; }
 .main-nav { display: flex; align-items: center; justify-content: center; gap: clamp(.8rem,1.8vw,1.7rem); margin-left: auto; }
-.main-nav a { font-size: .74rem; text-transform: uppercase; letter-spacing: .075em; font-weight: 780; color: #32424a; position: relative; }
+.main-nav a { font-size: .82rem; text-transform: uppercase; letter-spacing: .075em; font-weight: 780; color: #32424a; position: relative; }
 .main-nav a::after { content:""; position: absolute; left: 0; right: 100%; bottom: -9px; height: 2px; background: var(--metal); transition: right .25s ease; }
 .main-nav a:hover::after, .main-nav a.active::after { right: 0; }
 .nav-actions { display: flex; align-items: center; gap: .7rem; }
@@ -403,7 +403,7 @@ details[open] summary span { transform: rotate(45deg); }
 a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 3px solid var(--metal); outline-offset: 3px; }
 @media (max-width: 1040px) {
   .main-nav { gap:.9rem; }
-  .main-nav a { font-size:.67rem; }
+  .main-nav a { font-size:.75rem; }
   .service-grid, .article-grid { grid-template-columns:repeat(3,1fr); }
   .article-grid .article-card:last-child { grid-column:span 3; min-height:180px; }
   .related-grid, .city-service-grid { grid-template-columns:repeat(2,1fr); }
@@ -413,7 +413,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visibl
   .utility-inner { min-height:32px; font-size:.61rem; }
   .utility span { display:none; }
   .utility-inner { justify-content:flex-end; }
-  .nav-wrap { height:68px; }
+  .nav-wrap { height:90px; }
   .main-nav, .nav-phone, .nav-actions > .btn { display:none; }
   .menu-toggle { width:42px; height:40px; padding:8px; display:grid; align-content:center; gap:6px; border:0; background:transparent; }
   .menu-toggle span { width:25px; height:1.5px; background:var(--ink); display:block; transition:transform .2s ease; }
@@ -454,7 +454,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visibl
 @media (max-width: 590px) {
   :root { --shell: calc(100% - 32px); }
   .brand { font-size:.76rem; }
-  .brand-logo { height: 40px; }
+  .brand-logo { height: 55px; }
   .hero-home { min-height:680px; }
   .hero-grid { min-height:680px; padding-top:4rem; }
   h1 { font-size:clamp(2.85rem,13vw,4.1rem); }
@@ -636,7 +636,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visibl
   margin-bottom: 2rem;
 }
 .gate-logo {
-  width: 120px;
+  width: 180px;
   height: auto;
   object-fit: contain;
   filter: brightness(0) invert(1);
@@ -654,12 +654,12 @@ a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visibl
 .gate-heading {
   color: #fff;
   font-family: var(--serif, serif);
-  font-size: clamp(1.6rem, 4vw, 2.4rem);
+  font-size: clamp(1.8rem, 4.5vw, 2.8rem);
   font-weight: 400;
   letter-spacing: -0.03em;
   line-height: 1.15;
   margin: 0 0 0.75rem;
-  max-width: 380px;
+  max-width: 420px;
 }
 .gate-sub {
   color: rgba(255, 255, 255, 0.6);
@@ -736,6 +736,51 @@ a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visibl
   font-weight: 700;
 }
 .gate-contact a:hover { color: #fff; }
+
+/* Splash Screen */
+.glass-splash {
+  position: fixed; inset: 0;
+  z-index: 10001;
+  background: #0a0a0a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: all;
+}
+.glass-splash-inner {
+  position: relative; z-index: 2;
+  display: flex; align-items: center; justify-content: center;
+}
+.glass-splash-logo {
+  width: 220px;
+  height: auto;
+  filter: brightness(0) invert(1);
+  animation: splashPulse 2.5s ease-in-out infinite;
+}
+.glass-splash-door {
+  position: absolute; top: 0; bottom: 0; width: 50%;
+  z-index: 3;
+  background: #0a0a0a;
+  transition: transform 1.4s cubic-bezier(.7,.0,.3,1);
+}
+.glass-splash-door-left { left: 0; }
+.glass-splash-door-right { right: 0; }
+.glass-splash.splash-opening .glass-splash-door-left { transform: translateX(-105%); }
+.glass-splash.splash-opening .glass-splash-door-right { transform: translateX(105%); }
+
+/* Gate fades in after splash opens */
+.glass-doors-gate {
+  opacity: 0;
+  transition: opacity .6s ease;
+}
+.glass-doors-gate.gate-visible {
+  opacity: 1;
+}
+
+@keyframes splashPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: .85; transform: scale(1.02); }
+}
 
 /* Scroll-reveal animations */
 .reveal { opacity: 0; transform: translateY(28px); transition: opacity .6s ease, transform .6s ease; }

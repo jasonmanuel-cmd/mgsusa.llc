@@ -37,7 +37,7 @@
     revealEls.forEach(el => el.classList.add('revealed'));
   }
 
-  // Glass Doors Password Gate
+  // Glass Doors Password Gate + Splash Screen
   const doorOverlay = document.getElementById('glassDoorsOverlay');
   if (doorOverlay) {
     const STORAGE_KEY = 'mgs_gate_auth';
@@ -45,6 +45,8 @@
     const gateForm = document.getElementById('gateForm');
     const gateInput = document.getElementById('gatePassword');
     const gateError = document.getElementById('gateError');
+    const splash = document.getElementById('glassSplash');
+    const gate = document.getElementById('glassGate');
 
     const openDoors = () => {
       doorOverlay.classList.add('doors-opened');
@@ -52,12 +54,25 @@
       setTimeout(() => { doorOverlay.style.display = 'none'; }, 1500);
     };
 
-    // If already authenticated, open immediately
+    const openSplashDoors = () => {
+      splash.classList.add('splash-opening');
+      // After splash doors finish opening, fade gate in
+      setTimeout(() => {
+        splash.style.display = 'none';
+        gate.classList.add('gate-visible');
+      }, 1400);
+    };
+
+    // If already authenticated, skip everything
     if (localStorage.getItem(STORAGE_KEY) === '1') {
       doorOverlay.style.display = 'none';
     } else {
-      // Lock scroll while gate is showing
+      // Lock scroll while gate/splash is showing
       document.body.style.overflow = 'hidden';
+      // Start splash door animation after 5 seconds
+      if (splash) {
+        setTimeout(openSplashDoors, 5000);
+      }
     }
 
     if (gateForm) {
