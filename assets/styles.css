@@ -419,9 +419,11 @@ a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visibl
   .utility-inner { min-height:32px; font-size:.61rem; }
   .utility span { display:none; }
   .utility-inner { justify-content:flex-end; }
-  .nav-wrap { height:90px; }
-  .main-nav, .nav-phone, .nav-actions > .btn { display:none; }
-  .menu-toggle { width:42px; height:40px; padding:8px; display:grid; align-content:center; gap:6px; border:0; background:transparent; }
+   .nav-wrap { height:70px; gap: 0.5rem; }
+   .brand-logo { height: 50px !important; }
+   .main-nav, .nav-phone, .nav-actions > .btn { display:none; }
+   .nav-actions { margin-left: auto; }
+   .menu-toggle { width:44px; height:44px; padding:8px; display:grid; align-content:center; gap:6px; border:0; background:transparent; cursor: pointer; flex-shrink: 0; }
   .menu-toggle span { width:25px; height:1.5px; background:var(--ink); display:block; transition:transform .2s ease; }
   .menu-toggle[aria-expanded="true"] span:first-child { transform:translateY(3.8px) rotate(45deg); }
   .menu-toggle[aria-expanded="true"] span:last-child { transform:translateY(-3.8px) rotate(-45deg); }
@@ -458,9 +460,10 @@ a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visibl
   .emergency-checklist { max-width:530px; }
 }
 @media (max-width: 590px) {
-  :root { --shell: calc(100% - 32px); }
-  .brand { font-size:.76rem; }
-  .brand-logo { height: 55px; }
+   :root { --shell: calc(100% - 32px); }
+   .brand { font-size:.76rem; }
+   .nav-wrap { height: 65px; }
+   .brand-logo { height: 45px; }
   .hero-home { min-height:680px; }
   .hero-grid { min-height:680px; padding-top:4rem; }
   h1 { font-size:clamp(2.85rem,13vw,4.1rem); }
