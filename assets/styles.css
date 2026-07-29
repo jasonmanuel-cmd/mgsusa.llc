@@ -503,9 +503,16 @@ a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visibl
   .inner-hero-content { padding:5rem 0 3.5rem; }
   .related-grid { margin-top:2.2rem; }
   .related-service { min-height:180px; }
-  .form-grid { grid-template-columns:1fr; }
-  .form-grid .full { grid-column:auto; }
-  .service-area-note { align-items:flex-start; flex-direction:column; }
+   .form-grid { grid-template-columns:1fr; }
+   .form-grid .full { grid-column:auto; }
+   .lead-form label { margin-bottom:.3rem; }
+   .lead-form input, .lead-form select, .lead-form textarea { min-height:48px; padding:.85rem .8rem; font-size:.9rem; }
+   .lead-form textarea { min-height:130px; }
+    .btn { min-height:52px; padding:.95rem 1.2rem; font-size:.78rem; }
+   .checkbox { align-items:center; padding:.5rem 0; }
+   .checkbox input { width:22px; height:22px; min-height:22px; cursor:pointer; }
+   .form-submit { margin-top:2rem; }
+   .service-area-note { align-items:flex-start; flex-direction:column; }
   .city-grid { grid-template-columns:1fr; }
   .city-card { min-height:250px; }
   .city-card h2 { margin:2rem 0 1rem; }
