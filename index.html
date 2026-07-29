@@ -24,6 +24,22 @@ body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Ro
 </style>
 </head>
 <body>
+
+<!-- SPLASH PAGE OVERLAY (10 SECOND INTRO) -->
+<div class="splash-overlay" id="splashOverlay">
+  <video
+    class="splash-video"
+    autoplay
+    muted
+    playsinline
+    preload="metadata"
+    poster="assets/Residentialhero.png">
+    <source src="assets/Videos/MGSVID.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+  <button class="splash-skip" id="splashSkip" aria-label="Skip intro and go to site">Skip &gt;</button>
+</div>
+
 <a class="skip-link" href="#main">Skip to content</a>
 
 <div class="utility"><div class="shell utility-inner"><span><svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg> 24/7 emergency glass support</span><div class="utility-right"><a href="https://www.instagram.com/glassmastersolutions" target="_blank" rel="noopener" aria-label="Instagram"><svg aria-hidden="true" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="12" r="5" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor"/></svg></a><a href="https://www.facebook.com/masterglasssolutionsusa" target="_blank" rel="noopener" aria-label="Facebook"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a><a href="tel:2103703700"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.37 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.33 1.85.57 2.81.7A2 2 0 0 1 22 16.92Z"/></svg> 210-370-3700</a></div></div></div>
@@ -83,11 +99,76 @@ body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Ro
 <section class="section final-cta"><div class="final-rule"></div><div class="shell final-cta-grid"><div><p class="eyebrow"><span></span>MASTER GLASS SOLUTIONS</p><h2>A precise next step starts with a clear conversation.</h2></div><div><p>Tell us what you're planning, repairing, or replacing. We'll help you identify the right path.</p><div class="hero-actions"><a class="btn btn-light" href="request-quote.html">Start your quote <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h13M13 6l6 6-6 6"/></svg></a><a class="btn btn-ghost" href="tel:2103703700"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.37 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.33 1.85.57 2.81.7A2 2 0 0 1 22 16.92Z"/></svg> Call 210-370-3700</a></div></div></div></section>
 
 </main><footer class="site-footer"><div class="shell footer-top">
-<div class="footer-intro"><a class="brand brand-footer" href="index.html"><img class="brand-logo" src="assets/logo.png" alt="Master Glass Solutions" width="50" height="50"></a><p>Commercial and residential glass work, fabricated and installed with a clear standard for precision.</p><a class="footer-phone" href="tel:2103703700"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.37 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.33 1.85.57 2.81.7A2 2 0 0 1 22 16.92Z"/></svg> 210-370-3700</a></div>
-<div><p class="footer-label">Explore</p><a href="residential-glass.html">Residential glass</a><a href="commercial-glass.html">Commercial glass</a><a href="storefront-glass.html">Storefront glass</a><a href="custom-glass.html">Custom glass</a></div>
-<div><p class="footer-label">Resources & Guides</p><a href="resources.html">Resources center</a><a href="quote-process.html">Quote process guide</a><a href="glass-project-planning-checklist.html">Planning checklist</a><a href="gallery.html">Project showcase</a><a href="faq.html">FAQ</a></div>
-<div><p class="footer-label">Visit / contact</p><address>4949 N Loop 1604 West, Suite 501, San Antonio, TX 78249</address><a href="mailto:contact@masterglasssolutionsusa.com">contact@masterglasssolutionsusa.com</a><a href="service-areas.html">Serving Boerne & San Antonio, TX</a></div>
-</div><div class="shell footer-bottom"><span>&copy; <span data-year></span> Master Glass Solutions. All rights reserved.</span><span>Masters of Glass &amp; Glazing</span></div></footer>
+<div class="footer-intro">
+  <a class="brand brand-footer" href="index.html"><img class="brand-logo" src="assets/logo.png" alt="Master Glass Solutions" width="40" height="40"></a>
+  <a class="footer-phone" href="tel:2103703700"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.37 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.33 1.85.57 2.81.7A2 2 0 0 1 22 16.92Z"/></svg> 210-370-3700</a>
+</div>
+<div>
+  <p class="footer-label">Glass</p>
+  <a href="residential-glass.html">Residential</a>
+  <a href="commercial-glass.html">Commercial</a>
+  <a href="emergency-glass-repair.html">Emergency</a>
+</div>
+<div>
+  <p class="footer-label">Resources</p>
+  <a href="quote-process.html">Quote process</a>
+  <a href="gallery.html">Projects</a>
+  <a href="faq.html">FAQ</a>
+</div>
+<div>
+  <p class="footer-label">Contact</p>
+  <a href="tel:2103703700">210-370-3700</a>
+  <a href="mailto:contact@masterglasssolutionsusa.com">Email</a>
+  <a href="service-areas.html">Service areas</a>
+</div>
+</div>
+<div class="shell footer-bottom">
+  <span>&copy; <span data-year></span> Master Glass Solutions</span>
+  <span>Masters of Glass &amp; Glazing</span>
+</div></footer>
 <a class="mobile-call-fab" href="tel:2103703700" aria-label="Call Master Glass Solutions now"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.37 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.33 1.85.57 2.81.7A2 2 0 0 1 22 16.92Z"/></svg><span>Call now</span></a>
+
+<script>
+// SPLASH PAGE OVERLAY (10 SECOND AUTO-FADE)
+(function() {
+  const splashOverlay = document.getElementById('splashOverlay');
+  const splashSkip = document.getElementById('splashSkip');
+  const splashVideo = splashOverlay?.querySelector('video');
+  
+  if (!splashOverlay) return;
+  
+  // Function to fade out splash and unlock body scroll
+  function fadeSplash() {
+    splashOverlay.classList.add('fade-out');
+    document.body.style.overflow = 'auto';
+    setTimeout(() => {
+      splashOverlay.style.display = 'none';
+    }, 800);
+  }
+  
+  // Auto-fade after 10 seconds
+  const splashTimer = setTimeout(fadeSplash, 10000);
+  
+  // Skip button click
+  if (splashSkip) {
+    splashSkip.addEventListener('click', () => {
+      clearTimeout(splashTimer);
+      fadeSplash();
+    });
+  }
+  
+  // Fade on video end (fallback)
+  if (splashVideo) {
+    splashVideo.addEventListener('ended', () => {
+      clearTimeout(splashTimer);
+      fadeSplash();
+    });
+  }
+  
+  // Prevent body scroll during splash
+  document.body.style.overflow = 'hidden';
+})();
+</script>
+
 <script src="assets/scripts.js" defer></script>
 </body></html>

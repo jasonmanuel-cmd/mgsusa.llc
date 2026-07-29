@@ -803,3 +803,245 @@ a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visibl
   .team-card { margin-bottom: 0; }
 }
 
+/* ============================================
+   SPLASH PAGE OVERLAY (10 SECOND INTRO)
+   ============================================ */
+.splash-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 1;
+  transition: opacity 0.8s ease-out;
+}
+
+.splash-overlay.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.splash-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.splash-skip {
+  position: absolute;
+  bottom: 40px;
+  right: 40px;
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.3);
+  padding: 10px 20px;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.075em;
+  font-weight: 800;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+  z-index: 10000;
+}
+
+.splash-skip:hover {
+  background: rgba(255,255,255,0.25);
+  border-color: rgba(255,255,255,0.5);
+}
+
+@media (max-width: 768px) {
+  .splash-skip {
+    bottom: 20px;
+    right: 20px;
+    padding: 8px 16px;
+    font-size: 0.7rem;
+  }
+}
+
+/* ============================================
+   FLOATING LOGO WATERMARK BACKGROUND
+   ============================================ */
+body {
+  background-image: 
+    radial-gradient(circle at 15% 20%, rgba(196, 30, 58, 0.02) 0%, transparent 50%),
+    radial-gradient(circle at 85% 50%, rgba(196, 30, 58, 0.015) 0%, transparent 45%),
+    radial-gradient(circle at 50% 85%, rgba(196, 30, 58, 0.02) 0%, transparent 50%),
+    url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" opacity="0.04"><text x="100" y="110" text-anchor="middle" font-size="16" font-family="Georgia, serif" fill="%23C41E3A" transform="rotate(-15 100 100)">MGS</text></svg>');
+  background-repeat: 
+    no-repeat,
+    no-repeat,
+    no-repeat,
+    repeat;
+  background-size: 
+    800px 800px,
+    1000px 1000px,
+    900px 900px,
+    400px 400px;
+  background-position: 
+    -200px -200px,
+    -100px 50%,
+    50% 100%,
+    0 0;
+  background-attachment: fixed;
+}
+
+/* ============================================
+   HORIZONTAL FOOTER REDESIGN
+   ============================================ */
+.site-footer {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 1.5rem 0;
+  margin-top: 3rem;
+}
+
+.footer-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 3rem;
+  flex-wrap: wrap;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.footer-intro {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-shrink: 0;
+}
+
+.footer-intro a.brand-footer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+}
+
+.footer-intro .brand-logo {
+  height: 40px;
+  width: auto;
+}
+
+.footer-intro p {
+  margin: 0;
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.7);
+  max-width: 200px;
+}
+
+.footer-intro .footer-phone {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: 1rem;
+  color: var(--metal-light);
+  font-weight: 700;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.footer-intro .footer-phone svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Footer sections: Explore, Resources, Visit */
+.site-footer > .shell > div:not(.footer-intro),
+.footer-top > div:not(.footer-intro) {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: max-content;
+}
+
+.footer-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 850;
+  color: var(--metal-light);
+  margin: 0 0 0.5rem 0;
+}
+
+.site-footer a {
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.75);
+  transition: color 0.2s ease;
+  text-decoration: none;
+}
+
+.site-footer a:hover {
+  color: var(--metal-light);
+}
+
+.site-footer address {
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.75);
+  font-style: normal;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Footer bottom: copyright + tagline */
+.footer-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding-top: 1rem;
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.6);
+  flex-wrap: wrap;
+}
+
+.footer-bottom span {
+  white-space: nowrap;
+}
+
+@media (max-width: 1024px) {
+  .footer-top {
+    gap: 2rem;
+  }
+  
+  .footer-intro {
+    gap: 1rem;
+  }
+  
+  .footer-intro p {
+    max-width: 150px;
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .footer-top {
+    flex-direction: column;
+    gap: 1.5rem;
+    align-items: flex-start;
+  }
+  
+  .footer-intro {
+    width: 100%;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  
+  .site-footer > .shell > div:not(.footer-intro) {
+    width: 100%;
+  }
+  
+  .footer-bottom {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+}
+
