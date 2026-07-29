@@ -37,60 +37,20 @@
     revealEls.forEach(el => el.classList.add('revealed'));
   }
 
-  // Glass Doors Password Gate + Splash Screen
-  const doorOverlay = document.getElementById('glassDoorsOverlay');
-  if (doorOverlay) {
-    const STORAGE_KEY = 'mgs_gate_auth';
-    const PASSCODE = 'Glass2026';
-    const gateForm = document.getElementById('gateForm');
-    const gateInput = document.getElementById('gatePassword');
-    const gateError = document.getElementById('gateError');
-    const splash = document.getElementById('glassSplash');
-    const gate = document.getElementById('glassGate');
-
-    const openDoors = () => {
-      doorOverlay.classList.add('doors-opened');
-      document.body.style.overflow = '';
-      setTimeout(() => { doorOverlay.style.display = 'none'; }, 1500);
-    };
-
-    const openSplashDoors = () => {
-      splash.classList.add('splash-opening');
-      // After splash doors finish opening, fade gate in
+  // Brand reveal animation - welcoming door opening with logo
+  const brandReveal = document.getElementById('brandReveal');
+  if (brandReveal) {
+    // Auto-open doors after 2.5 seconds
+    setTimeout(() => {
+      brandReveal.classList.add('brand-reveal-opened');
+      // Hide the reveal screen after animation completes
       setTimeout(() => {
-        splash.style.display = 'none';
-        gate.classList.add('gate-visible');
-      }, 1400);
-    };
-
-    // If already authenticated, skip everything
-    if (localStorage.getItem(STORAGE_KEY) === '1') {
-      doorOverlay.style.display = 'none';
-    } else {
-      // Lock scroll while gate/splash is showing
-      document.body.style.overflow = 'hidden';
-      // Start splash door animation after 5 seconds
-      if (splash) {
-        setTimeout(openSplashDoors, 5000);
-      }
-    }
-
-    if (gateForm) {
-      gateForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const val = gateInput.value.trim();
-        if (val === PASSCODE) {
-          localStorage.setItem(STORAGE_KEY, '1');
-          gateError.classList.remove('visible');
-          openDoors();
-        } else {
-          gateError.classList.add('visible');
-          gateInput.classList.add('gate-shake');
-          gateInput.value = '';
-          gateInput.focus();
-          setTimeout(() => gateInput.classList.remove('gate-shake'), 450);
-        }
-      });
-    }
+        brandReveal.style.opacity = '0';
+        setTimeout(() => {
+          brandReveal.style.display = 'none';
+          document.body.style.overflow = '';
+        }, 600);
+      }, 1800);
+    }, 2500);
   }
 })();

@@ -1,0 +1,402 @@
+<!-- 
+  REVIEWS & VIDEOS INTEGRATION TEMPLATE
+  This is what your final section will look like once you provide the data
+  
+  Instructions:
+  1. Collect reviews from Facebook (Name, Rating, Quote, Date)
+  2. Collect video URLs from Instagram
+  3. Send me the data
+  4. I'll populate this template and integrate it into index.html
+-->
+
+<!-- ========== REVIEWS SECTION (Replaces placeholder line 38) ========== -->
+<section id="client-proof" class="proof-section">
+  <div class="container">
+    <h2>Trusted by San Antonio</h2>
+    <p class="section-subtitle">Real reviews from real Master Glass clients</p>
+    
+    <div class="reviews-grid">
+      
+      <!-- REVIEW TEMPLATE 1 -->
+      <article class="review-card">
+        <div class="review-header">
+          <span class="proof-symbol">"</span>
+          <div class="reviewer-info">
+            <h3 class="reviewer-name">John Smith</h3>
+            <div class="rating">
+              <span class="star filled">★</span>
+              <span class="star filled">★</span>
+              <span class="star filled">★</span>
+              <span class="star filled">★</span>
+              <span class="star filled">★</span>
+            </div>
+          </div>
+        </div>
+        
+        <p class="review-text">
+          "Amazing service! They fixed our broken storefront window in 24 hours. 
+          Highly recommend Master Glass for any commercial glass needs!"
+        </p>
+        
+        <footer class="review-footer">
+          <span class="review-source">Facebook</span>
+          <span class="review-date">June 2026</span>
+        </footer>
+      </article>
+
+      <!-- REVIEW TEMPLATE 2 -->
+      <article class="review-card">
+        <div class="review-header">
+          <span class="proof-symbol">"</span>
+          <div class="reviewer-info">
+            <h3 class="reviewer-name">Maria Garcia</h3>
+            <div class="rating">
+              <span class="star filled">★</span>
+              <span class="star filled">★</span>
+              <span class="star filled">★</span>
+              <span class="star filled">★</span>
+              <span class="star filled">★</span>
+            </div>
+          </div>
+        </div>
+        
+        <p class="review-text">
+          "Professional team. Fair pricing. They replaced all our home windows 
+          and the attention to detail was incredible. Best glass company in San Antonio!"
+        </p>
+        
+        <footer class="review-footer">
+          <span class="review-source">Facebook</span>
+          <span class="review-date">July 2026</span>
+        </footer>
+      </article>
+
+      <!-- REVIEW TEMPLATE 3 -->
+      <article class="review-card">
+        <div class="review-header">
+          <span class="proof-symbol">"</span>
+          <div class="reviewer-info">
+            <h3 class="reviewer-name">Robert Johnson</h3>
+            <div class="rating">
+              <span class="star filled">★</span>
+              <span class="star filled">★</span>
+              <span class="star filled">★</span>
+              <span class="star filled">★</span>
+              <span class="star filled">★</span>
+            </div>
+          </div>
+        </div>
+        
+        <p class="review-text">
+          "Emergency glass repair at 2 AM - they answered and came out within 
+          an hour. Outstanding service and fair pricing. Can't thank them enough!"
+        </p>
+        
+        <footer class="review-footer">
+          <span class="review-source">Facebook</span>
+          <span class="review-date">July 2026</span>
+        </footer>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- ========== VIDEOS SECTION (New section, add after reviews) ========== -->
+<section id="from-instagram" class="instagram-videos-section">
+  <div class="container">
+    <h2>Our Latest Work</h2>
+    <p class="section-subtitle">Watch Master Glass in action on Instagram</p>
+    
+    <div class="videos-grid">
+      
+      <!-- VIDEO TEMPLATE 1 -->
+      <div class="video-card">
+        <div class="video-wrapper">
+          <iframe 
+            src="https://www.instagram.com/p/ABCD1234567/embed"
+            width="100%" 
+            height="auto"
+            frameborder="0"
+            scrolling="no"
+            allowtransparency="true">
+          </iframe>
+        </div>
+        <div class="video-meta">
+          <p class="video-caption">Professional glass installation in action</p>
+          <span class="video-date">July 2026</span>
+        </div>
+      </div>
+
+      <!-- VIDEO TEMPLATE 2 -->
+      <div class="video-card">
+        <div class="video-wrapper">
+          <iframe 
+            src="https://www.instagram.com/p/EFGH5678901/embed"
+            width="100%" 
+            height="auto"
+            frameborder="0"
+            scrolling="no"
+            allowtransparency="true">
+          </iframe>
+        </div>
+        <div class="video-meta">
+          <p class="video-caption">Emergency glass repair response</p>
+          <span class="video-date">July 2026</span>
+        </div>
+      </div>
+
+      <!-- VIDEO TEMPLATE 3 -->
+      <div class="video-card">
+        <div class="video-wrapper">
+          <iframe 
+            src="https://www.instagram.com/p/IJKL9012345/embed"
+            width="100%" 
+            height="auto"
+            frameborder="0"
+            scrolling="no"
+            allowtransparency="true">
+          </iframe>
+        </div>
+        <div class="video-meta">
+          <p class="video-caption">Commercial storefront glass installation</p>
+          <span class="video-date">June 2026</span>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="instagram-cta">
+      <p>Follow us on Instagram for more updates and behind-the-scenes content</p>
+      <a href="https://www.instagram.com/masterglasssolutions_/" target="_blank" class="btn btn-secondary">
+        @masterglasssolutions_
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ========== CSS STYLING (Add to assets/styles.css) ========== -->
+<style>
+/* Reviews Section */
+.proof-section {
+  padding: 4rem 1rem;
+  background: linear-gradient(135deg, #f5f5f5 0%, #ffffff 100%);
+  border-top: 1px solid #e0e0e0;
+}
+
+.proof-section h2 {
+  font-size: 2.5rem;
+  color: #0a0a0a;
+  text-align: center;
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+}
+
+.section-subtitle {
+  text-align: center;
+  color: #666;
+  font-size: 1.1rem;
+  margin-bottom: 3rem;
+}
+
+.reviews-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.review-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border-left: 4px solid #2c5aa0;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.review-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+}
+
+.proof-symbol {
+  font-size: 3rem;
+  color: #2c5aa0;
+  opacity: 0.3;
+  line-height: 1;
+}
+
+.review-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.reviewer-info {
+  flex: 1;
+}
+
+.reviewer-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #0a0a0a;
+  margin: 0;
+}
+
+.rating {
+  display: flex;
+  gap: 0.25rem;
+  margin-top: 0.5rem;
+}
+
+.star {
+  color: #ffc107;
+  font-size: 1rem;
+}
+
+.star.filled {
+  color: #ffc107;
+}
+
+.review-text {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #333;
+  margin: 1rem 0;
+  font-style: italic;
+}
+
+.review-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 1rem;
+  border-top: 1px solid #e0e0e0;
+  font-size: 0.85rem;
+  color: #999;
+}
+
+.review-source {
+  font-weight: 600;
+  color: #666;
+}
+
+/* Videos Section */
+.instagram-videos-section {
+  padding: 4rem 1rem;
+  background: white;
+}
+
+.instagram-videos-section h2 {
+  font-size: 2.5rem;
+  color: #0a0a0a;
+  text-align: center;
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+}
+
+.videos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 3rem auto;
+}
+
+.video-card {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease;
+}
+
+.video-card:hover {
+  transform: translateY(-4px);
+}
+
+.video-wrapper {
+  width: 100%;
+  overflow: hidden;
+  border-radius: 12px 12px 0 0;
+  background: #f5f5f5;
+}
+
+.video-wrapper iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 1 / 1.25;
+}
+
+.video-meta {
+  padding: 1.5rem;
+}
+
+.video-caption {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #0a0a0a;
+  margin: 0 0 0.5rem 0;
+}
+
+.video-date {
+  font-size: 0.85rem;
+  color: #999;
+}
+
+.instagram-cta {
+  text-align: center;
+  margin-top: 3rem;
+  padding: 2rem;
+  background: #f5f5f5;
+  border-radius: 12px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.instagram-cta p {
+  margin-bottom: 1rem;
+  color: #666;
+  font-size: 1.05rem;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .proof-section h2,
+  .instagram-videos-section h2 {
+    font-size: 2rem;
+  }
+
+  .reviews-grid,
+  .videos-grid {
+    gap: 1.5rem;
+  }
+
+  .video-wrapper iframe {
+    aspect-ratio: 1 / 1.3;
+  }
+}
+</style>
+
+<!-- 
+  INTEGRATION INSTRUCTIONS
+  
+  1. COPY the <section id="client-proof"> block
+  2. PASTE into index.html at line 38 (replace existing placeholder)
+  3. COPY the <section id="from-instagram"> block
+  4. PASTE into index.html after the reviews section
+  5. COPY all the CSS code
+  6. PASTE into assets/styles.css
+  7. REPLACE placeholder URLs with real Instagram URLs:
+     - Replace "ABCD1234567" with real Instagram post ID
+     - Replace "EFGH5678901" with real Instagram post ID
+     - Replace "IJKL9012345" with real Instagram post ID
+  8. REPLACE example review data with real reviews
+  9. TEST on mobile & desktop
+  10. DEPLOY! ✅
+-->
