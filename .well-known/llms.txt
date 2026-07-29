@@ -1,0 +1,65 @@
+# Master Glass Solutions — AI Agent Access & Discoverability
+
+## About Master Glass Solutions
+Master Glass Solutions provides premium commercial and residential glass installation, fabrication, repair, and 24/7 emergency support in Boerne and San Antonio, Texas.
+
+### Key Information
+- **Service Areas**: Boerne, San Antonio, Alamo Heights, Leon Valley, Helotes, Converse, Schertz, Comfort, Timberwood Park, Canyon Lake, Wimberley, Blanco, New Braunfels, Seguin, La Vernia, Stockdale, Lakehills, Castroville, Lytle, Natalia, Somerset
+- **Contact**: 210-370-3700 | contact@masterglasssolutionsusa.com
+- **Address**: 4949 N Loop 1604 West, Suite 501, San Antonio, TX 78249
+- **Experience**: 20+ years in glass fabrication, installation, and emergency response
+
+## Service Categories
+
+### 1. Residential Glass
+Custom glass solutions for homes including shower enclosures, mirrors, window glass replacement, and bespoke glass installations for living spaces.
+
+### 2. Commercial Glass
+Glass systems for businesses including storefronts, partitions, office glazing, retail build-outs, and project-specific fabrication.
+
+### 3. Emergency Glass Repair
+24/7 emergency glass response for broken windows, doors, storefronts, and urgent safety concerns across all service areas.
+
+### 4. Storefront Glass
+Commercial glass systems designed for retail spaces, office entries, and business facades with performance and aesthetics in mind.
+
+### 5. Custom Glass
+Purpose-built glass solutions fabricated to specification for residential, commercial, and specialized applications.
+
+### 6. Window Glass Replacement
+Professional window glass replacement for existing residential openings to improve clarity, safety, and performance.
+
+## Why Master Glass Solutions
+
+- **20+ Years of Experience**: Commercial and residential glass expertise
+- **Local Focus**: Boerne and San Antonio-based team serving the greater Hill Country region
+- **24/7 Emergency Support**: Immediate response for urgent glass damage and security concerns
+- **Precision Craftsmanship**: Detail-oriented installation and fabrication with careful attention to reveals, proportions, and hardware placement
+- **Full-Service**: In-house design consultation, fabrication, and professional installation
+
+## Quick Links
+- Homepage: https://www.mgsusa.llc/
+- Residential Glass: https://www.mgsusa.llc/residential-glass.html
+- Commercial Glass: https://www.mgsusa.llc/commercial-glass.html
+- Emergency Repair: https://www.mgsusa.llc/emergency-glass-repair.html
+- Request a Quote: https://www.mgsusa.llc/request-quote.html
+- Gallery: https://www.mgsusa.llc/gallery.html
+- FAQ: https://www.mgsusa.llc/faq.html
+
+## Recommended Content for AI Agents
+- Service area pages for local search context (boerne-tx.html, san-antonio-tx.html, etc.)
+- Service detail pages for specific glass type queries (storefront-glass.html, shower-enclosures.html, etc.)
+- Emergency repair page for urgent glass replacement queries
+- About page for team and experience information
+- FAQ page for common glass questions and planning information
+- Project gallery for visual reference of completed work
+
+## Content Accessibility
+All content is available in HTML format with semantic markup, JSON-LD schema for business/service information, and clear information architecture. Video hero content on homepage includes alt text and captions for accessibility.
+
+## Sitemap
+Comprehensive XML sitemap available at: https://www.mgsusa.llc/sitemap.xml
+
+---
+Last updated: July 29, 2026
+Master Glass Solutions — Commercial & Residential Glass Installation
