@@ -40,22 +40,23 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 .utility span, .utility a { display: inline-flex; align-items: center; gap: .45rem; }
 .utility-right { display: inline-flex; align-items: center; gap: .8rem; }
 .utility-right a { color: #ffffff; transition: color .2s ease; font-weight: 600; }
-.utility-right a:hover { color: var(--metal-light); }
-.utility-right svg { width: 14px; height: 14px; }
-.utility a { color: #E8344E; font-weight: 800; }
-.utility svg { width: 13px; height: 13px; }
+.utility-right a:hover { color: #FF0000; }
+.utility-right svg { width: 22px; height: 22px; }
+.utility a { color: #FF0000; font-weight: 900; font-size: 1.1rem; letter-spacing: 0.05em; }
+.utility svg { width: 18px; height: 18px; }
 .site-header { position: sticky; top: 0; z-index: 100; background: rgba(255,255,255,.97); border-bottom: 1px solid rgba(10,10,10,.09); }
 .nav-wrap { height: 110px; display: flex; align-items: center; justify-content: space-between; gap: 1.2rem; }
 .brand { display: inline-flex; align-items: center; gap: .9rem; color: var(--ink); white-space: nowrap; }
 .brand-logo { height: 75px; width: auto; object-fit: contain; }
-.brand-footer .brand-logo { height: 65px; }
+.brand-footer .brand-logo { height: 120px; }
 .main-nav { display: flex; align-items: center; justify-content: center; gap: clamp(.8rem,1.8vw,1.7rem); margin-left: auto; }
-.main-nav a { font-size: .82rem; text-transform: uppercase; letter-spacing: .075em; font-weight: 780; color: #32424a; position: relative; }
-.main-nav a::after { content:""; position: absolute; left: 0; right: 100%; bottom: -9px; height: 2px; background: var(--metal); transition: right .25s ease; }
+.main-nav a { font-size: .82rem; text-transform: uppercase; letter-spacing: .075em; font-weight: 800; color: #FF0000; position: relative; }
+.main-nav a::after { content:""; position: absolute; left: 0; right: 100%; bottom: -9px; height: 2px; background: #FF0000; transition: right .25s ease; }
 .main-nav a:hover::after, .main-nav a.active::after { right: 0; }
 .nav-actions { display: flex; align-items: center; gap: .7rem; }
-.nav-phone { display: grid; place-items: center; color: var(--ink); width: 32px; height: 32px; }
-.nav-phone svg { width: 17px; height: 17px; }
+.nav-phone { display: flex; align-items: center; gap: .35rem; font-weight: 800; font-size: 1.2rem; color: #FF0000; padding: .6rem; border-radius: 4px; transition: background .2s ease; }
+.nav-phone svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.nav-phone:hover { background: rgba(255,0,0,.05); }
 .menu-toggle, .mobile-nav { display: none; }
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: .7rem; border: 1px solid transparent; min-height: 48px; padding: .8rem 1.05rem; font-size: .75rem; line-height: 1; text-transform: uppercase; letter-spacing: .075em; font-weight: 830; transition: transform .2s ease, background .2s ease, color .2s ease, border .2s ease; }
 .btn:hover { transform: translateY(-2px); }
@@ -427,9 +428,9 @@ a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visibl
   .mobile-nav { position:fixed; top:100px; left:0; right:0; bottom:0; display:block; background:var(--warm-white); z-index:99; padding:1.5rem 0; transform:translateX(100%); transition:transform .25s ease; overflow:auto; }
   .mobile-nav.is-open { transform:translateX(0); }
   .mobile-nav .shell { display:grid; gap:0; }
-  .mobile-nav a:not(.btn):not(.mobile-call) { padding:1rem 0; border-bottom:1px solid var(--line); font-family:var(--serif); font-size:1.65rem; }
+  .mobile-nav a:not(.btn):not(.mobile-call) { padding:1rem 0; border-bottom:1px solid var(--line); font-family:var(--serif); font-size:1.65rem; color:#FF0000; font-weight:800; }
   .mobile-nav .btn { margin-top:2rem; }
-  .mobile-call { display:flex; align-items:center; gap:.6rem; margin-top:1rem; color:var(--ink); font-size:.85rem; font-weight:800; }
+  .mobile-call { display:flex; align-items:center; gap:.6rem; margin-top:1rem; color:#FF0000; font-size:1.3rem; font-weight:900; letter-spacing:0.05em; }
   .mobile-call svg { width:17px; height:17px; fill:none; stroke:var(--metal); stroke-width:1.7; }
   .hero-home { min-height:720px; }
   .hero-grid { grid-template-columns:1fr; min-height:720px; padding:5rem 0 2.2rem; gap:2.3rem; }
@@ -869,10 +870,10 @@ a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visibl
    ============================================ */
 body {
   background-image: 
-    radial-gradient(circle at 15% 20%, rgba(196, 30, 58, 0.02) 0%, transparent 50%),
-    radial-gradient(circle at 85% 50%, rgba(196, 30, 58, 0.015) 0%, transparent 45%),
-    radial-gradient(circle at 50% 85%, rgba(196, 30, 58, 0.02) 0%, transparent 50%),
-    url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" opacity="0.04"><text x="100" y="110" text-anchor="middle" font-size="16" font-family="Georgia, serif" fill="%23C41E3A" transform="rotate(-15 100 100)">MGS</text></svg>');
+    radial-gradient(circle at 15% 20%, rgba(196, 30, 58, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 85% 50%, rgba(196, 30, 58, 0.025) 0%, transparent 45%),
+    radial-gradient(circle at 50% 85%, rgba(196, 30, 58, 0.03) 0%, transparent 50%),
+    url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" opacity="0.06"><text x="100" y="110" text-anchor="middle" font-size="16" font-family="Georgia, serif" fill="%23C41E3A" transform="rotate(-15 100 100)">MGS</text></svg>');
   background-repeat: 
     no-repeat,
     no-repeat,
@@ -889,6 +890,13 @@ body {
     50% 100%,
     0 0;
   background-attachment: fixed;
+  animation: bg-drift 60s linear infinite;
+}
+
+@keyframes bg-drift {
+  0% { background-position: -200px -200px, -100px 50%, 50% 100%, 0 0; }
+  50% { background-position: -150px -150px, -50px 52%, 48% 95%, -200px -200px; }
+  100% { background-position: -200px -200px, -100px 50%, 50% 100%, -400px -400px; }
 }
 
 /* ============================================

@@ -1,6 +1,11 @@
 {
   "cleanUrls": true,
   "trailingSlash": false,
+  "redirects": [
+    { "source": "/residential", "destination": "/residential-glass", "permanent": true },
+    { "source": "/projects", "destination": "/gallery", "permanent": true },
+    { "source": "/commercial", "destination": "/commercial-glass", "permanent": true }
+  ],
   "headers": [
     {
       "source": "/assets/(.*)",

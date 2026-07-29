@@ -10,6 +10,18 @@
 <style>
 /* Critical CSS for LCP optimization */
 body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+.hero-video-section { position: relative; width: 100%; height: 100vh; overflow: hidden; background: #000; }
+.hero-video-section video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
+.hero-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, rgba(0,0,0,0.5), rgba(0,0,0,0.3)); z-index: 10; }
+.hero-content { position: absolute; bottom: 60px; left: 0; right: 0; z-index: 20; color: white; text-align: center; }
+.hero-content h1 { font-size: 3.5rem; margin: 0 20px 20px; font-weight: 700; }
+.hero-content p { font-size: 1.2rem; margin: 0 20px 40px; opacity: 0.95; }
+.hero-actions { display: flex; gap: 15px; justify-content: center; padding: 0 20px; flex-wrap: wrap; }
+.btn { padding: 12px 30px; font-size: 1rem; border: none; cursor: pointer; border-radius: 4px; text-decoration: none; display: inline-block; transition: all 0.3s; }
+.btn-light { background: white; color: #000; font-weight: 600; }
+.btn-light:hover { background: #f0f0f0; }
+.btn-ghost { background: transparent; color: white; border: 2px solid white; }
+.btn-ghost:hover { background: rgba(255,255,255,0.1); }
 </style>
 </head>
 <body>
@@ -22,7 +34,7 @@ body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Ro
     muted
     playsinline
     preload="metadata"
-    >
+    poster="assets/Residentialhero.png">
     <source src="assets/Videos/MGSVID.mp4" type="video/mp4">
     Your browser does not support the video tag.
   </video>
@@ -41,7 +53,30 @@ body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Ro
 
 <main id="main">
 
-<section class="hero-home"><div class="hero-image" role="img" aria-label="Premium commercial glass storefront at blue hour"></div><div class="hero-scrim"></div><div class="shell hero-grid"><div class="hero-copy"><p class="eyebrow"><span></span>BOERNE + SAN ANTONIO • COMMERCIAL & RESIDENTIAL GLASS</p><h1>Glass work that makes the whole property feel finished.</h1><p>Thoughtfully fabricated. Precisely installed. Master Glass Solutions brings more than 20 years of glass industry expertise to residential glass installation, commercial storefronts, frameless shower enclosures, custom glass fabrication, window replacement, and 24/7 emergency glass repair across Boerne and San Antonio. Every project—from simple mirror installation to complex commercial hardening—receives the same standard: clean reveals, intentional hardware, and installation precision that makes the space feel finished.</p><div class="hero-actions"><a class="btn btn-light" href="request-quote.html">Request a quote <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h13M13 6l6 6-6 6"/></svg></a><a class="btn btn-ghost" href="tel:2103703700"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.37 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.33 1.85.57 2.81.7A2 2 0 0 1 22 16.92Z"/></svg> Emergency? Call now</a></div><p class="hero-note">For planned projects and urgent glass needs.</p></div><aside class="hero-panel" aria-label="Glass service options"><p>What brings you here?</p><a href="residential-quote.html"><span>Residential glass</span><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h13M13 6l6 6-6 6"/></svg></a><a href="commercial-quote.html"><span>Commercial project</span><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h13M13 6l6 6-6 6"/></svg></a><a href="emergency.html"><span>Broken glass emergency</span><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h13M13 6l6 6-6 6"/></svg></a></aside></div></section>
+<!-- FULL-SCREEN VIDEO HERO (OPTIMIZED) -->
+<section class="hero-video-section" role="region" aria-label="Master Glass Solutions brand video hero">
+  <video
+    autoplay
+    muted
+    loop
+    playsinline
+    preload="metadata"
+    poster="assets/Residentialhero.png"
+    width="100%"
+    height="100%">
+    <source src="assets/Videos/MGSVID.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <h1>Master Glass Solutions</h1>
+    <p>Commercial & Residential Glass Installation<br>Boerne • San Antonio • 24/7 Emergency Support</p>
+    <div class="hero-actions">
+      <a class="btn btn-light" href="request-quote.html">Request a quote</a>
+      <a class="btn btn-ghost" href="tel:2103703700">Call 210-370-3700</a>
+    </div>
+  </div>
+</section>
 
 <section class="trust-strip"><div class="shell trust-grid"><div><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 21 21 3M5 5l14 14M4 10l3-3M9 15l3-3M14 20l3-3"/></svg><span><b>20+ years</b> of experience</span></div><div><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/></svg><span><b>Commercial + residential</b> glass expertise</span></div><div><svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span><b>24/7 support</b> for urgent glass needs</span></div><div><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 21s7-5.14 7-12A7 7 0 0 0 5 9c0 6.86 7 12 7 12Z"/><circle cx="12" cy="9" r="2.5"/></svg><span><b>Boerne + San Antonio</b> local focus</span></div></div></section>
 
