@@ -75,7 +75,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 .btn-large { min-height: 56px; padding-inline: 1.35rem; }
 .hero-home { position: relative; min-height: 687px; display: grid; align-items: end; color: var(--paper); overflow: hidden; background: var(--ink); }
 .hero-image, .hero-scrim { position: absolute; inset: 0; }
-.hero-image { background: url('Residentialhero.png') center/cover no-repeat; opacity: .88; }
+.hero-image { background: none; }
 .hero-scrim { background: linear-gradient(90deg, rgba(10,10,10,.9) 0%, rgba(10,10,10,.7) 42%, rgba(10,10,10,.18) 100%); }
 .hero-grid { position: relative; z-index: 1; display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(275px,.55fr); align-items: end; gap: 4rem; min-height: 687px; padding: 7rem 0 4rem; }
 .hero-copy { max-width: 755px; }
@@ -297,8 +297,8 @@ details[open] summary span { transform: rotate(45deg); }
 .lead-form textarea { resize:vertical; min-height:115px; line-height:1.5; }
 .lead-form input:focus, .lead-form select:focus, .lead-form textarea:focus { border-color:var(--metal); box-shadow:0 0 0 3px rgba(196,30,58,.15); }
 .lead-form .full { grid-column:1 / -1; }
-.checkbox { display:flex!important; grid-template-columns:auto 1fr; align-items:start; gap:.65rem!important; color:#5e6c71!important; text-transform:none!important; letter-spacing:0!important; font-weight:500!important; }
-.checkbox input { width:17px; height:17px; min-height:17px; margin-top:.05rem; }
+.checkbox { display:flex!important; grid-template-columns:auto 1fr; align-items:center; gap:.75rem!important; padding:.5rem 0!important; color:#5e6c71!important; text-transform:none!important; letter-spacing:0!important; font-weight:500!important; }
+.checkbox input { width:20px; height:20px; min-height:20px; cursor:pointer; }
 .form-submit { margin-top:1.5rem; }
 .form-note { margin:1rem 0 0; color:#6b7779; font-size:.78rem; line-height:1.6; }
 .areas { background:var(--warm-white); }
