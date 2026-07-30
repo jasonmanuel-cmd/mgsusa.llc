@@ -1,5 +1,9 @@
 /* Master Glass Solutions — deliberate, local-first static design system
    Palette: black / red / white. Heraldic brand identity. */
+@font-face { font-family: 'Inter'; src: url('https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHAPMtMcoZP5PgoyMZVjUX7q3JJXeE.woff2') format('woff2'); font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Inter'; src: url('https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHAPMtMcoZP5PgoyMZVjUX7q3JJXeE.woff2') format('woff2'); font-weight: 600; font-display: swap; }
+@font-face { font-family: 'Inter'; src: url('https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHAPMtMcoZP5PgoyMZVjUX7q3JJXeE.woff2') format('woff2'); font-weight: 700; font-display: swap; }
+@font-face { font-family: 'Inter'; src: url('https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHAPMtMcoZP5PgoyMZVjUX7q3JJXeE.woff2') format('woff2'); font-weight: 800; font-display: swap; }
 :root {
   --ink: #0a0a0a;
   --ink-2: #1a1a1a;
@@ -101,7 +105,7 @@ h3 { font-family: var(--serif); font-size: 1.7rem; line-height: 1.15; letter-spa
 .trust-grid > div:first-child { border-left: 1px solid var(--line); }
 .trust-grid svg { flex: 0 0 auto; height: 23px; width: 23px; fill: none; stroke: var(--metal); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
 .trust-grid b { display: block; color: var(--ink); font-size: .8rem; }
-.section { padding: clamp(5rem, 10vw, 9rem) 0; position: relative; }
+.section { padding: clamp(5rem, 10vw, 9rem) 0; position: relative; content-visibility: auto; }
 .section > .shell, .section > *:not(.hero-image):not(.hero-scrim):not(.emergency-image):not(.inner-hero-image) { position: relative; z-index: 1; }
 .section-ink { background: var(--ink); color: var(--paper); }
 .section-cream { background: var(--paper); }
