@@ -223,6 +223,7 @@ details[open] summary span { transform: rotate(45deg); }
 .final-cta h2 { max-width: 520px; margin: 0; }
 .final-cta-grid > div:last-child > p { max-width: 450px; color: #d4dfdc; font-size: 1.05rem; line-height: 1.7; }
 .site-footer { background: #0a0a0a; color: var(--paper); padding-top: 4.4rem; padding-bottom: env(safe-area-inset-bottom, 0); }
+.site-footer .footer-section { background-color: #0a0a0a; }
 .footer-grid { display: grid; grid-template-columns: 1.5fr .8fr .9fr 1.15fr; gap: 2.5rem; padding-bottom: 4.25rem; }
 .brand-footer { color: var(--paper); margin-bottom: 1.45rem; }
 .footer-intro p { max-width: 280px; color: #bac7c4; font-size: .9rem; line-height: 1.6; }
