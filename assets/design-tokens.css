@@ -17,7 +17,7 @@
      COLOR — NEUTRAL (4px base rhythm)
      ────────────────────────────────────────────── */
   --color-ink: #0a0a0a;
-  --color-ink-muted: #4a4a4a;
+  --color-ink-muted: #0a0a0a;
   --color-border: rgba(10,10,10,.12);
   --color-border-hover: rgba(10,10,10,.24);
   --color-border-focus: var(--color-brand);
