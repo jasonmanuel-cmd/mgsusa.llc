@@ -50,11 +50,11 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 .brand-logo { height: 75px; width: auto; object-fit: contain; }
 .brand-footer .brand-logo { height: 120px; }
 .main-nav { display: flex; align-items: center; justify-content: center; gap: clamp(.8rem,1.8vw,1.7rem); margin-left: auto; }
-.main-nav a { font-size: .82rem; text-transform: uppercase; letter-spacing: .075em; font-weight: 800; color: #FF0000; position: relative; }
-.main-nav a::after { content:""; position: absolute; left: 0; right: 100%; bottom: -9px; height: 2px; background: #FF0000; transition: right .25s ease; }
+.main-nav a { font-size: .82rem; text-transform: uppercase; letter-spacing: .075em; font-weight: 800; color: var(--metal); position: relative; }
+.main-nav a::after { content:""; position: absolute; left: 0; right: 100%; bottom: -9px; height: 2px; background: var(--metal); transition: right .25s ease; }
 .main-nav a:hover::after, .main-nav a.active::after { right: 0; }
 .nav-actions { display: flex; align-items: center; gap: .7rem; }
-.nav-phone { display: flex; align-items: center; gap: .35rem; font-weight: 800; font-size: 1.2rem; color: #FF0000; padding: .6rem; border-radius: 4px; transition: background .2s ease; }
+.nav-phone { display: flex; align-items: center; gap: .35rem; font-weight: 800; font-size: 1.2rem; color: var(--metal); padding: .6rem; border-radius: 4px; transition: background .2s ease; }
 .nav-phone svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .nav-phone:hover { background: rgba(255,0,0,.05); }
 .menu-toggle, .mobile-nav { display: none; }
