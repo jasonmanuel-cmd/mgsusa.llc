@@ -2,21 +2,279 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "redirects": [
-    { "source": "/residential", "destination": "/residential-glass", "permanent": true },
-    { "source": "/projects", "destination": "/gallery", "permanent": true },
-    { "source": "/commercial", "destination": "/commercial-glass", "permanent": true }
+    {
+      "source": "/emergency",
+      "destination": "/emergency-glass-repair",
+      "permanent": true
+    },
+    {
+      "source": "/emergency.html",
+      "destination": "/emergency-glass-repair",
+      "permanent": true
+    },
+    {
+      "source": "/about.html",
+      "destination": "/about",
+      "permanent": true
+    },
+    {
+      "source": "/alamo-heights-tx.html",
+      "destination": "/alamo-heights-tx",
+      "permanent": true
+    },
+    {
+      "source": "/blanco-tx.html",
+      "destination": "/blanco-tx",
+      "permanent": true
+    },
+    {
+      "source": "/boerne-tx.html",
+      "destination": "/boerne-tx",
+      "permanent": true
+    },
+    {
+      "source": "/canyon-lake-tx.html",
+      "destination": "/canyon-lake-tx",
+      "permanent": true
+    },
+    {
+      "source": "/castroville-tx.html",
+      "destination": "/castroville-tx",
+      "permanent": true
+    },
+    {
+      "source": "/comfort-tx.html",
+      "destination": "/comfort-tx",
+      "permanent": true
+    },
+    {
+      "source": "/commercial-glass.html",
+      "destination": "/commercial-glass",
+      "permanent": true
+    },
+    {
+      "source": "/commercial-quote.html",
+      "destination": "/commercial-quote",
+      "permanent": true
+    },
+    {
+      "source": "/contact.html",
+      "destination": "/contact",
+      "permanent": true
+    },
+    {
+      "source": "/converse-tx.html",
+      "destination": "/converse-tx",
+      "permanent": true
+    },
+    {
+      "source": "/custom-glass.html",
+      "destination": "/custom-glass",
+      "permanent": true
+    },
+    {
+      "source": "/emergency-glass-repair.html",
+      "destination": "/emergency-glass-repair",
+      "permanent": true
+    },
+    {
+      "source": "/faq.html",
+      "destination": "/faq",
+      "permanent": true
+    },
+    {
+      "source": "/frameless-vs-framed-glass.html",
+      "destination": "/frameless-vs-framed-glass",
+      "permanent": true
+    },
+    {
+      "source": "/gallery.html",
+      "destination": "/gallery",
+      "permanent": true
+    },
+    {
+      "source": "/glass-project-planning-checklist.html",
+      "destination": "/glass-project-planning-checklist",
+      "permanent": true
+    },
+    {
+      "source": "/helotes-tx.html",
+      "destination": "/helotes-tx",
+      "permanent": true
+    },
+    {
+      "source": "/index.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/la-vernia-tx.html",
+      "destination": "/la-vernia-tx",
+      "permanent": true
+    },
+    {
+      "source": "/lakehills-tx.html",
+      "destination": "/lakehills-tx",
+      "permanent": true
+    },
+    {
+      "source": "/leon-valley-tx.html",
+      "destination": "/leon-valley-tx",
+      "permanent": true
+    },
+    {
+      "source": "/lytle-tx.html",
+      "destination": "/lytle-tx",
+      "permanent": true
+    },
+    {
+      "source": "/mirrors.html",
+      "destination": "/mirrors",
+      "permanent": true
+    },
+    {
+      "source": "/natalia-tx.html",
+      "destination": "/natalia-tx",
+      "permanent": true
+    },
+    {
+      "source": "/new-braunfels-tx.html",
+      "destination": "/new-braunfels-tx",
+      "permanent": true
+    },
+    {
+      "source": "/privacy-policy.html",
+      "destination": "/privacy-policy",
+      "permanent": true
+    },
+    {
+      "source": "/quote-process.html",
+      "destination": "/quote-process",
+      "permanent": true
+    },
+    {
+      "source": "/request-quote.html",
+      "destination": "/request-quote",
+      "permanent": true
+    },
+    {
+      "source": "/residential-glass.html",
+      "destination": "/residential-glass",
+      "permanent": true
+    },
+    {
+      "source": "/residential-quote.html",
+      "destination": "/residential-quote",
+      "permanent": true
+    },
+    {
+      "source": "/resources.html",
+      "destination": "/resources",
+      "permanent": true
+    },
+    {
+      "source": "/reviews.html",
+      "destination": "/reviews",
+      "permanent": true
+    },
+    {
+      "source": "/san-antonio-tx.html",
+      "destination": "/san-antonio-tx",
+      "permanent": true
+    },
+    {
+      "source": "/schertz-tx.html",
+      "destination": "/schertz-tx",
+      "permanent": true
+    },
+    {
+      "source": "/seguin-tx.html",
+      "destination": "/seguin-tx",
+      "permanent": true
+    },
+    {
+      "source": "/service-areas.html",
+      "destination": "/service-areas",
+      "permanent": true
+    },
+    {
+      "source": "/shower-enclosures.html",
+      "destination": "/shower-enclosures",
+      "permanent": true
+    },
+    {
+      "source": "/somerset-tx.html",
+      "destination": "/somerset-tx",
+      "permanent": true
+    },
+    {
+      "source": "/stockdale-tx.html",
+      "destination": "/stockdale-tx",
+      "permanent": true
+    },
+    {
+      "source": "/storefront-glass.html",
+      "destination": "/storefront-glass",
+      "permanent": true
+    },
+    {
+      "source": "/terms-and-conditions.html",
+      "destination": "/terms-and-conditions",
+      "permanent": true
+    },
+    {
+      "source": "/thank-you.html",
+      "destination": "/thank-you",
+      "permanent": true
+    },
+    {
+      "source": "/timberwood-park-tx.html",
+      "destination": "/timberwood-park-tx",
+      "permanent": true
+    },
+    {
+      "source": "/wimberley-tx.html",
+      "destination": "/wimberley-tx",
+      "permanent": true
+    },
+    {
+      "source": "/window-glass-replacement.html",
+      "destination": "/window-glass-replacement",
+      "permanent": true
+    },
+    {
+      "source": "/residential",
+      "destination": "/residential-glass",
+      "permanent": true
+    },
+    {
+      "source": "/projects",
+      "destination": "/gallery",
+      "permanent": true
+    },
+    {
+      "source": "/commercial",
+      "destination": "/commercial-glass",
+      "permanent": true
+    }
   ],
   "headers": [
     {
       "source": "/assets/(.*)",
       "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
       ]
     },
     {
       "source": "/(.*)",
       "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate, s-maxage=86400" }
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate, s-maxage=86400"
+        }
       ]
     }
   ]

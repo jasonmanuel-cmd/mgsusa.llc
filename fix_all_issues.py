@@ -334,35 +334,35 @@ textarea::placeholder {
 FOOTER_HTML = """<footer class="site-footer">
 <div class="shell footer-grid">
   <div>
-    <a class="brand brand-footer" href="index.html"><img class="brand-logo" src="assets/logo.png" alt="Master Glass Solutions" width="140" height="140" loading="lazy"></a>
+    <a class="brand brand-footer" href="/"><img class="brand-logo" src="assets/logo.png" alt="Master Glass Solutions" width="140" height="140" loading="lazy"></a>
     <p class="footer-tagline">Commercial and residential glass work, fabricated and installed with precision.</p>
     <a class="footer-phone" href="tel:2103703700"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M22 16.92v3a 2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a 2 2 0 0 1 2 1.72c.13.96.37 1.9.7 2.81a 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a 2 2 0 0 1 2.11-.45c.91.33 1.85.57 2.81.7A 2 2 0 0 1 22 16.92Z"/></svg>210-370-3700</a>
   </div>
   <div class="footer-section">
     <h3>Explore</h3>
     <ul>
-      <li><a href="residential-glass.html">Residential glass</a></li>
-      <li><a href="commercial-glass.html">Commercial glass</a></li>
-      <li><a href="storefront-glass.html">Storefront glass</a></li>
-      <li><a href="custom-glass.html">Custom glass</a></li>
+      <li><a href="/residential-glass">Residential glass</a></li>
+      <li><a href="/commercial-glass">Commercial glass</a></li>
+      <li><a href="/storefront-glass">Storefront glass</a></li>
+      <li><a href="/custom-glass">Custom glass</a></li>
     </ul>
   </div>
   <div class="footer-section">
     <h3>Resources</h3>
     <ul>
-      <li><a href="resources.html">Resources center</a></li>
-      <li><a href="quote-process.html">Quote process</a></li>
-      <li><a href="glass-project-planning-checklist.html">Planning checklist</a></li>
-      <li><a href="gallery.html">Projects</a></li>
+      <li><a href="/resources">Resources center</a></li>
+      <li><a href="/quote-process">Quote process</a></li>
+      <li><a href="/glass-project-planning-checklist">Planning checklist</a></li>
+      <li><a href="/gallery">Projects</a></li>
     </ul>
   </div>
   <div class="footer-section">
     <h3>Services</h3>
     <ul>
-      <li><a href="emergency-glass-repair.html">Emergency repair</a></li>
-      <li><a href="shower-enclosures.html">Shower enclosures</a></li>
-      <li><a href="window-glass-replacement.html">Window replacement</a></li>
-      <li><a href="mirrors.html">Mirrors</a></li>
+      <li><a href="/emergency-glass-repair">Emergency repair</a></li>
+      <li><a href="/shower-enclosures">Shower enclosures</a></li>
+      <li><a href="/window-glass-replacement">Window replacement</a></li>
+      <li><a href="/mirrors">Mirrors</a></li>
     </ul>
   </div>
   <div class="footer-section">
@@ -370,14 +370,14 @@ FOOTER_HTML = """<footer class="site-footer">
     <p style="font-size: 0.85rem; line-height: 1.6; color: #b0b0b0; margin: 0 0 1rem 0;">4949 N Loop 1604 West, Suite 501, San Antonio, TX 78249</p>
     <ul>
       <li><a href="mailto:contact@masterglasssolutionsusa.com">contact@masterglasssolutionsusa.com</a></li>
-      <li><a href="service-areas.html">Service areas</a></li>
-      <li><a href="faq.html">FAQ</a></li>
-      <li><a href="request-quote.html">Request quote</a></li>
+      <li><a href="/service-areas">Service areas</a></li>
+      <li><a href="/faq">FAQ</a></li>
+      <li><a href="/request-quote">Request quote</a></li>
     </ul>
   </div>
 </div>
 <div class="shell footer-bottom">
-  <span>&copy; <span data-year></span> Master Glass Solutions. All rights reserved. | <a href="privacy-policy.html">Privacy Policy</a> | <a href="terms-and-conditions.html">Terms &amp; Conditions</a></span>
+  <span>&copy; <span data-year></span> Master Glass Solutions. All rights reserved. | <a href="/privacy-policy">Privacy Policy</a> | <a href="/terms-and-conditions">Terms &amp; Conditions</a></span>
   <span>Masters of Glass &amp; Glazing | Powered by <a href="https://coaibakersfield.com" target="_blank">chaotically organized AI</a></span>
 </div>
 </footer>"""

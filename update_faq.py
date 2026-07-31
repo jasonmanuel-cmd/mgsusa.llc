@@ -13,7 +13,7 @@ faqs = [
     {"q": "Are custom glass projects possible?", "a": "Yes. Custom glass is a core service. Whether you have a specific design or dimension requirement, the team fabricates and installs glass built around your exact project needs."},
     {"q": "How quickly can emergency glass repairs be completed?", "a": "Emergency glass repairs are prioritized based on severity and safety risk. Call 210-370-3700 to discuss your situation. The team will work to schedule the soonest available time slot."},
     {"q": "Do you install shower enclosures?", "a": "Yes. Frameless and framed shower enclosures are a specialty. The team handles custom sizing, hardware selection, and precision installation to match your bathroom design."},
-    {"q": "What areas do you serve?", "a": "The current local focus is Boerne and San Antonio, Texas. Contact the team with the property location to discuss a specific project."},
+    {"q": "What areas do you serve?", "a": "The current service-area focus is Boerne and San Antonio, Texas. Contact the team with the property location to discuss a specific project."},
     {"q": "What experience does the team bring?", "a": "Master Glass Solutions brings more than 20 years of experience in commercial and residential glass installation, fabrication, and repair spanning all service types."},
     {"q": "Can you handle large commercial projects?", "a": "Yes. The team has experience with large-scale commercial glass projects including storefronts, office interiors, partitions, and specialized applications."},
     {"q": "What is the typical timeline for a glass installation project?", "a": "Timeline varies by project type and complexity. Simple jobs may be completed in 1-2 weeks; larger custom projects may take 3-6 weeks."},
