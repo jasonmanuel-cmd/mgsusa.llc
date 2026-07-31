@@ -240,54 +240,8 @@
   --link-visited: #6b21a8;
 }
 
-/* ──────────────────────────────────────────────
-   DARK MODE — prefers-color-scheme: dark
-   ────────────────────────────────────────────── */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-ink: #fafafa;
-    --color-ink-muted: #a3a3a3;
-    --color-border: rgba(250,250,250,.18);
-    --color-border-hover: rgba(250,250,250,.36);
-    --color-surface: #121212;
-    --color-surface-hover: #1a1a1a;
-    --color-muted: #1f1f1f;
-    --color-muted-hover: #2a2a2a;
-    --color-disabled: rgba(250,250,250,.3);
-
-    --color-success-light: #064e3b;
-    --color-warning-light: #78350f;
-    --color-error-light: #7f1d1d;
-    --color-info-light: #1e3a5f;
-
-    --btn-primary-bg: var(--color-brand);
-    --btn-primary-hover: #E03E5A;
-    --btn-secondary-bg: #fafafa;
-    --btn-secondary-hover: #e5e5e5;
-    --btn-secondary-text: #0a0a0a;
-    --btn-ghost-hover: rgba(250,250,250,.12);
-    --btn-ghost-text: #fafafa;
-    --btn-outline-border: var(--color-border);
-    --btn-outline-hover-bg: var(--color-muted);
-
-    --input-bg: #1a1a1a;
-    --input-border: var(--color-border);
-    --input-border-hover: var(--color-border-hover);
-    --input-placeholder: var(--color-ink-muted);
-
-    --card-bg: #1a1a1a;
-    --card-border: var(--color-border);
-    --card-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.2);
-    --card-hover-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.4), 0 8px 10px -6px rgb(0 0 0 / 0.3);
-
-    --badge-bg: var(--color-muted);
-    --badge-text: var(--color-ink);
-
-    --link-text: #FCA5A5;
-    --link-hover: #FECACA;
-    --link-visited: #D8B4FE;
-  }
-}
+/* Dark-mode token overrides removed: the component stylesheet hardcodes
+   light surfaces, so flipping the tokens produced white-on-white text. */
 
 /* ──────────────────────────────────────────────
    GLOBAL ACCESSIBILITY UTILITIES

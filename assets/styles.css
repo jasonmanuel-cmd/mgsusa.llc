@@ -493,31 +493,38 @@ details[open] summary span { transform: rotate(45deg); }
 /* ──────────────────────────────────────────────
    GHOST BUTTON CONTRAST FIX — Hero Contexts
    ────────────────────────────────────────────── */
+.hero-home .btn-light,
+.inner-hero .btn-light,
+.emergency-landing .btn-light {
+  color: #ffffff;
+  background: var(--color-brand);
+  border-color: var(--color-brand);
+}
+
+.hero-home .btn-light:hover,
+.inner-hero .btn-light:hover,
+.emergency-landing .btn-light:hover {
+  background: var(--color-brand-hover);
+  border-color: var(--color-brand-hover);
+  color: var(--color-surface);
+  transform: translateY(-2px);
+}
+
 .hero-home .btn-ghost,
 .inner-hero .btn-ghost,
-.emergency-landing .btn-ghost,
-.hero-home .btn-light,
-.inner-hero .btn-light {
-  /* Ensure 3:1 contrast against variable backgrounds */
-  background: rgba(10, 10, 10, 0.35);
-  backdrop-filter: blur(4px);
-  border-color: rgba(255, 255, 255, 0.6);
+.emergency-landing .btn-ghost {
+  color: #ffffff;
+  border-color: #ffffff;
+  background: var(--color-brand);
 }
 
 .hero-home .btn-ghost:hover,
 .inner-hero .btn-ghost:hover,
 .emergency-landing .btn-ghost:hover {
-  background: rgba(10, 10, 10, 0.55);
-  color: var(--color-surface);
-  border-color: rgba(255, 255, 255, 0.8);
-  transform: translateY(-2px);
-}
-
-.hero-home .btn-light:hover,
-.inner-hero .btn-light:hover {
   background: var(--color-brand-hover);
   border-color: var(--color-brand-hover);
   color: var(--color-surface);
+  transform: translateY(-2px);
 }
 
 /* ──────────────────────────────────────────────
@@ -1698,10 +1705,10 @@ img[loading="lazy"] {
 .hero-home .hero-copy > p:not(.eyebrow):not(.hero-note) { color: #ffffff; }
 .hero-home .hero-note { color: #ffffff; }
 .hero-home .hero-proof span { color: #ffffff; }
-.hero-home .hero-actions .btn-light { color: #ffffff; background: #ffffff; border-color: #ffffff; }
-.hero-home .hero-actions .btn-light:hover { background: var(--metal-light); border-color: var(--metal-light); color: var(--paper); }
-.hero-home .hero-actions .btn-ghost { color: #ffffff; border-color: rgba(255,255,255,.55); background: rgba(10,10,10,0.35); }
-.hero-home .hero-actions .btn-ghost:hover { background: rgba(10,10,10,0.55); color: var(--color-surface); border-color: rgba(255,255,255,0.8); }
+.hero-home .hero-actions .btn-light { color: #ffffff; background: var(--color-brand); border-color: var(--color-brand); }
+.hero-home .hero-actions .btn-light:hover { background: var(--color-brand-hover); border-color: var(--color-brand-hover); color: var(--paper); }
+.hero-home .hero-actions .btn-ghost { color: #ffffff; border-color: #ffffff; background: var(--color-brand); }
+.hero-home .hero-actions .btn-ghost:hover { background: var(--color-brand-hover); border-color: var(--color-brand-hover); color: var(--color-surface); }
 .hero-home .hero-proof span { color: #ffffff; }
 .hero-home .section-heading h2 { color: var(--metal); }
 .services-section .section-heading h2 { color: var(--metal); }
@@ -1840,9 +1847,6 @@ img[loading="lazy"] {
 .commercial-glass .inner-hero-content > p:not(.eyebrow),
 .commercial-glass .inner-hero h1 { color: #ffffff; }
 .commercial-glass .inner-hero .eyebrow { color: var(--metal); }
-.commercial-glass .inner-hero .btn-light { color: #ffffff; }
-.commercial-glass .inner-hero .btn-ghost { color: #ffffff; }
-
 /* Commercial page body - teal, white, gray text in black areas -> white */
 .commercial-glass .section-ink p,
 .commercial-glass .section-ink .lead,
@@ -1872,23 +1876,14 @@ img[loading="lazy"] {
 .emergency-glass-repair .inner-hero-content > p:not(.eyebrow),
 .emergency-glass-repair .inner-hero h1 { color: #ffffff; }
 .emergency-glass-repair .inner-hero .eyebrow { color: var(--metal); }
-.emergency-glass-repair .inner-hero .btn-light { color: #ffffff; }
-.emergency-glass-repair .inner-hero .btn-ghost { color: #ffffff; }
-
 /* Emergency landing page */
 .emergency-landing .inner-hero-content > p:not(.eyebrow),
 .emergency-landing .inner-hero h1 { color: #ffffff; }
 .emergency-landing .inner-hero .eyebrow { color: var(--metal); }
-.emergency-landing .inner-hero .btn-light { color: #ffffff; }
-.emergency-landing .inner-hero .btn-ghost { color: #ffffff; }
-
-/* --- Service Area Page --- */
+.emergency-landing .inner-hero /* --- Service Area Page --- */
 .service-areas .inner-hero-content > p:not(.eyebrow),
 .service-areas .inner-hero h1 { color: #ffffff; }
 .service-areas .inner-hero .eyebrow { color: var(--metal); }
-.service-areas .inner-hero .btn-light { color: #ffffff; }
-.service-areas .inner-hero .btn-ghost { color: #ffffff; }
-
 /* Service area hero - white text, red accents */
 .service-areas .inner-hero .btn-light { color: #ffffff; background: #ffffff; border-color: #ffffff; }
 .service-areas .inner-hero .btn-light:hover { background: var(--metal-light); border-color: var(--metal-light); color: var(--paper); }
@@ -1921,10 +1916,10 @@ img[loading="lazy"] {
 .gallery .inner-hero-content > p:not(.eyebrow),
 .gallery .inner-hero h1 { color: var(--ink); }
 .gallery .inner-hero .eyebrow { color: var(--metal); }
-.gallery .inner-hero .btn-light { color: var(--ink); background: #ffffff; border-color: #ffffff; }
-.gallery .inner-hero .btn-ghost { color: var(--ink); border-color: var(--ink); }
-.gallery .inner-hero .btn-light:hover { background: var(--metal-light); border-color: var(--metal-light); color: var(--paper); }
-.gallery .inner-hero .btn-ghost:hover { background: var(--ink); color: var(--paper); }
+.gallery .inner-hero .btn-light { color: #ffffff; background: var(--color-brand); border-color: var(--color-brand); }
+.gallery .inner-hero .btn-light:hover { background: var(--color-brand-hover); border-color: var(--color-brand-hover); color: var(--paper); }
+.gallery .inner-hero .btn-ghost { color: #ffffff; border-color: #ffffff; background: var(--color-brand); }
+.gallery .inner-hero .btn-ghost:hover { background: var(--color-brand-hover); border-color: var(--color-brand-hover); color: var(--color-surface); }
 
 /* Gallery page hero text - gray to black */
 .gallery .inner-hero-content > p:not(.eyebrow) { color: var(--ink); }
