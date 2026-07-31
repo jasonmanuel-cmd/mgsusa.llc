@@ -7,3 +7,12 @@ temp-*.html
 *-AUDIT.md
 *-REVIEW.md
 .vercel
+
+# scratch/dev files
+_*.py
+_*.txt
+*.py
+lighthouse-*.json
+DEPLOYMENT_SUMMARY.txt
+*_REPORT.md
+*_SUMMARY.md
