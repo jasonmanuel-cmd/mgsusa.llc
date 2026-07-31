@@ -12,6 +12,13 @@
   // Detect support
   const supportsIntersectionObserver = 'IntersectionObserver' in window;
 
+  // IntersectionObserver options
+  const observerOptions = {
+    root: null,
+    rootMargin: '50px',
+    threshold: 0.01
+  };
+
   function lazyLoadImages() {
     if (!supportsIntersectionObserver) {
       // Fallback: load all images immediately
@@ -21,13 +28,6 @@
       });
       return;
     }
-
-    // IntersectionObserver options
-    const observerOptions = {
-      root: null,
-      rootMargin: '50px',
-      threshold: 0.01
-    };
 
     const imageObserver = new IntersectionObserver((entries, observer) => {
       entries.forEach(entry => {

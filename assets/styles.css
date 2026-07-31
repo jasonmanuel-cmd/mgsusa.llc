@@ -1,9 +1,5 @@
 /* Master Glass Solutions — deliberate, local-first static design system
    Palette: black / red / white. Heraldic brand identity. */
-@font-face { font-family: 'Inter'; src: url('https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHAPMtMcoZP5PgoyMZVjUX7q3JJXeE.woff2') format('woff2'); font-weight: 400; font-display: swap; }
-@font-face { font-family: 'Inter'; src: url('https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHAPMtMcoZP5PgoyMZVjUX7q3JJXeE.woff2') format('woff2'); font-weight: 600; font-display: swap; }
-@font-face { font-family: 'Inter'; src: url('https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHAPMtMcoZP5PgoyMZVjUX7q3JJXeE.woff2') format('woff2'); font-weight: 700; font-display: swap; }
-@font-face { font-family: 'Inter'; src: url('https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHAPMtMcoZP5PgoyMZVjUX7q3JJXeE.woff2') format('woff2'); font-weight: 800; font-display: swap; }
 :root {
   --ink: #0a0a0a;
   --ink-2: #1a1a1a;
@@ -85,6 +81,13 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 .hero-copy { max-width: 755px; }
 .eyebrow { display: flex; align-items: center; gap: .7rem; color: var(--metal); margin: 0 0 1.35rem; font-size: .69rem; letter-spacing: .14em; font-weight: 850; line-height: 1.2; text-transform: uppercase; }
 .eyebrow > span { display: inline-block; width: 29px; height: 2px; background: currentColor; }
+/* Eyebrows on dark surfaces need a light tone to hold WCAG AA contrast. */
+.hero-home .eyebrow,
+.section-ink .eyebrow,
+.location-section .location-grid > div:last-child .eyebrow,
+.final-cta .eyebrow,
+.inner-hero .eyebrow,
+.emergency-band .eyebrow { color: #f8d5ba; }
 h1, h2, h3, p { margin-top: 0; }
 h1, h2, h3 { text-wrap: balance; }
 h1, h2 { font-family: var(--serif); font-weight: 400; letter-spacing: -.047em; line-height: .99; }
@@ -712,72 +715,6 @@ a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visibl
     transform: scale(1.05);
     opacity: 0.9;
   }
-}
-
-/* (Removed password gate form styles - no longer needed in production) */
-  transition: opacity 0.25s ease;
-  pointer-events: none;
-}
-.gate-error.visible {
-  opacity: 1;
-}
-
-/* Gate footer link */
-.gate-contact {
-  margin-top: 2rem;
-  color: rgba(255, 255, 255, 0.45);
-  font-size: 0.72rem;
-}
-.gate-contact a {
-  color: var(--metal-light);
-  border-bottom: 1px solid rgba(196, 30, 58, 0.5);
-  font-weight: 700;
-}
-.gate-contact a:hover { color: #fff; }
-
-/* Splash Screen */
-.glass-splash {
-  position: fixed; inset: 0;
-  z-index: 10001;
-  background: #0a0a0a;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: all;
-}
-.glass-splash-inner {
-  position: relative; z-index: 2;
-  display: flex; align-items: center; justify-content: center;
-}
-.glass-splash-logo {
-  width: 220px;
-  height: auto;
-  filter: brightness(0) invert(1);
-  animation: splashPulse 2.5s ease-in-out infinite;
-}
-.glass-splash-door {
-  position: absolute; top: 0; bottom: 0; width: 50%;
-  z-index: 3;
-  background: #0a0a0a;
-  transition: transform 1.4s cubic-bezier(.7,.0,.3,1);
-}
-.glass-splash-door-left { left: 0; }
-.glass-splash-door-right { right: 0; }
-.glass-splash.splash-opening .glass-splash-door-left { transform: translateX(-105%); }
-.glass-splash.splash-opening .glass-splash-door-right { transform: translateX(105%); }
-
-/* Gate fades in after splash opens */
-.glass-doors-gate {
-  opacity: 0;
-  transition: opacity .6s ease;
-}
-.glass-doors-gate.gate-visible {
-  opacity: 1;
-}
-
-@keyframes splashPulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: .85; transform: scale(1.02); }
 }
 
 /* Scroll-reveal animations: visible by default so content is never invisible if JS lags. */
