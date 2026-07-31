@@ -51,12 +51,12 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 .utility-right a { color: #ffffff; transition: color .2s ease; font-weight: 600; }
 .utility-right a:hover { color: #FF0000; }
 .utility-right svg { width: 22px; height: 22px; }
-.utility a { color: #FF0000; font-weight: 900; font-size: 1.1rem; letter-spacing: 0.05em; }
+.utility span { color: var(--metal); font-weight: 900; font-size: 1.1rem; letter-spacing: 0.05em; }
 .utility svg { width: 18px; height: 18px; }
 .site-header { position: sticky; top: max(0, env(safe-area-inset-top)); z-index: 100; background: rgba(255,255,255,.97); border-bottom: 1px solid rgba(10,10,10,.09); padding-top: env(safe-area-inset-top, 0); }
 .nav-wrap { height: 110px; display: flex; align-items: center; justify-content: space-between; gap: 1.2rem; }
 .brand { display: inline-flex; align-items: center; gap: .9rem; color: var(--ink); white-space: nowrap; }
-.brand-logo { height: 75px; width: auto; object-fit: contain; }
+.brand-logo { height: 80px; width: auto; object-fit: contain; }
 .main-nav { display: flex; align-items: center; justify-content: center; gap: clamp(.8rem,1.8vw,1.7rem); margin-left: auto; }
 .main-nav a { font-size: .82rem; text-transform: uppercase; letter-spacing: .075em; font-weight: 800; color: var(--metal); position: relative; }
 .main-nav a::after { content:""; position: absolute; left: 0; right: 100%; bottom: -9px; height: 2px; background: var(--metal); transition: right .25s ease; }
@@ -102,11 +102,11 @@ h1, h2 { font-family: var(--serif); font-weight: 400; letter-spacing: -.047em; l
 h1 { max-width: 780px; font-size: clamp(3.15rem, 6.7vw, 6.35rem); margin-bottom: 1.45rem; }
 h2 { font-size: clamp(2.3rem, 4.2vw, 4.5rem); margin-bottom: 1.3rem; margin-top: 1.5rem; }
 h3 { font-family: var(--serif); font-size: 1.7rem; line-height: 1.15; letter-spacing: -.025em; font-weight: 500; margin-bottom: 1rem; }
-.hero-copy > p:not(.eyebrow):not(.hero-note) { max-width: 640px; font-size: 1.15rem; line-height: 1.72; color: #e1e3dc; }
+.hero-copy > p:not(.eyebrow):not(.hero-note) { max-width: 640px; font-size: 1.15rem; line-height: 1.72; color: #ffffff; }
 .hero-actions { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 2rem; }
 .hero-proof { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .6rem; max-width: 680px; margin: 1.4rem 0 0; }
 .hero-proof span { border: 1px solid rgba(255,255,255,.24); background: rgba(255,255,255,.08); padding: .72rem .85rem; color: #fff; font-size: .74rem; line-height: 1.35; font-weight: 800; text-transform: uppercase; letter-spacing: .055em; }
-.hero-note { margin: 1.2rem 0 0; color: rgba(255,255,255,.6); font-size: .77rem; }
+.hero-note { margin: 1.2rem 0 0; color: #ffffff; font-size: .77rem; }
 .hero-panel { align-self: center; border: 1px solid rgba(255,255,255,.26); border-top: 3px solid var(--metal-light); padding: 1.2rem 1.35rem; max-width: 380px; background: rgba(10,10,10,.62); box-shadow: 0 22px 55px rgba(0,0,0,.28); backdrop-filter: blur(6px); }
 .hero-panel > p { margin-bottom: .7rem; color: var(--metal-light); text-transform: uppercase; letter-spacing: .12em; font-size: .68rem; font-weight: 800; }
 .hero-panel a { display: flex; justify-content: space-between; align-items: center; gap: 1rem; border-bottom: 1px solid rgba(255,255,255,.3); padding: .95rem 0; font-size: .96rem; color: #fff; font-weight: 800; transition: color .2s ease, padding .2s ease, background .2s ease; }
@@ -152,12 +152,13 @@ h3 { font-family: var(--serif); font-size: 1.7rem; line-height: 1.15; letter-spa
 .services-section { background: var(--warm-white); position: relative; }
 .services-section::before { content: ""; position: absolute; inset: 0; background: url('Commercial1.webp') center/cover no-repeat; opacity: .03; pointer-events: none; }
 .service-grid { display: grid; grid-template-columns: repeat(3,1fr); margin-top: 3.5rem; border-top: 1px solid var(--line); border-left: 1px solid var(--line); }
+.services-section .section-heading h2 { color: var(--metal); }
 .service-card { min-height: 270px; padding: 1.65rem; display: flex; flex-direction: column; justify-content: space-between; gap: 1rem; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); transition: background .25s ease, color .25s ease; }
 .service-card:hover { background: var(--ink); color: var(--paper); }
 .service-card:hover p { color: #d4dcd9; }
 .service-number { font: 700 .67rem/1 var(--sans); color: var(--metal); letter-spacing: .12em; }
-.service-card h3 { margin: 0 0 .85rem; font-size: 1.6rem; }
-.service-card p { margin: 0; color: #536068; font-size: .92rem; line-height: 1.6; max-width: 300px; }
+.service-card h3 { margin: 0 0 .85rem; font-size: 1.6rem; color: #ffffff; }
+.service-card p { margin: 0; color: #ffffff; font-size: .92rem; line-height: 1.6; max-width: 300px; }
 .service-arrow { display: grid; align-self: flex-end; place-items: center; width: 32px; height: 32px; color: var(--metal); }
 .service-arrow svg { width: 18px; height: 18px; fill:none; stroke:currentColor; stroke-width:1.7; }
 .craft-grid { display: grid; grid-template-columns: .96fr 1.04fr; gap: clamp(2.5rem,6vw,7rem); align-items: center; }
@@ -1069,7 +1070,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visibl
   .utility span { display:none; }
   .utility-inner { justify-content:flex-end; }
    .nav-wrap { height:70px; gap: 0.5rem; }
-   .brand-logo { height: 50px !important; }
+   .brand-logo { height: 55px !important; }
    .main-nav, .nav-phone, .nav-actions > .btn { display:none; }
    .nav-actions { margin-left: auto; }
    .menu-toggle { width:44px; height:44px; padding:8px; display:grid; align-content:center; gap:6px; border:0; background:transparent; cursor: pointer; flex-shrink: 0; }
@@ -1112,7 +1113,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visibl
    :root { --shell: calc(100% - 32px); }
    .brand { font-size:.76rem; }
    .nav-wrap { height: 65px; }
-   .brand-logo { height: 45px; }
+   .brand-logo { height: 50px; }
   .hero-home { min-height:auto; }
   .hero-grid { min-height:auto; padding-top:2.75rem; }
   h1 { font-size:clamp(2.85rem,13vw,4.1rem); }
@@ -1575,7 +1576,7 @@ img[loading="lazy"] {
 .footer-logo { display: inline-flex; }
 
 .footer-logo-img {
-  height: 44px;
+  height: 60px;
   width: auto;
   object-fit: contain;
 }
@@ -1673,9 +1674,317 @@ img[loading="lazy"] {
   text-underline-offset: .16em;
 }
 
-.footer-credit { color: rgba(255,255,255,.55); }
+.footer-credit { color: var(--metal); font-weight: 700; }
 
 .footer-credit a { color: rgba(255,255,255,.72); }
+
+@media (max-width: 700px) {
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: 1.75rem;
+  }
+  .footer-bottom {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: .75rem;
+  }
+}
+
+/* ============================================
+   PAGE-SPECIFIC STYLES
+   ============================================ */
+
+/* --- Home Page --- */
+.hero-home .hero-copy > p:not(.eyebrow):not(.hero-note) { color: #ffffff; }
+.hero-home .hero-note { color: #ffffff; }
+.hero-home .hero-proof span { color: #ffffff; }
+.hero-home .hero-actions .btn-light { color: #ffffff; background: #ffffff; border-color: #ffffff; }
+.hero-home .hero-actions .btn-light:hover { background: var(--metal-light); border-color: var(--metal-light); color: var(--paper); }
+.hero-home .hero-actions .btn-ghost { color: #ffffff; border-color: rgba(255,255,255,.55); background: rgba(10,10,10,0.35); }
+.hero-home .hero-actions .btn-ghost:hover { background: rgba(10,10,10,0.55); color: var(--color-surface); border-color: rgba(255,255,255,0.8); }
+.hero-home .hero-proof span { color: #ffffff; }
+.hero-home .section-heading h2 { color: var(--metal); }
+.services-section .section-heading h2 { color: var(--metal); }
+
+/* Home page service boxes - all text white */
+.hero-home ~ .services-section .service-card h3,
+.hero-home ~ .services-section .service-card p { color: #ffffff; }
+.hero-home ~ .services-section .service-card:hover h3,
+.hero-home ~ .services-section .service-card:hover p { color: #ffffff; }
+
+/* Home page content below hero - white text */
+.hero-home ~ .section.introduction .lead { color: #ffffff; }
+.hero-home ~ .section.introduction p:not(.lead) { color: #ffffff; }
+.hero-home ~ .section.introduction .text-link { color: #ffffff; border-bottom-color: #ffffff; }
+.hero-home ~ .section.introduction .text-link:hover { color: var(--metal-light); border-bottom-color: var(--metal-light); }
+
+/* Home page trust strip - ensure red accents */
+.hero-home ~ .trust-strip .trust-grid svg { stroke: var(--metal); }
+.hero-home ~ .trust-strip .trust-grid b { color: var(--ink); }
+
+/* --- Residential Page --- */
+.residential-glass .inner-hero-content > p:not(.eyebrow),
+.residential-glass .inner-hero h1 { color: #ffffff; }
+.residential-glass .inner-hero .eyebrow { color: var(--metal); }
+
+/* Residential page body - more red elements */
+.residential-glass .answer-section .lead { color: var(--ink); }
+.residential-glass .answer-section p:not(.lead) { color: #42525a; }
+.residential-glass .answer-grid p:not(.lead) { color: #42525a; }
+.residential-glass .answer-grid .lead { color: var(--ink); }
+.residential-glass .answer-grid .text-link { color: var(--ink); border-bottom-color: var(--ink); }
+.residential-glass .answer-grid .text-link:hover { color: var(--metal-light); border-bottom-color: var(--metal-light); }
+.residential-glass .split-info h2 { color: var(--ink); }
+.residential-glass .when-block h2, .residential-glass .how-block h2 { color: var(--ink); }
+.residential-glass .compact-steps h3 { color: var(--ink); }
+.residential-glass .compact-steps p { color: #536068; }
+.residential-glass .compact-steps li > span { color: var(--metal); }
+.residential-glass .related-service h3 { color: var(--ink); }
+.residential-glass .related-service p { color: #536068; }
+.residential-glass .related-service:hover p { color: #ffffff; }
+.residential-glass .related-service:hover { background: var(--ink); color: var(--paper); }
+.residential-glass .cost-grid .lead { color: var(--ink); }
+.residential-glass .cost-grid > div:last-child > p:not(.lead) { color: #ced9d5; }
+.residential-glass .cost-grid .btn { color: var(--paper); background: var(--ink); }
+.residential-glass .faq-section .lead { color: var(--ink); }
+.residential-glass .faq-answer { color: #4b5b62; }
+.residential-glass .faq-answer p { color: #4b5b62; }
+.residential-glass .faq-list summary { color: var(--ink); }
+.residential-glass .faq-list summary span { color: var(--metal); }
+
+/* Residential page gray text on white backgrounds -> black */
+.residential-glass .section-cream p,
+.residential-glass .section-cream .lead,
+.residential-glass .section-cream .lead { color: var(--ink); }
+.residential-glass .section-cream .text-link { color: var(--ink); border-bottom-color: var(--ink); }
+.residential-glass .section-cream .text-link:hover { color: var(--metal-light); border-bottom-color: var(--metal-light); }
+.residential-glass .answer-section::before { opacity: 0.03; }
+.residential-glass .answer-section .lead { color: var(--ink); }
+.residential-glass .answer-grid > div:last-child { padding-top: 2.8rem; }
+.residential-glass .answer-grid .lead { color: var(--ink); margin-bottom: 1.35rem; }
+.residential-glass .answer-grid p:not(.lead) { color: #42525a; }
+
+/* Gray text on white backgrounds -> black */
+.residential-glass .section-cream .lead,
+.residential-glass .section-cream p:not(.lead),
+.residential-glass .warm-white p,
+.residential-glass .warm-white .lead { color: var(--ink); }
+
+/* Gray text -> white or red */
+.residential-glass .intro-copy p:not(.lead) { color: #ffffff; }
+.residential-glass .answer-grid p:not(.lead) { color: #ffffff; }
+.residential-glass .compact-steps p { color: #ffffff; }
+.residential-glass .related-service p { color: #ffffff; }
+
+/* Red elements */
+.residential-glass .numbered { color: var(--metal); }
+.residential-glass .card-kicker { color: var(--metal); }
+.residential-glass .eyebrow { color: var(--metal); }
+.residential-glass .text-link { color: var(--metal); border-bottom-color: var(--metal); }
+.residential-glass .text-link:hover { color: var(--metal-light); border-bottom-color: var(--metal-light); }
+.residential-glass .check-list svg { color: var(--metal); }
+.residential-glass .compact-steps > li > span { color: var(--metal); }
+.residential-glass .related-service span { color: var(--metal); }
+
+/* Gray on white backgrounds -> black */
+.residential-glass .section-cream .lead,
+.residential-glass .section-cream p:not(.lead),
+.residential-glass .answer-section .lead,
+.residential-glass .answer-grid p:not(.lead) { color: var(--ink); }
+
+/* Gray text -> white or red */
+.residential-glass .intro-copy p:not(.lead) { color: #ffffff; }
+.residential-glass .answer-grid p:not(.lead) { color: #ffffff; }
+.residential-glass .compact-steps p { color: #ffffff; }
+.residential-glass .related-service p { color: #ffffff; }
+
+/* Red elements */
+.residential-glass .numbered { color: var(--metal); }
+.residential-glass .card-kicker { color: var(--metal); }
+.residential-glass .eyebrow { color: var(--metal); }
+.residential-glass .text-link { color: var(--metal); border-bottom-color: var(--metal); }
+.residential-glass .text-link:hover { color: var(--metal-light); border-bottom-color: var(--metal-light); }
+.residential-glass .check-list svg { color: var(--metal); }
+.residential-glass .compact-steps > li > span { color: var(--metal); }
+.residential-glass .related-service span { color: var(--metal); }
+
+/* Gray on white backgrounds -> black */
+.residential-glass .section-cream .lead,
+.residential-glass .section-cream p:not(.lead),
+.residential-glass .answer-section .lead,
+.residential-glass .answer-grid p:not(.lead) { color: var(--ink); }
+
+/* Gray text -> white or red */
+.residential-glass .intro-copy p:not(.lead) { color: #ffffff; }
+.residential-glass .answer-grid p:not(.lead) { color: #ffffff; }
+.residential-glass .compact-steps p { color: #ffffff; }
+.residential-glass .related-service p { color: #ffffff; }
+
+/* Red elements */
+.residential-glass .numbered { color: var(--metal); }
+.residential-glass .card-kicker { color: var(--metal); }
+.residential-glass .eyebrow { color: var(--metal); }
+.residential-glass .text-link { color: var(--metal); border-bottom-color: var(--metal); }
+.residential-glass .text-link:hover { color: var(--metal-light); border-bottom-color: var(--metal-light); }
+.residential-glass .check-list svg { color: var(--metal); }
+.residential-glass .compact-steps > li > span { color: var(--metal); }
+.residential-glass .related-service span { color: var(--metal); }
+
+/* Gray on white backgrounds -> black */
+.residential-glass .section-cream .lead,
+.residential-glass .section-cream p:not(.lead),
+.residential-glass .answer-section .lead,
+.residential-glass .answer-grid p:not(.lead) { color: var(--ink); }
+
+/* --- Commercial Page --- */
+.commercial-glass .inner-hero-content > p:not(.eyebrow),
+.commercial-glass .inner-hero h1 { color: #ffffff; }
+.commercial-glass .inner-hero .eyebrow { color: var(--metal); }
+.commercial-glass .inner-hero .btn-light { color: #ffffff; }
+.commercial-glass .inner-hero .btn-ghost { color: #ffffff; }
+
+/* Commercial page body - teal, white, gray text in black areas -> white */
+.commercial-glass .section-ink p,
+.commercial-glass .section-ink .lead,
+.commercial-glass .section-ink h2,
+.commercial-glass .section-ink h3,
+.commercial-glass .section-ink p:not(.lead),
+.commercial-glass .section-ink .text-link { color: #ffffff; }
+.commercial-glass .section-ink .text-link { color: #ffffff; border-bottom-color: #ffffff; }
+.commercial-glass .section-ink .text-link:hover { color: var(--metal-light); border-bottom-color: var(--metal-light); }
+.commercial-glass .section-ink .eyebrow { color: var(--metal); }
+.commercial-glass .section-ink .text-link:hover { color: var(--metal-light); }
+.commercial-glass .section-ink .numbered { color: var(--metal); }
+.commercial-glass .section-ink .card-kicker { color: var(--metal-light); }
+.commercial-glass .section-ink .eyebrow { color: var(--metal); }
+.commercial-glass .section-ink .text-link { color: var(--metal); border-bottom-color: var(--metal); }
+.commercial-glass .section-ink .text-link:hover { color: var(--metal-light); border-bottom-color: var(--metal-light); }
+
+/* Commercial page body - teal, white, gray text in black areas -> white */
+.commercial-glass .craft-content > p:not(.eyebrow) { color: #ffffff; }
+.commercial-glass .craft-content .lead { color: #ffffff; }
+.commercial-glass .check-list li { color: #ffffff; }
+.commercial-glass .check-list svg { color: var(--metal); }
+.commercial-glass .text-link { color: var(--metal); }
+.commercial-glass .text-link:hover { color: var(--metal-light); }
+
+/* --- Emergency Page --- */
+.emergency-glass-repair .inner-hero-content > p:not(.eyebrow),
+.emergency-glass-repair .inner-hero h1 { color: #ffffff; }
+.emergency-glass-repair .inner-hero .eyebrow { color: var(--metal); }
+.emergency-glass-repair .inner-hero .btn-light { color: #ffffff; }
+.emergency-glass-repair .inner-hero .btn-ghost { color: #ffffff; }
+
+/* Emergency landing page */
+.emergency-landing .inner-hero-content > p:not(.eyebrow),
+.emergency-landing .inner-hero h1 { color: #ffffff; }
+.emergency-landing .inner-hero .eyebrow { color: var(--metal); }
+.emergency-landing .inner-hero .btn-light { color: #ffffff; }
+.emergency-landing .inner-hero .btn-ghost { color: #ffffff; }
+
+/* --- Service Area Page --- */
+.service-areas .inner-hero-content > p:not(.eyebrow),
+.service-areas .inner-hero h1 { color: #ffffff; }
+.service-areas .inner-hero .eyebrow { color: var(--metal); }
+.service-areas .inner-hero .btn-light { color: #ffffff; }
+.service-areas .inner-hero .btn-ghost { color: #ffffff; }
+
+/* Service area hero - white text, red accents */
+.service-areas .inner-hero .btn-light { color: #ffffff; background: #ffffff; border-color: #ffffff; }
+.service-areas .inner-hero .btn-light:hover { background: var(--metal-light); border-color: var(--metal-light); color: var(--paper); }
+.service-areas .inner-hero .btn-ghost { color: #ffffff; border-color: rgba(255,255,255,.55); background: rgba(10,10,10,0.35); }
+.service-areas .inner-hero .btn-ghost:hover { background: rgba(10,10,10,0.55); color: var(--color-surface); border-color: rgba(255,255,255,0.8); }
+
+/* Service area city boxes - text in white boxes to black, top header red, gray to black */
+.service-areas .city-card { background: #ffffff; color: var(--ink); }
+.service-areas .city-card h2 { color: var(--ink); }
+.service-areas .city-card p { color: var(--metal); }
+.service-areas .city-card span { color: var(--ink); }
+.service-areas .city-card:hover { background: var(--stone); }
+.service-areas .city-card:hover h2 { color: var(--ink); }
+.service-areas .city-card:hover p { color: var(--metal); }
+.service-areas .city-card:hover span { color: var(--ink); }
+.service-areas .city-card svg { stroke: var(--metal); }
+
+/* City card region heading - red */
+.service-areas .region-heading { color: var(--metal); border-bottom-color: var(--metal); }
+
+/* Call section - entirely red */
+.service-areas .emergency-band-inline { background: var(--metal); }
+.service-areas .emergency-band-inline .btn { background: #ffffff; color: var(--metal); border-color: #ffffff; }
+.service-areas .emergency-band-inline .btn:hover { background: var(--metal-light); color: #ffffff; border-color: var(--metal-light); }
+.service-areas .emergency-band-inline svg { stroke: #ffffff; }
+.service-areas .emergency-band-inline .btn span { color: #ffffff; }
+.service-areas .emergency-band-inline .btn strong { color: #ffffff; }
+
+/* --- Project/Gallery Page --- */
+.gallery .inner-hero-content > p:not(.eyebrow),
+.gallery .inner-hero h1 { color: var(--ink); }
+.gallery .inner-hero .eyebrow { color: var(--metal); }
+.gallery .inner-hero .btn-light { color: var(--ink); background: #ffffff; border-color: #ffffff; }
+.gallery .inner-hero .btn-ghost { color: var(--ink); border-color: var(--ink); }
+.gallery .inner-hero .btn-light:hover { background: var(--metal-light); border-color: var(--metal-light); color: var(--paper); }
+.gallery .inner-hero .btn-ghost:hover { background: var(--ink); color: var(--paper); }
+
+/* Gallery page hero text - gray to black */
+.gallery .inner-hero-content > p:not(.eyebrow) { color: var(--ink); }
+.gallery .inner-hero h1 { color: var(--ink); }
+
+/* Gallery grid captions */
+.gallery-grid figcaption span { color: var(--metal-light); }
+.gallery-grid figcaption b { color: var(--paper); }
+
+/* --- Utility Bar - 24/7 emergency glass support text red --- */
+.utility span { color: var(--metal); font-weight: 900; font-size: 1.1rem; letter-spacing: 0.05em; }
+
+/* --- Footer credit link color --- */
+.footer-credit a { color: var(--metal); }
+
+/* --- Service card hover - ensure white text on hover --- */
+.service-card:hover h3,
+.service-card:hover p,
+.related-service:hover h3,
+.related-service:hover p,
+.value-grid article:hover h3,
+.value-grid article:hover p,
+.article-card:hover h3,
+.article-card:hover p,
+.team-card:hover h3,
+.team-card:hover p,
+.city-card:hover h3,
+.city-card:hover p,
+.proof-cards article:hover h3,
+.proof-cards article:hover p { color: #ffffff; }
+
+/* Service card default state - white text */
+.service-card h3,
+.service-card p,
+.related-service h3,
+.related-service p,
+.value-grid article h3,
+.value-grid article p,
+.article-card h3,
+.article-card > span,
+.article-card > p,
+.team-card h3,
+.team-card p,
+.city-card h3,
+.city-card p,
+.proof-cards article h3,
+.proof-cards article p { color: #ffffff; }
+
+/* Service card default background - dark */
+.service-card,
+.related-service,
+.value-grid article,
+.article-card,
+.team-card,
+.city-card,
+.proof-cards article { background: var(--ink); color: #ffffff; }
+
+/* ============================================
+   MEDIA QUERIES
+   ============================================ */
 
 @media (max-width: 1100px) {
   .footer-grid {
