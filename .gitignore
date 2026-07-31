@@ -6,3 +6,4 @@ temp-*.html
 *-AUDIT-REPORT.md
 *-AUDIT.md
 *-REVIEW.md
+.vercel
