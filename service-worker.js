@@ -1,14 +1,13 @@
 // Service Worker for MGS USA LLC - Cache-First Strategy
 // Enables offline support and 70% faster repeat visits
-const CACHE_NAME = 'mgs-usa-v1.0.0';
-const ASSETS_CACHE = 'mgs-usa-assets-v1.0.0';
+const CACHE_NAME = 'mgs-usa-v1.0.1';
+const ASSETS_CACHE = 'mgs-usa-assets-v1.0.1';
 
 // Core assets to cache immediately (shell + critical resources)
 const CRITICAL_ASSETS = [
   '/',
   '/index.html',
   '/assets/styles.css',
-  '/assets/inter.woff2',
   '/assets/images/brand-video-poster.webp',
   '/assets/images/commercial-video-poster.webp',
   '/assets/images/shower-video-poster.webp'

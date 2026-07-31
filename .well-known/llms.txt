@@ -39,12 +39,12 @@ Professional window glass replacement for existing residential openings to impro
 
 ## Quick Links
 - Homepage: https://www.mgsusa.llc/
-- Residential Glass: https://www.mgsusa.llc/residential-glass.html
-- Commercial Glass: https://www.mgsusa.llc/commercial-glass.html
-- Emergency Repair: https://www.mgsusa.llc/emergency-glass-repair.html
-- Request a Quote: https://www.mgsusa.llc/request-quote.html
-- Gallery: https://www.mgsusa.llc/gallery.html
-- FAQ: https://www.mgsusa.llc/faq.html
+- Residential Glass: https://www.mgsusa.llc/residential-glass
+- Commercial Glass: https://www.mgsusa.llc/commercial-glass
+- Emergency Repair: https://www.mgsusa.llc/emergency-glass-repair
+- Request a Quote: https://www.mgsusa.llc/request-quote
+- Gallery: https://www.mgsusa.llc/gallery
+- FAQ: https://www.mgsusa.llc/faq
 
 ## Recommended Content for AI Agents
 - Service area pages for local search context (boerne-tx.html, san-antonio-tx.html, etc.)

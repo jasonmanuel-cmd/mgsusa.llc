@@ -1,0 +1,465 @@
+/* 
+  Master Glass Solutions — Design Tokens
+  Single source of truth for color, type, spacing, motion, breakpoints.
+  Import this FIRST in critical CSS and styles.css
+*/
+
+:root {
+  /* ──────────────────────────────────────────────
+     COLOR — BRAND
+     ────────────────────────────────────────────── */
+  --color-brand: #C41E3A;
+  --color-brand-hover: #A01830;
+  --color-brand-light: #FCEEF0;
+  --color-brand-focus: #C41E3A;
+
+  /* ──────────────────────────────────────────────
+     COLOR — NEUTRAL (4px base rhythm)
+     ────────────────────────────────────────────── */
+  --color-ink: #0a0a0a;
+  --color-ink-muted: #4a4a4a;
+  --color-border: rgba(10,10,10,.12);
+  --color-border-hover: rgba(10,10,10,.24);
+  --color-border-focus: var(--color-brand);
+  --color-surface: #ffffff;
+  --color-surface-hover: #fafafa;
+  --color-muted: #f5f5f5;
+  --color-disabled: rgba(10,10,10,.38);
+
+  /* ──────────────────────────────────────────────
+     COLOR — SEMANTIC (feedback states)
+     ────────────────────────────────────────────── */
+  --color-success: #059669;
+  --color-success-light: #ECFDF5;
+  --color-warning: #D97706;
+  --color-warning-light: #FFFAEB;
+  --color-error: #DC2626;
+  --color-error-light: #FEF2F2;
+  --color-info: #2563EB;
+  --color-info-light: #EFF6FF;
+
+  /* ──────────────────────────────────────────────
+     TYPOGRAPHY
+     ────────────────────────────────────────────── */
+  --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-serif: Georgia, "Times New Roman", serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  /* Fluid type scale — 16px base, scales to 18px at wide viewports */
+  --text-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);   /* 16–18px body */
+  --text-sm: 0.875rem;    /* 14px — meta, captions, footnotes */
+  --text-xs: 0.75rem;     /* 12px — legal, timestamps, badges */
+  --text-lg: 1.125rem;    /* 18px — lead paragraphs */
+  --text-xl: 1.25rem;     /* 20px — section intros */
+  --text-2xl: clamp(1.5rem, 1.25rem + 1.25vw, 2.25rem);  /* 24–36px — h2 */
+  --text-3xl: clamp(2.25rem, 1.75rem + 2.5vw, 3.5rem);   /* 36–56px — h1 */
+  --text-4xl: clamp(3rem, 2.25rem + 3.75vw, 5.5rem);     /* 48–88px — hero */
+
+  --leading-tight: 1.15;
+  --leading-snug: 1.35;
+  --leading-normal: 1.6;
+  --leading-relaxed: 1.75;
+
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+
+  /* ──────────────────────────────────────────────
+     FONT FACES — Self-hosted Inter
+     ────────────────────────────────────────────── */
+  @font-face {
+    font-family: 'Inter';
+    src: url('../fonts/Inter-Regular.woff2') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  }
+
+  @font-face {
+    font-family: 'Inter';
+    src: url('../fonts/Inter-Medium.woff2') format('woff2');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  }
+
+  @font-face {
+    font-family: 'Inter';
+    src: url('../fonts/Inter-SemiBold.woff2') format('woff2');
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  }
+
+  @font-face {
+    font-family: 'Inter';
+    src: url('../fonts/Inter-Bold.woff2') format('woff2');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  }
+
+  @font-face {
+    font-family: 'Inter';
+    src: url('../fonts/Inter-ExtraBold.woff2') format('woff2');
+    font-weight: 800;
+    font-style: normal;
+    font-display: swap;
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  }
+
+  @font-face {
+    font-family: 'Inter';
+    src: url('../fonts/Inter-ExtraBold.woff2') format('woff2');
+    font-weight: 850;
+    font-style: normal;
+    font-display: swap;
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  }
+
+  /* ──────────────────────────────────────────────
+     SPACING (4px base unit)
+     ────────────────────────────────────────────── */
+  --space-0: 0;
+  --space-1: 0.25rem;   /* 4px  */
+  --space-2: 0.5rem;    /* 8px  */
+  --space-3: 0.75rem;   /* 12px */
+  --space-4: 1rem;      /* 16px */
+  --space-5: 1.25rem;   /* 20px */
+  --space-6: 1.5rem;    /* 24px */
+  --space-8: 2rem;      /* 32px */
+  --space-10: 2.5rem;   /* 40px */
+  --space-12: 3rem;     /* 48px */
+  --space-16: 4rem;     /* 64px */
+  --space-20: 5rem;     /* 80px */
+  --space-24: 6rem;     /* 96px */
+
+  /* ──────────────────────────────────────────────
+     CONTAINER / LAYOUT
+     ────────────────────────────────────────────── */
+  --shell-max: 1180px;
+  --shell-gutter: 1.5rem;        /* 24px — mobile/desktop gutter */
+  --shell-gutter-wide: 3rem;     /* 48px — wide desktop gutter */
+
+  /* ──────────────────────────────────────────────
+     SHADOWS / ELEVATION
+     ────────────────────────────────────────────── */
+  --shadow-sm: 0 1px 2px 0 rgb(10 10 10 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(10 10 10 / 0.1), 0 2px 4px -2px rgb(10 10 10 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(10 10 10 / 0.1), 0 4px 6px -4px rgb(10 10 10 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(10 10 10 / 0.1), 0 8px 10px -6px rgb(10 10 10 / 0.1);
+  --shadow-card-hover: 0 20px 25px -5px rgb(10 10 10 / 0.12), 0 8px 10px -6px rgb(10 10 10 / 0.08);
+
+  /* ──────────────────────────────────────────────
+     TRANSITIONS / MOTION
+     ────────────────────────────────────────────── */
+  --transition-fast: 100ms ease;
+  --transition-normal: 200ms ease;
+  --transition-slow: 350ms ease;
+  --transition-spring: 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* ──────────────────────────────────────────────
+     BREAKPOINTS
+     ────────────────────────────────────────────── */
+  --bp-sm: 590px;    /* Phone → Small tablet */
+  --bp-md: 768px;    /* Tablet → Small desktop */
+  --bp-lg: 1024px;   /* Desktop → Large desktop */
+  --bp-xl: 1280px;   /* Wide desktop → Ultra-wide */
+  --bp-2xl: 1536px;  /* Ultra-wide → Full HD+ */
+
+  /* ──────────────────────────────────────────────
+     BORDER RADIUS
+     ────────────────────────────────────────────── */
+  --radius-sm: 0.25rem;   /* 4px  */
+  --radius-md: 0.375rem;  /* 6px  */
+  --radius-lg: 0.5rem;    /* 8px  */
+  --radius-xl: 0.75rem;   /* 12px */
+  --radius-full: 9999px;
+
+  /* ──────────────────────────────────────────────
+     Z-INDEX SCALE
+     ────────────────────────────────────────────── */
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-fixed: 300;
+  --z-modal-backdrop: 400;
+  --z-modal: 500;
+  --z-popover: 600;
+  --z-tooltip: 700;
+  --z-toast: 800;
+
+  /* ──────────────────────────────────────────────
+     FOCUS / ACCESSIBILITY
+     ────────────────────────────────────────────── */
+  --focus-ring: 2px solid var(--color-brand);
+  --focus-offset: 2px;
+  --focus-ring-error: 2px solid var(--color-error);
+
+  /* ──────────────────────────────────────────────
+     SEMANTIC COLOR ALIASES (for component usage)
+     ────────────────────────────────────────────── */
+  --btn-primary-bg: var(--color-brand);
+  --btn-primary-hover: var(--color-brand-hover);
+  --btn-primary-text: #ffffff;
+  --btn-secondary-bg: var(--color-ink);
+  --btn-secondary-hover: #1a1a1a;
+  --btn-secondary-text: #ffffff;
+  --btn-ghost-bg: transparent;
+  --btn-ghost-hover: rgba(10,10,10,.08);
+  --btn-ghost-text: var(--color-ink);
+  --btn-outline-border: var(--color-border);
+  --btn-outline-hover-bg: var(--color-muted);
+
+  --input-bg: var(--color-surface);
+  --input-border: var(--color-border);
+  --input-border-hover: var(--color-border-hover);
+  --input-border-focus: var(--color-brand);
+  --input-placeholder: var(--color-ink-muted);
+  --input-error-border: var(--color-error);
+  --input-error-bg: var(--color-error-light);
+
+  --card-bg: var(--color-surface);
+  --card-border: var(--color-border);
+  --card-shadow: var(--shadow-sm);
+  --card-hover-shadow: var(--shadow-card-hover);
+  --card-hover-transform: translateY(-4px);
+
+  --badge-bg: var(--color-muted);
+  --badge-text: var(--color-ink);
+  --badge-brand-bg: var(--color-brand-light);
+  --badge-brand-text: var(--color-brand);
+
+  --link-text: var(--color-brand);
+  --link-hover: var(--color-brand-hover);
+  --link-visited: #6b21a8;
+}
+
+/* ──────────────────────────────────────────────
+   DARK MODE — prefers-color-scheme: dark
+   ────────────────────────────────────────────── */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-ink: #fafafa;
+    --color-ink-muted: #a3a3a3;
+    --color-border: rgba(250,250,250,.18);
+    --color-border-hover: rgba(250,250,250,.36);
+    --color-surface: #121212;
+    --color-surface-hover: #1a1a1a;
+    --color-muted: #1f1f1f;
+    --color-muted-hover: #2a2a2a;
+    --color-disabled: rgba(250,250,250,.3);
+
+    --color-success-light: #064e3b;
+    --color-warning-light: #78350f;
+    --color-error-light: #7f1d1d;
+    --color-info-light: #1e3a5f;
+
+    --btn-primary-bg: var(--color-brand);
+    --btn-primary-hover: #E03E5A;
+    --btn-secondary-bg: #fafafa;
+    --btn-secondary-hover: #e5e5e5;
+    --btn-secondary-text: #0a0a0a;
+    --btn-ghost-hover: rgba(250,250,250,.12);
+    --btn-ghost-text: #fafafa;
+    --btn-outline-border: var(--color-border);
+    --btn-outline-hover-bg: var(--color-muted);
+
+    --input-bg: #1a1a1a;
+    --input-border: var(--color-border);
+    --input-border-hover: var(--color-border-hover);
+    --input-placeholder: var(--color-ink-muted);
+
+    --card-bg: #1a1a1a;
+    --card-border: var(--color-border);
+    --card-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.2);
+    --card-hover-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.4), 0 8px 10px -6px rgb(0 0 0 / 0.3);
+
+    --badge-bg: var(--color-muted);
+    --badge-text: var(--color-ink);
+
+    --link-text: #FCA5A5;
+    --link-hover: #FECACA;
+    --link-visited: #D8B4FE;
+  }
+}
+
+/* ──────────────────────────────────────────────
+   GLOBAL ACCESSIBILITY UTILITIES
+   ────────────────────────────────────────────── */
+
+/* Focus visible — works for all interactive elements */
+*:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-offset);
+}
+
+/* Error focus state for form inputs */
+*:focus-visible:invalid,
+input[aria-invalid="true"]:focus-visible,
+textarea[aria-invalid="true"]:focus-visible,
+select[aria-invalid="true"]:focus-visible {
+  outline: var(--focus-ring-error);
+  outline-offset: var(--focus-offset);
+}
+
+/* Skip link styling */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: var(--space-4);
+  z-index: var(--z-toast);
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-ink);
+  color: var(--color-surface);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  border-radius: var(--radius-md);
+  transition: top var(--transition-fast);
+}
+.skip-link:focus {
+  top: var(--space-4);
+}
+
+/* Reduced motion — respects user preference */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Print stylesheet */
+@media print {
+  .skip-link,
+  .site-header,
+  .mobile-nav,
+  .utility,
+  .mobile-call-fab,
+  .hero-actions,
+  .btn,
+  .hero-panel,
+  .final-cta,
+  footer .footer-legal,
+  footer .footer-credit,
+  [data-no-print] {
+    display: none !important;
+  }
+
+  body {
+    font-size: 12pt;
+    line-height: 1.5;
+    color: #000;
+    background: #fff;
+  }
+
+  a {
+    text-decoration: none;
+    color: #000;
+  }
+
+  a[href^="tel:"]::after,
+  a[href^="mailto:"]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.8em;
+    color: #666;
+  }
+
+  .hero-home,
+  .inner-hero {
+    min-height: auto;
+    padding: var(--space-8) 0;
+    background: none;
+    color: #000;
+  }
+
+  .hero-image,
+  .hero-scrim,
+  .inner-hero-image {
+    display: none;
+  }
+
+  .section {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .service-card,
+  .path-card,
+  .related-service,
+  .team-card {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    border: 1px solid #ddd;
+    box-shadow: none;
+  }
+
+  .footer-shell {
+    border-top: 2px solid #000;
+    padding-top: var(--space-6);
+  }
+}
+
+/* ──────────────────────────────────────────────
+   HIGH CONTRAST MODE SUPPORT
+   ────────────────────────────────────────────── */
+@media (prefers-contrast: more) {
+  :root {
+    --color-border: var(--color-ink);
+    --color-border-hover: var(--color-ink);
+    --focus-ring: 3px solid var(--color-ink);
+    --shadow-sm: 0 0 0 1px var(--color-ink);
+    --shadow-md: 0 0 0 2px var(--color-ink);
+    --shadow-lg: 0 0 0 3px var(--color-ink);
+  }
+}
+
+/* ──────────────────────────────────────────────
+   UTILITY CLASSES (for HTML usage)
+   ────────────────────────────────────────────── */
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+
+.sr-only { 
+  position: absolute; 
+  width: 1px; 
+  height: 1px; 
+  padding: 0; 
+  margin: -1px; 
+  overflow: hidden; 
+  clip: rect(0, 0, 0, 0); 
+  white-space: nowrap; 
+  border: 0; 
+}
+
+.no-print { @media print { display: none !important; } }
+.print-only { @media screen { display: none !important; } @media print { display: block !important; } }
+
+/* Focus trap for modals (JS-managed) */
+.focus-trap:focus { outline: none; }
