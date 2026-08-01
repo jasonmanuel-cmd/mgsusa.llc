@@ -98,4 +98,90 @@
   } catch (e) {
     console.error('Brand reveal animation failed:', e);
   }
+
+  try {
+    // Lightbox: project photos are shown cropped (center/cover) in the grid.
+    // Clicking one opens it uncropped (object-fit: contain) in a native <dialog>.
+    var figures = [].slice.call(document.querySelectorAll('.gallery-grid figure'));
+    var items = figures.map(function(fig) {
+      var match = (getComputedStyle(fig).backgroundImage || '').match(/url\(["']?([^"')]+)["']?\)/);
+      var cap = fig.querySelector('figcaption');
+      var tagEl = cap && cap.querySelector('span');
+      var labelEl = cap && cap.querySelector('b');
+      return {
+        el: fig,
+        src: match ? match[1] : '',
+        tag: tagEl ? tagEl.textContent : '',
+        label: labelEl ? labelEl.textContent : ''
+      };
+    }).filter(function(item) { return item.src; });
+
+    if (items.length && typeof HTMLDialogElement === 'function') {
+      var dialog = document.createElement('dialog');
+      dialog.className = 'lightbox';
+      dialog.innerHTML =
+        '<button class="lightbox-close" type="button" aria-label="Close image viewer">&times;</button>' +
+        '<button class="lightbox-nav lightbox-prev" type="button" aria-label="Previous image">&#8249;</button>' +
+        '<button class="lightbox-nav lightbox-next" type="button" aria-label="Next image">&#8250;</button>' +
+        '<figure class="lightbox-figure"><img class="lightbox-img" alt="">' +
+        '<figcaption class="lightbox-cap"><span></span><b></b></figcaption></figure>';
+      document.body.appendChild(dialog);
+
+      var lbImg = dialog.querySelector('.lightbox-img');
+      var lbTag = dialog.querySelector('.lightbox-cap span');
+      var lbLabel = dialog.querySelector('.lightbox-cap b');
+      var current = 0;
+
+      function showItem(i) {
+        current = (i + items.length) % items.length;
+        var item = items[current];
+        lbImg.src = item.src;
+        lbImg.alt = item.label || item.tag;
+        lbTag.textContent = item.tag;
+        lbLabel.textContent = item.label;
+      }
+
+      function openItem(i) {
+        showItem(i);
+        document.body.classList.add('lightbox-open');
+        dialog.showModal();
+      }
+
+      if (items.length < 2) {
+        dialog.querySelector('.lightbox-prev').hidden = true;
+        dialog.querySelector('.lightbox-next').hidden = true;
+      }
+
+      items.forEach(function(item, i) {
+        item.el.classList.add('is-zoomable');
+        item.el.setAttribute('role', 'button');
+        item.el.setAttribute('tabindex', '0');
+        item.el.setAttribute('aria-label', 'View larger image: ' + (item.label || item.tag));
+        item.el.addEventListener('click', function() { openItem(i); });
+        item.el.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openItem(i); }
+        });
+      });
+
+      dialog.querySelector('.lightbox-close').addEventListener('click', function() { dialog.close(); });
+      dialog.querySelector('.lightbox-prev').addEventListener('click', function() { showItem(current - 1); });
+      dialog.querySelector('.lightbox-next').addEventListener('click', function() { showItem(current + 1); });
+      // Click on the backdrop (the dialog element itself) closes the viewer.
+      dialog.addEventListener('click', function(e) { if (e.target === dialog) dialog.close(); });
+      dialog.addEventListener('keydown', function(e) {
+        if (e.key === 'ArrowLeft') { e.preventDefault(); showItem(current - 1); }
+        if (e.key === 'ArrowRight') { e.preventDefault(); showItem(current + 1); }
+      });
+      // Keep the scroll lock in sync however the viewer was dismissed (close
+      // button, backdrop click, or ESC). Engines differ on which of
+      // 'close'/'toggle' they fire, so listen for both and read dialog.open.
+      function syncScrollLock() {
+        document.body.classList.toggle('lightbox-open', dialog.open);
+      }
+      dialog.addEventListener('close', syncScrollLock);
+      dialog.addEventListener('toggle', syncScrollLock);
+    }
+  } catch (e) {
+    console.error('Lightbox initialization failed:', e);
+  }
 })();
