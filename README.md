@@ -33,7 +33,9 @@ Full strategy: `strategy/MASTER-GLASS-STRATEGY.md`.
 
 ## CSS architecture
 
-- `assets/design-tokens.css` — design tokens (colors, type, spacing, motion). Single source of truth for values.
+- `assets/design-tokens.css` — design tokens (colors, type, spacing, motion). Source of truth,
+  but **not fetched at runtime**: its `:root` block is inlined into the stylesheets below so the
+  browser does not pay for a render-blocking `@import`. Edit here, then re-inline.
 - `assets/styles.css` — flattened, deduplicated source stylesheet (one rule per line).
 - `assets/styles.min.css` — what pages load; regenerate from styles.css by stripping newlines.
 
