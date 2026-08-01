@@ -93,7 +93,7 @@ h1,h2{font-family:var(--serif);font-weight:400;letter-spacing:-.047em;line-heigh
 .section-heading h2{max-width:750px}
 .path-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;margin-top:clamp(2rem,4vw,3.5rem);background:rgba(255,255,255,.15)}
 .path-card::before{content:"";position:absolute;inset:0;opacity:.32;transition:transform .6s ease,opacity .25s;background-position:center;background-size:cover}
-.path-residential::before{background-image:url('Residentialhero.png')}
+.path-residential::before{background-image:url('Residential8.webp')}
 .path-commercial::before{background-image:url('Commercialhero.webp')}
 .path-card::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(10,10,10,.88),rgba(10,10,10,.25))}
 .path-card>*{position:relative;z-index:1}
@@ -144,7 +144,7 @@ h1,h2{font-family:var(--serif);font-weight:400;letter-spacing:-.047em;line-heigh
 .emergency-phone strong{margin-top:.2rem;color:#fff;font-size:1.75rem;line-height:1;letter-spacing:-.04em}
 .light-link{color:#fff;margin-top:1rem}
 .proof-section{background:var(--warm-white);position:relative}
-.proof-section::before{content:"";position:absolute;inset:0;background:url('Residential3.png') center/cover no-repeat;opacity:.035;pointer-events:none}
+
 .proof-layout{display:grid;grid-template-columns:.9fr 1.1fr;gap:clamp(2rem,8vw,9rem);align-items:center}
 .proof-layout>div:first-child>p:not(.eyebrow){color:var(--color-ink);max-width:480px}
 .proof-cards{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
@@ -192,7 +192,7 @@ details[open] summary span{transform:rotate(45deg)}
 .compact-steps h3{margin:0 0 .25rem;font-size:1.2rem}
 .compact-steps p{margin:0;color:var(--color-ink);font-size:.9rem;line-height:1.6}
 .related-section{background:var(--warm-white);position:relative}
-.related-section::before{content:"";position:absolute;inset:0;background:url('Residential5.png') center/cover no-repeat;opacity:.035;pointer-events:none}
+
 .related-service h3{margin:0 0 .8rem;font-size:1.4rem}
 .related-service p{color:var(--color-ink);margin:0;font-size:.9rem;line-height:1.6}
 .related-service:hover p{color:#d5dfdb}
