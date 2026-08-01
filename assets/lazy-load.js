@@ -15,7 +15,9 @@
   // IntersectionObserver options
   const observerOptions = {
     root: null,
-    rootMargin: '50px',
+    // 300px so gallery tiles finish decoding just before they scroll into
+    // view; 50px was tight enough to show the placeholder colour first.
+    rootMargin: '300px',
     threshold: 0.01
   };
 

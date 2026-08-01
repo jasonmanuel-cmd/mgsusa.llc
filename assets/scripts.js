@@ -104,7 +104,10 @@
     // Clicking one opens it uncropped (object-fit: contain) in a native <dialog>.
     var figures = [].slice.call(document.querySelectorAll('.gallery-grid figure'));
     var items = figures.map(function(fig) {
-      var match = (getComputedStyle(fig).backgroundImage || '').match(/url\(["']?([^"')]+)["']?\)/);
+      // data-full is the full-size original; the tile itself lazy-loads a smaller
+      // -sm crop, so never read the rendered background for the viewer source.
+      var full = fig.getAttribute('data-full');
+      var match = full ? [null, full] : (getComputedStyle(fig).backgroundImage || '').match(/url\(["']?([^"')]+)["']?\)/);
       var cap = fig.querySelector('figcaption');
       var tagEl = cap && cap.querySelector('span');
       var labelEl = cap && cap.querySelector('b');
