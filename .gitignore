@@ -1,1 +1,7 @@
 .vercel
+
+# dependencies (regenerate with: npm install)
+node_modules/
+
+# audit output
+lighthouse-*.json
