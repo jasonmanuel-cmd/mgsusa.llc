@@ -1,3 +1,6 @@
+# Dependencies
+node_modules/
+
 # Working/scratch files
 assets/candidate-*.jpg
 assets/*-real.jpg
