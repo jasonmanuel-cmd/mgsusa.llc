@@ -7,7 +7,7 @@ const ASSETS_CACHE = 'mgs-usa-assets-v1.0.1';
 const CRITICAL_ASSETS = [
   '/',
   '/index.html',
-  '/assets/styles.css',
+  '/assets/styles.min.css',
   '/assets/images/brand-video-poster.webp',
   '/assets/images/commercial-video-poster.webp',
   '/assets/images/shower-video-poster.webp'
