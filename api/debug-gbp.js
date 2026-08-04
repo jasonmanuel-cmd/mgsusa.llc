@@ -1,20 +1,18 @@
 /**
  * TEMPORARY diagnostic endpoint - remove after debugging.
- * Reports: token scopes, accounts owned, locations per account, and the
- * status of the currently-configured location's reviews.
+ * Reports: token scopes (via tokeninfo), locations under the configured
+ * account, and the status of the currently-configured location's reviews.
  * No secrets are returned.
  */
 
 var TOKEN_URL = 'https://oauth2.googleapis.com/token';
 
-function decodeJwtPayload(token) {
+async function readJson(res) {
+  var text = await res.text();
   try {
-    var parts = String(token).split('.');
-    var b64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
-    while (b64.length % 4) { b64 += '='; }
-    return JSON.parse(Buffer.from(b64, 'base64').toString('utf8'));
+    return JSON.parse(text);
   } catch (e) {
-    return { error: String((e && e.message) || e) };
+    return { rawHtmlHead: text.slice(0, 200) };
   }
 }
 
@@ -34,7 +32,7 @@ module.exports = async function handler(req, res) {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: body.toString()
     });
-    var tj = await tr.json();
+    var tj = await readJson(tr);
     out.tokenStatus = tr.status;
 
     if (!tr.ok) {
@@ -42,57 +40,52 @@ module.exports = async function handler(req, res) {
       return res.status(200).json(out);
     }
 
-    var payload = decodeJwtPayload(tj.access_token);
-    out.scopes = String(payload.scope || '').split(' ').filter(Boolean);
-    out.tokenClientId = payload.client_id || process.env.GOOGLE_CLIENT_ID;
+    var ti = await readJson(await fetch('https://oauth2.googleapis.com/tokeninfo?access_token=' + encodeURIComponent(tj.access_token)));
+    out.scopes = String(ti.scope || '').split(' ').filter(Boolean);
+    out.scopeMissing = !/business\.manage/.test(String(ti.scope || ''));
+    out.tokeninfoStatus = ti.error ? ti.error : 'ok';
 
-    var ar = await fetch('https://mybusinessaccountmanagement.googleapis.com/v1/accounts', {
-      headers: { Authorization: 'Bearer ' + tj.access_token }
-    });
-    var aj = await ar.json();
-    out.accountsStatus = ar.status;
-    out.accounts = (aj.accounts || []).map(function (a) {
-      return { name: a.name, accountName: a.accountName, type: a.type, state: a.state };
-    });
-    out.accountsError = ar.ok ? null : ((aj.error && aj.error.message) || ar.statusText);
-
-    var acc = process.env.GOOGLE_BUSINESS_ACCOUNT_ID ||
-      ((out.accounts && out.accounts[0]) ? out.accounts[0].name : null);
+    var acc = process.env.GOOGLE_BUSINESS_ACCOUNT_ID;
     out.lookupAccount = acc;
 
-    if (acc) {
-      var lr = await fetch(
-        'https://mybusiness.googleapis.com/v4/accounts/' + encodeURIComponent(acc) + '/locations?pageSize=100',
+    if (!acc) {
+      out.error = 'GOOGLE_BUSINESS_ACCOUNT_ID missing';
+      return res.status(200).json(out);
+    }
+
+    var lr = await fetch(
+      'https://mybusiness.googleapis.com/v4/accounts/' + encodeURIComponent(acc) + '/locations?pageSize=100',
+      { headers: { Authorization: 'Bearer ' + tj.access_token } }
+    );
+    var lj = await readJson(lr);
+    out.locationsStatus = lr.status;
+    out.locations = (lj.locations || []).map(function (l) {
+      var addr = l.storefrontAddress || {};
+      return {
+        name: l.name,
+        title: l.title,
+        category: l.category && l.category.displayName,
+        address: (addr.addressLines || []).join(' '),
+        state: l.locationState,
+        profileUrl: l.profile && l.profile.googleUrl
+      };
+    });
+    out.locationsError = lr.ok ? null : ((lj.error && lj.error.message) || lj.rawHtmlHead || lr.statusText);
+
+    var configured = process.env.GOOGLE_BUSINESS_LOCATION_ID;
+    if (configured) {
+      var rr = await fetch(
+        'https://mybusiness.googleapis.com/v4/accounts/' + encodeURIComponent(acc) +
+          '/locations/' + encodeURIComponent(configured) + '/reviews?pageSize=5',
         { headers: { Authorization: 'Bearer ' + tj.access_token } }
       );
-      var lj = await lr.json();
-      out.locationsStatus = lr.status;
-      out.locations = (lj.locations || []).map(function (l) {
-        var addr = l.storefrontAddress || {};
-        return {
-          name: l.name,
-          title: l.title,
-          category: l.category && l.category.displayName,
-          address: (addr.addressLines || []).join(' '),
-          state: l.locationState
-        };
-      });
-      out.locationsError = lr.ok ? null : ((lj.error && lj.error.message) || lr.statusText);
-
-      var configured = process.env.GOOGLE_BUSINESS_LOCATION_ID;
-      if (configured) {
-        var rr = await fetch(
-          'https://mybusiness.googleapis.com/v4/accounts/' + encodeURIComponent(acc) +
-            '/locations/' + encodeURIComponent(configured) + '/reviews?pageSize=5',
-          { headers: { Authorization: 'Bearer ' + tj.access_token } }
-        );
-        out.configuredReviewsStatus = rr.status;
-        var rj = await rr.json();
-        out.configuredReviewsError = rr.ok ? null : ((rj.error && rj.error.message) || rr.statusText);
-        if (rr.ok) {
-          out.configuredReviewsCount = (rj.reviews || []).length;
-          out.configuredReviewsTotal = typeof rj.totalReviewCount === 'number' ? rj.totalReviewCount : null;
-        }
+      out.configuredReviewsStatus = rr.status;
+      var rj = await readJson(rr);
+      out.configuredReviewsError = rr.ok ? null : ((rj.error && rj.error.message) || rj.rawHtmlHead || rr.statusText);
+      if (rr.ok) {
+        out.configuredReviewsCount = (rj.reviews || []).length;
+        out.configuredReviewsTotal = typeof rj.totalReviewCount === 'number' ? rj.totalReviewCount : null;
+        out.configuredReviewsAvg = rj.averageRating;
       }
     }
 
