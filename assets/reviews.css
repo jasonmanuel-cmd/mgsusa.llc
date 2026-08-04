@@ -1,0 +1,58 @@
+/* Homepage CUSTOMER REVIEWS section - Master Glass Solutions.
+   Uses the site's design tokens (see assets/design-tokens.css / styles.css :root).
+   All classes are prefixed with mgs- to avoid collision with the existing
+   .review-* classes used by reviews.html. */
+
+.mgs-reviews{background:var(--warm-white)}
+
+.mgs-reviews-heading h2{max-width:750px}
+.mgs-reviews-heading p:not(.eyebrow){max-width:640px}
+
+.mgs-reviews-summary{margin-top:clamp(2rem,4vw,3rem);display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+
+.mgs-rating-row{display:flex;align-items:center;gap:.65rem;flex-wrap:wrap;margin:0}
+.mgs-rating-stars{display:inline-flex;gap:.15rem;color:var(--metal)}
+.mgs-rating-stars svg{width:22px;height:22px;flex:0 0 auto}
+.mgs-rating-stars .mgs-star--off{opacity:.22}
+.mgs-rating-value{font-weight:800;font-size:1.4rem;color:var(--ink);line-height:1}
+.mgs-rating-meta{color:var(--color-ink);font-size:.95rem}
+
+.mgs-reviews-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.25rem;margin-top:clamp(1.5rem,3vw,2.5rem)}
+
+.mgs-review-card{border:1px solid var(--line);border-radius:8px;background:var(--surface);padding:1.35rem 1.35rem 1.15rem;display:flex;flex-direction:column;gap:.85rem;box-shadow:var(--shadow-sm);transition:box-shadow .2s ease,transform .2s ease}
+.mgs-review-card:hover{box-shadow:var(--shadow-md);transform:translateY(-2px)}
+
+.mgs-review-card-head{display:flex;align-items:center;gap:.8rem}
+.mgs-review-avatar{width:42px;height:42px;border-radius:50%;overflow:hidden;background:var(--color-brand-light);color:var(--color-brand);display:grid;place-items:center;font-weight:800;font-size:.9rem;flex:0 0 auto}
+.mgs-review-avatar img{width:42px;height:42px;border-radius:50%;object-fit:cover}
+.mgs-review-who{min-width:0}
+.mgs-review-author{font-weight:800;font-size:.95rem;color:var(--ink);line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mgs-review-date{color:var(--color-disabled);font-size:.8rem}
+
+.mgs-review-stars{display:inline-flex;gap:.1rem;color:var(--metal)}
+.mgs-review-stars svg{width:15px;height:15px;flex:0 0 auto}
+.mgs-review-stars .mgs-star--off{opacity:.22}
+
+.mgs-review-text{margin:0;color:var(--color-ink);font-size:.95rem;line-height:1.6;overflow-wrap:anywhere}
+
+.mgs-review-link{align-self:flex-start;margin-top:auto;font-weight:700;font-size:.85rem;color:var(--color-brand);display:inline-flex;align-items:center;gap:.35rem}
+.mgs-review-link:hover{color:var(--color-brand-hover)}
+.mgs-review-link svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;transition:transform .2s ease}
+.mgs-review-link:hover svg{transform:translateX(3px)}
+
+.mgs-reviews-footer{display:flex;flex-wrap:wrap;gap:.75rem;align-items:center;margin-top:clamp(1.75rem,3.5vw,2.75rem)}
+.mgs-reviews-footer .btn svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+.mgs-reviews-unavailable{color:var(--color-ink);font-size:.95rem;line-height:1.6;margin:0}
+.mgs-reviews-unavailable a{color:var(--color-brand);font-weight:700;text-decoration:underline}
+.mgs-reviews-noscript{color:var(--color-ink);font-size:.95rem;line-height:1.6}
+.mgs-reviews-noscript a{color:var(--color-brand);font-weight:700;text-decoration:underline}
+
+@media (max-width: 880px){
+  .mgs-reviews-grid{grid-template-columns:1fr 1fr}
+}
+
+@media (max-width: 560px){
+  .mgs-reviews-grid{grid-template-columns:1fr}
+  .mgs-rating-stars svg{width:20px;height:20px}
+}
