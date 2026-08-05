@@ -25,3 +25,9 @@ lighthouse-*.json
 DEPLOYMENT_SUMMARY.txt
 *_REPORT.md
 *_SUMMARY.md
+
+# scratch QA/diagnostics
+diag*.mjs
+shots.mjs
+shots/
+master-glass-site/
