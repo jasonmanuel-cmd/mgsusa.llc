@@ -1,16 +1,20 @@
 .mgs-chat{position:fixed;inset:0;z-index:120;pointer-events:none}
 
-.mgs-chat__launcher{position:fixed;z-index:0;pointer-events:auto;display:inline-flex;align-items:center;gap:.6rem;right:max(16px,env(safe-area-inset-right));bottom:max(14px,env(safe-area-inset-bottom));min-height:48px;padding:.6rem 1.05rem .6rem .7rem;background:var(--metal);color:#fff;border:1px solid rgba(255,255,255,.16);border-radius:999px;box-shadow:var(--shadow-lg);font-family:var(--font-sans);font-size:.74rem;line-height:1;text-transform:uppercase;letter-spacing:.06em;font-weight:800;cursor:pointer;transition:transform .2s ease,background .2s ease,box-shadow .2s ease}
+.mgs-chat__launcher{position:fixed;z-index:0;pointer-events:auto;display:inline-flex;align-items:center;gap:.45rem;right:max(16px,env(safe-area-inset-right));bottom:max(14px,env(safe-area-inset-bottom));min-height:40px;padding:.42rem .8rem .42rem .58rem;background:var(--metal);color:#fff;border:1px solid rgba(255,255,255,.16);border-radius:999px;box-shadow:var(--shadow-lg);font-family:var(--font-sans);font-size:.67rem;line-height:1;text-transform:uppercase;letter-spacing:.05em;font-weight:800;cursor:pointer;transition:transform .2s ease,background .2s ease,box-shadow .2s ease}
 .mgs-chat__launcher:hover{background:var(--color-brand-hover);transform:translateY(-2px)}
-.mgs-chat__launcher-icon{position:relative;flex:0 0 auto;width:20px;height:18px}
-.mgs-chat__launcher-icon::before{content:"";position:absolute;left:1px;top:1px;width:17px;height:13px;border:2px solid currentColor;border-radius:5px}
-.mgs-chat__launcher-icon::after{content:"";position:absolute;left:5px;bottom:-1px;width:0;height:0;border:5px solid transparent;border-top:0;border-bottom-color:currentColor;transform:rotate(38deg)}
-.mgs-chat__launcher-dot{position:absolute;top:5px;right:5px;width:10px;height:10px;border-radius:50%;background:var(--color-success);border:2px solid #fff;animation:mgsPulse 2s ease-in-out infinite}
+.mgs-chat__launcher-icon{position:relative;flex:0 0 auto;width:17px;height:15px}
+.mgs-chat__launcher-icon::before{content:"";position:absolute;left:1px;top:1px;width:14px;height:11px;border:2px solid currentColor;border-radius:4px}
+.mgs-chat__launcher-icon::after{content:"";position:absolute;left:4px;bottom:-1px;width:0;height:0;border:4px solid transparent;border-top:0;border-bottom-color:currentColor;transform:rotate(38deg)}
+.mgs-chat__launcher-dot{position:absolute;top:4px;right:4px;width:8px;height:8px;border-radius:50%;background:var(--color-success);border:2px solid #fff;animation:mgsPulse 2s ease-in-out infinite}
 @keyframes mgsPulse{0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,.45)}50%{box-shadow:0 0 0 6px rgba(34,197,94,0)}}
 
 .mgs-chat__panel{position:fixed;z-index:1;pointer-events:auto;right:max(16px,env(safe-area-inset-right));bottom:max(14px,env(safe-area-inset-bottom));width:min(26rem,calc(100vw - 1.5rem));height:min(80vh,40rem);display:flex;flex-direction:column;background:var(--paper);color:var(--ink);border:1px solid var(--line);border-radius:var(--radius-lg,16px);box-shadow:var(--shadow-xl);overflow:hidden;font-family:var(--font-sans);animation:mgsPanelIn .22s ease-out}
 .mgs-chat__panel[hidden]{display:none}
 @keyframes mgsPanelIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* Turnstile mounts here (inside the panel), never on the launcher button. */
+.mgs-chat__verify{flex:0 0 auto;display:flex;justify-content:center;padding:0 1rem .55rem}
+.mgs-chat__verify:empty{display:none}
 
 .mgs-chat__header{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.85rem 1rem;background:var(--ink);color:#fff}
 .mgs-chat__title{font-size:.92rem;font-weight:800;letter-spacing:.02em}

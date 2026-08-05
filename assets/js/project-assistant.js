@@ -137,6 +137,7 @@
             '<svg aria-hidden="true" width="18" height="18" viewBox="0 0 18 18"><path d="M1 9l16-7-6 15-3-6-7-2z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>' +
           '</button>' +
         '</form>' +
+        '<div class="mgs-chat__verify"></div>' +
         '<div class="mgs-chat__footer">' +
           '<a href="tel:' + phone.replace(/[^+\d]/g, '') + '">Call ' + phone + '</a> ' +
           '<a href="/request-quote">Get a quote</a>' +
@@ -308,10 +309,32 @@
       }, 0);
     });
 
+    // Turnstile only renders reliably in a visible container, so mount it the
+    // first time the panel opens instead of into the hidden panel on load.
+    // (It used to mount on the launcher button, which inflated the button.)
+    function ensureTurnstile() {
+      if (!TURNSTILE_SITE_KEY || tsWidgetId !== null) return;
+      var verifyEl = root.querySelector('.mgs-chat__verify');
+      if (!window.turnstile || !verifyEl || panel.hidden) return;
+      try {
+        tsWidgetId = window.turnstile.render(verifyEl, {
+          sitekey: TURNSTILE_SITE_KEY,
+          action: 'turnstile-spin-v2',
+          callback: function (token) {
+            setTurnstileToken(token);
+            track('mgs_chat_turnstile_verified', {});
+          },
+          'expired-callback': function () { tsToken = ''; },
+          'error-callback': function () { tsToken = ''; }
+        });
+      } catch (e) { /* ignore */ }
+    }
+
     function openPanel() {
       if (open) return;
       open = true;
       panel.hidden = false;
+      ensureTurnstile();
       launcher.setAttribute('aria-expanded', 'true');
       renderHistory();
       renderQuick();
@@ -346,20 +369,7 @@
         s.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
         s.async = true;
         s.defer = true;
-        s.onload = function () {
-          try {
-            tsWidgetId = window.turnstile.render(root.querySelector('.mgs-chat__launcher'), {
-              sitekey: TURNSTILE_SITE_KEY,
-              action: 'turnstile-spin-v2',
-              callback: function (token) {
-                setTurnstileToken(token);
-                track('mgs_chat_turnstile_verified', {});
-              },
-              'expired-callback': function () { tsToken = ''; },
-              'error-callback': function () { tsToken = ''; }
-            });
-          } catch (e2) { /* ignore */ }
-        };
+        s.onload = function () { ensureTurnstile(); };
         document.head.appendChild(s);
       } catch (e) { /* ignore */ }
     }

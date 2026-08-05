@@ -51,8 +51,14 @@ function verifyTurnstile(token) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ secret: secret, response: token })
   }).then(function (r) { return r.json(); }).then(function (d) {
+    if (d.success !== true) {
+      console.error('Turnstile verify failed (submit-quote):', JSON.stringify(d['error-codes'] || d));
+    }
     return d.success === true;
-  }).catch(function () { return false; });
+  }).catch(function (e) {
+    console.error('Turnstile verify error (submit-quote):', e && e.message);
+    return false;
+  });
 }
 
 function escapeHtml(value) {
