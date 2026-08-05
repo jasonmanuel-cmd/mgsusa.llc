@@ -17,8 +17,12 @@ module.exports = async function handler(req, res) {
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
 
   var secret = process.env.TURNSTILE_SECRET_KEY;
+  // Site keys are public (they ship in the page HTML), so echoing is safe.
+  var siteKeyEnv = process.env.TURNSTILE_SITE_KEY || null;
+  var HARDCODED_SITE_KEY = '0x4AAAAAAEGumU2z9QHnLmlL';
+
   if (!secret) {
-    return res.status(200).json({ secretConfigured: false });
+    return res.status(200).json({ secretConfigured: false, siteKeyEnv: siteKeyEnv });
   }
 
   try {
@@ -30,6 +34,9 @@ module.exports = async function handler(req, res) {
     var d = await r.json();
     return res.status(200).json({
       secretConfigured: true,
+      siteKeyEnv: siteKeyEnv,
+      siteKeyInJs: HARDCODED_SITE_KEY,
+      siteKeysMatch: siteKeyEnv ? (siteKeyEnv.trim() === HARDCODED_SITE_KEY) : null,
       // length only - helps spot a truncated or whitespace-padded value
       secretLength: String(secret).length,
       secretHasWhitespace: /\s/.test(String(secret)),
