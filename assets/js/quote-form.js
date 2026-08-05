@@ -27,11 +27,25 @@
     return (window.MGS && window.MGS.serviceAreas) || [];
   }
 
+  // Turnstile tokens are single-use, so the widget must be reset before a retry.
+  var turnstileWidgetId = null;
+
   function getTurnstileToken() {
     try {
-      if (window.turnstile) return window.turnstile.getResponse();
+      if (!window.turnstile) return '';
+      return (turnstileWidgetId == null
+        ? window.turnstile.getResponse()
+        : window.turnstile.getResponse(turnstileWidgetId)) || '';
     } catch (e) { /* ignore */ }
     return '';
+  }
+
+  function resetTurnstile() {
+    try {
+      if (window.turnstile && turnstileWidgetId != null) {
+        window.turnstile.reset(turnstileWidgetId);
+      }
+    } catch (e) { /* ignore */ }
   }
 
   function track(event, params) {
@@ -509,7 +523,7 @@
           if (el.__render) el.__render();
           if (!turnstileRendered && TURNSTILE_SITE_KEY && el.__turnstile && el.__turnstile.children.length === 0 && window.turnstile) {
             try {
-              window.turnstile.render(el.__turnstile, { sitekey: TURNSTILE_SITE_KEY, action: 'turnstile-spin-v2' });
+              turnstileWidgetId = window.turnstile.render(el.__turnstile, { sitekey: TURNSTILE_SITE_KEY, action: 'turnstile-spin-v2' });
               turnstileRendered = true;
             } catch (e) { /* ignore */ }
           }
@@ -751,6 +765,8 @@
         window.location.href = (data && data.redirect) || '/thank-you';
       }).catch(function (e) {
         setBusy(false);
+        // The token was consumed by the failed attempt; issue a fresh one for the retry.
+        resetTurnstile();
         if (e && e.status === 503) {
           nativeFallback();
           return;
