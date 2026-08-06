@@ -2,5 +2,8 @@
   "name": "mgsusa-site",
   "version": "1.0.0",
   "private": true,
-  "description": "Master Glass Solutions - static site with a serverless Google Business Profile reviews endpoint."
+  "description": "Master Glass Solutions - static site with a serverless Google Business Profile reviews endpoint.",
+  "dependencies": {
+    "@vercel/analytics": "^2.0.1"
+  }
 }
