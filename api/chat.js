@@ -8,7 +8,9 @@
  * grounds the conversation in data/company-knowledge.js, and returns the AI
  * answer from OpenAI. Never cached (no-store).
  *
- * Env: OPENAI_API_KEY, OPENAI_MODEL (optional, default gpt-4o-mini),
+ * Env: OPENROUTER_API_KEY (preferred) with OPENROUTER_MODEL (optional, default a
+ *      free OpenRouter model), or OPENAI_API_KEY fallback with OPENAI_MODEL
+ *      (optional, default gpt-4o-mini),
  *      TURNSTILE_SECRET_KEY (optional; skip verification when unset)
  */
 
@@ -17,6 +19,10 @@ var serviceOptions = require('../data/service-options');
 var serviceAreas = require('../data/service-areas');
 
 var SYSTEM_PROMPT = buildSystemPrompt();
+
+var LLM_PROVIDER = process.env.OPENROUTER_API_KEY ? 'openrouter' : (process.env.OPENAI_API_KEY ? 'openai' : null);
+var OPENROUTER_MODEL = process.env.OPENROUTER_MODEL || 'google/gemma-4-26b-a4b-it:free';
+var OPENAI_MODEL = process.env.OPENAI_MODEL || 'gpt-4o-mini';
 
 function buildSystemPrompt() {
   var k = companyKnowledge;
@@ -109,18 +115,30 @@ function verifyTurnstile(token) {
 }
 
 function callOpenAI(messages) {
+  var messagesList = [{ role: 'system', content: SYSTEM_PROMPT }].concat(messages);
   var payload = {
-    model: process.env.OPENAI_MODEL || 'gpt-4o-mini',
-    messages: [{ role: 'system', content: SYSTEM_PROMPT }].concat(messages),
+    messages: messagesList,
     max_tokens: 420,
     temperature: 0.3
   };
-  return fetch('https://api.openai.com/v1/chat/completions', {
+  var url;
+  var headers = { 'Content-Type': 'application/json' };
+
+  if (LLM_PROVIDER === 'openrouter') {
+    url = 'https://openrouter.ai/api/v1/chat/completions';
+    payload.model = OPENROUTER_MODEL;
+    headers.Authorization = 'Bearer ' + process.env.OPENROUTER_API_KEY;
+    headers['HTTP-Referer'] = 'https://www.mgsusa.llc';
+    headers['X-Title'] = 'Master Glass Solutions';
+  } else {
+    url = 'https://api.openai.com/v1/chat/completions';
+    payload.model = OPENAI_MODEL;
+    headers.Authorization = 'Bearer ' + process.env.OPENAI_API_KEY;
+  }
+
+  return fetch(url, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + process.env.OPENAI_API_KEY
-    },
+    headers: headers,
     body: JSON.stringify(payload)
   }).then(function (r) {
     return r.json().then(function (data) {
@@ -137,7 +155,7 @@ module.exports = async function handler(req, res) {
     return jsonError(res, 405, 'Method not allowed. Use POST.');
   }
 
-  if (!process.env.OPENAI_API_KEY) {
+  if (!LLM_PROVIDER) {
     return jsonError(res, 503, 'Chat is not configured yet. The team is setting this up - call 210-370-3700.');
   }
 
