@@ -173,6 +173,7 @@ module.exports = async function handler(req, res) {
   var result = await callOpenAI(messages);
   if (result.status !== 200) {
     var err = result.data && result.data.error;
+    console.error('OpenAI call failed (chat):', result.status, JSON.stringify(err || {}));
     return jsonError(res, 502, 'The assistant is unavailable right now. Please try again shortly, or call 210-370-3700.');
   }
 
