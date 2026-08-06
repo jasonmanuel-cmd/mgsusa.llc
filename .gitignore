@@ -31,3 +31,4 @@ diag*.mjs
 shots.mjs
 shots/
 master-glass-site/
+.env*
