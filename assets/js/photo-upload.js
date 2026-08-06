@@ -39,10 +39,12 @@
     return '';
   }
 
-  function uploadFile(file) {
+  function uploadFile(file, turnstileToken) {
     return new Promise(function (resolve, reject) {
       var err = validateFile(file);
       if (err) { reject(new Error(err)); return; }
+
+      var token = (typeof turnstileToken === 'string' && turnstileToken) ? turnstileToken : getTurnstileToken();
 
       api('/api/blob-upload', {
         method: 'POST',
@@ -50,7 +52,7 @@
         body: JSON.stringify({
           fileName: file.name,
           fileType: file.type,
-          turnstileToken: getTurnstileToken()
+          turnstileToken: token
         })
       }).then(function (data) {
         // The signed URL is public (permanent) with the download=1 query param

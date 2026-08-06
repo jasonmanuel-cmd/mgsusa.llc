@@ -27,8 +27,11 @@
     return (window.MGS && window.MGS.serviceAreas) || [];
   }
 
-  // Turnstile tokens are single-use, so the widget must be reset before a retry.
+  // Turnstile tokens are single-use, so a widget must be reset before a retry.
+  // There are two widgets: one on the details step (photo uploads) and one on
+  // the review step (final submit). Each keeps its own widget id.
   var turnstileWidgetId = null;
+  var photoWidgetId = null;
 
   function getTurnstileToken() {
     try {
@@ -171,7 +174,7 @@
       uploading: 0
     };
     var current = 0;
-    var turnstileRendered = false;
+    var photoTurnstileEl = null;
 
     var steps = buildSteps();
     var root = make('div', { class: 'quote-wizard' });
@@ -405,11 +408,29 @@
           ta.setAttribute('rows', '5');
           el.appendChild(wrapField('Project details', ta, ''));
           buildPhotoArea(el);
+          var tc = make('div', {
+            class: 'quote-wizard__turnstile',
+            'data-sitekey': TURNSTILE_SITE_KEY,
+            'data-action': 'turnstile-spin-v2'
+          }, el);
+          el.__photoTurnstile = tc;
+          photoTurnstileEl = tc;
           if (fields.blueprint) {
             make('p', {
               class: 'quote-wizard__hint',
               text: 'Have blueprints or plans? You can email them to us, or mention them in the details above — we will ask for them after we reach out.'
             }, el);
+          }
+        },
+        onEnter: function (el) {
+          if (photoWidgetId == null && TURNSTILE_SITE_KEY && photoTurnstileEl &&
+              photoTurnstileEl.children.length === 0 && window.turnstile) {
+            try {
+              photoWidgetId = window.turnstile.render(photoTurnstileEl, {
+                sitekey: TURNSTILE_SITE_KEY,
+                action: 'turnstile-spin-v2'
+              });
+            } catch (e) { /* ignore */ }
           }
         },
         validate: function () {
@@ -521,10 +542,9 @@
         },
         onEnter: function (el) {
           if (el.__render) el.__render();
-          if (!turnstileRendered && TURNSTILE_SITE_KEY && el.__turnstile && el.__turnstile.children.length === 0 && window.turnstile) {
+          if (TURNSTILE_SITE_KEY && el.__turnstile && el.__turnstile.children.length === 0 && window.turnstile) {
             try {
               turnstileWidgetId = window.turnstile.render(el.__turnstile, { sitekey: TURNSTILE_SITE_KEY, action: 'turnstile-spin-v2' });
-              turnstileRendered = true;
             } catch (e) { /* ignore */ }
           }
         },
@@ -580,6 +600,56 @@
       });
     }
 
+    // Resolve a fresh, single-use Turnstile token for a photo upload. The
+    // widget lives on the details step; we reset it before each upload so the
+    // token sent with a request has never been consumed. Falls back to ''
+    // if Turnstile is unavailable so the server returns a friendly 403.
+    function getPhotoToken() {
+      return new Promise(function (resolve) {
+        if (!TURNSTILE_SITE_KEY) { resolve(''); return; }
+        var waited = 0;
+        function step() {
+          if (!window.turnstile) {
+            if (waited >= 3000) { resolve(''); return; }
+            waited += 100;
+            setTimeout(step, 100);
+            return;
+          }
+          if (photoWidgetId == null && photoTurnstileEl) {
+            try {
+              if (photoTurnstileEl.children.length === 0) {
+                photoWidgetId = window.turnstile.render(photoTurnstileEl, {
+                  sitekey: TURNSTILE_SITE_KEY,
+                  action: 'turnstile-spin-v2'
+                });
+              } else {
+                // Already rendered but id lost (e.g. re-entered step); reuse latest token.
+                var any = window.turnstile.getResponse();
+                if (any) { resolve(any); return; }
+              }
+            } catch (e) { /* ignore */ }
+          }
+          if (photoWidgetId == null) {
+            if (waited >= 8000) { resolve(''); return; }
+            waited += 100;
+            setTimeout(step, 100);
+            return;
+          }
+          try { window.turnstile.reset(photoWidgetId); } catch (e) { /* ignore */ }
+          var polled = 0;
+          (function poll() {
+            var t = '';
+            try { t = window.turnstile.getResponse(photoWidgetId); } catch (e) { /* ignore */ }
+            if (t) { resolve(t); return; }
+            polled += 100;
+            if (polled > 8000) { resolve(''); return; }
+            setTimeout(poll, 100);
+          })();
+        }
+        step();
+      });
+    }
+
     function addPhoto(file, wrap, list, fileInput) {
       var err = window.MGS.photoUpload.validateFile(file);
       if (err) { showError(err); return; }
@@ -589,7 +659,9 @@
       var status = make('span', { class: 'quote-wizard__photo-status', text: 'Uploading…' }, item);
 
       state.uploading++;
-      window.MGS.photoUpload.uploadFile(file).then(function (url) {
+      getPhotoToken().then(function (token) {
+        return window.MGS.photoUpload.uploadFile(file, token);
+      }).then(function (url) {
         state.photos.push(url);
         state.uploading--;
         item.classList.remove('is-uploading');
