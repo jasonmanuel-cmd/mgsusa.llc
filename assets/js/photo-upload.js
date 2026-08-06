@@ -1,13 +1,23 @@
 /* Master Glass Solutions - photo upload helper.
-   Uploads a selected image via POST /api/blob-upload (Vercel Blob) then PUTs
-   the raw bytes to the returned uploadUrl. Exposes window.MGS.photoUpload.
+   Uses the @vercel/blob client-upload pattern: the browser requests a short-lived
+   client token from POST /api/blob-upload (Vercel Blob), then PUTs the raw bytes
+   directly to https://vercel.com/api/blob. This avoids the serverless function
+   body size limit. Exposes window.MGS.photoUpload.
    Used by the guided quote form's photo step. */
 
 (function () {
   'use strict';
 
   var MAX_BYTES = 10 * 1024 * 1024; // 10 MB — keep in sync with api/blob-upload.js
-  var ALLOWED = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif', 'image/gif'];
+  var EXT_BY_TYPE = {
+    'image/jpeg': 'jpg',
+    'image/png': 'png',
+    'image/webp': 'webp',
+    'image/heic': 'heic',
+    'image/heif': 'heif',
+    'image/gif': 'gif'
+  };
+  var ALLOWED = Object.keys(EXT_BY_TYPE);
 
   function getTurnstileToken() {
     try {
@@ -18,20 +28,6 @@
     return '';
   }
 
-  function api(url, options) {
-    return fetch(url, options).then(function (r) {
-      return r.json().then(function (data) {
-        if (!r.ok) {
-          var err = new Error((data && data.error) || ('Request failed (' + r.status + ')'));
-          err.status = r.status;
-          err.data = data;
-          throw err;
-        }
-        return data;
-      });
-    });
-  }
-
   function validateFile(file) {
     if (!file) return 'No file selected.';
     if (ALLOWED.indexOf(file.type) === -1) return 'That file type is not supported. Use JPG, PNG, WebP, HEIC, or GIF.';
@@ -39,29 +35,44 @@
     return '';
   }
 
+  function buildPathname(file) {
+    var ext = EXT_BY_TYPE[file.type] || 'jpg';
+    var base = String(file.name || 'photo')
+      .replace(/[^a-zA-Z0-9._-]+/g, '-')
+      .replace(/\.[a-z0-9]+$/i, '')
+      .slice(-100);
+    if (!base) base = 'photo';
+    return 'quotes/' + Date.now().toString(36) + '-' + base + '.' + ext;
+  }
+
   function uploadFile(file, turnstileToken) {
     return new Promise(function (resolve, reject) {
       var err = validateFile(file);
       if (err) { reject(new Error(err)); return; }
 
+      if (!window.VercelBlob || !window.VercelBlob.upload) {
+        reject(new Error('The photo uploader is still loading. Please try again in a moment.'));
+        return;
+      }
+
       var token = (typeof turnstileToken === 'string' && turnstileToken) ? turnstileToken : getTurnstileToken();
 
-      api('/api/blob-upload', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          fileName: file.name,
-          fileType: file.type,
-          turnstileToken: token
-        })
-      }).then(function (data) {
-        // The signed URL is public (permanent) with the download=1 query param
-        // appended server-side; we store the plain URL for the form payload.
-        var publicUrl = data.url.split('?download=1')[0];
-        return fetch(data.uploadUrl, { method: 'PUT', body: file }).then(function () {
-          return publicUrl;
-        });
-      }).then(resolve).catch(reject);
+      window.VercelBlob.upload(buildPathname(file), file, {
+        access: 'public',
+        handleUploadUrl: '/api/blob-upload',
+        clientPayload: token,
+        contentType: file.type
+      }).then(function (blob) {
+        resolve(blob.url);
+      }).catch(function (e) {
+        var msg = (e && e.message) ? e.message : 'Upload failed';
+        if (/client token|verification|failed to/i.test(msg)) {
+          msg = 'Security check failed. Please refresh the page and try again.';
+        }
+        var err = new Error(msg);
+        err.raw = e;
+        reject(err);
+      });
     });
   }
 

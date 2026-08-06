@@ -1,26 +1,25 @@
 /**
- * Master Glass Solutions - photo upload (Vercel Blob).
+ * Master Glass Solutions - photo upload (Vercel Blob, client-upload pattern).
  *
  * POST /api/blob-upload
- * Body: { fileName: string, fileType: string, turnstileToken?: string }
- * Returns a Blob uploadUrl + URL pattern. The client PUTs the raw bytes to
- * uploadUrl, then the final public URL is uploadedUrl.replace('?download=1','').
+ * Body: { type: 'blob.generate-client-token',
+ *         payload: { pathname, clientPayload, multipart } }
  *
- * Limits: images only (jpeg/png/webp/heic/heif/gif), max 10 MB, client upload
- * must not exceed Vercel's function size limit (so verify size server-side).
+ * This route issues a short-lived client token via @vercel/blob's handleUpload().
+ * The browser then PUTs the raw file bytes directly to https://vercel.com/api/blob,
+ * so uploads are NOT limited by the serverless function body size limit (4.5 MB).
+ *
+ * The Turnstile response token is passed through clientPayload and verified here
+ * (in onBeforeGenerateToken) BEFORE any client token is issued. Allowed content
+ * types and the size cap are enforced server-side by the signed token.
  *
  * Env: BLOB_READ_WRITE_TOKEN, TURNSTILE_SECRET_KEY (optional)
  */
 
-var ALLOWED_TYPES = {
-  'image/jpeg': 'jpg',
-  'image/png': 'png',
-  'image/webp': 'webp',
-  'image/heic': 'heic',
-  'image/heif': 'heif',
-  'image/gif': 'gif'
-};
-var MAX_BYTES = 10 * 1024 * 1024; // 10 MB
+const { handleUpload } = require('@vercel/blob/client');
+
+const ALLOWED_CONTENT_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif', 'image/gif'];
+const MAX_BYTES = 10 * 1024 * 1024; // 10 MB
 
 function jsonError(res, status, message) {
   res.status(status).json({ ok: false, error: message });
@@ -55,12 +54,6 @@ function verifyTurnstile(token) {
   }).catch(function () { return false; });
 }
 
-function sanitizeFileName(name) {
-  return String(name || 'photo')
-    .replace(/[^a-zA-Z0-9._-]+/g, '-')
-    .slice(-120);
-}
-
 module.exports = async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
@@ -80,51 +73,30 @@ module.exports = async function handler(req, res) {
     return jsonError(res, 400, e.message);
   }
 
-  var ext = ALLOWED_TYPES[body.fileType];
-  if (!ext) {
-    return jsonError(res, 415, 'Only JPG, PNG, WebP, HEIC, and GIF images are supported.');
-  }
-
-  var ok = await verifyTurnstile(body.turnstileToken);
-  if (!ok) {
-    return jsonError(res, 403, 'Verification failed. Please refresh and try again.');
-  }
-
-  var safeName = sanitizeFileName(body.fileName);
-  var pathname = 'quotes/' + Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '-' + safeName;
-  if (!/\.(jpg|png|webp|heic|heif|gif)$/i.test(pathname)) {
-    pathname += '.' + ext;
-  }
-
   try {
-    var blob = await fetch('https://api.vercel.com/v3/blob/upload-url', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + process.env.BLOB_READ_WRITE_TOKEN
-      },
-      body: JSON.stringify({
-        pathname: pathname,
-        maxDurationSeconds: 300,
-        allowMultiple: false
-      })
-    }).then(function (r) { return r.json(); });
-
-    if (!blob.uploadUrl || !blob.url || blob.url.length === 0) {
-      console.error('Blob create failed', JSON.stringify(blob).slice(0, 500));
-      return jsonError(res, 502, 'Upload service error. Please try again or submit without photos.');
-    }
-
-    // Vercel Blob is signed by default; make a public URL we can send to Resend.
-    var publicUrl = blob.url + '?download=1';
-
-    return res.status(200).json({
-      ok: true,
-      uploadUrl: blob.uploadUrl,
-      url: publicUrl
+    var result = await handleUpload({
+      token: process.env.BLOB_READ_WRITE_TOKEN,
+      request: req,
+      body: body,
+      onBeforeGenerateToken: async function (pathname, clientPayload) {
+        var ok = await verifyTurnstile(clientPayload);
+        if (!ok) {
+          var err = new Error('Verification failed. Please refresh and try again.');
+          err.status = 403;
+          throw err;
+        }
+        return {
+          access: 'public',
+          addRandomSuffix: true,
+          allowedContentTypes: ALLOWED_CONTENT_TYPES,
+          maximumSizeInBytes: MAX_BYTES
+        };
+      }
     });
+    return res.status(200).json(result);
   } catch (e) {
-    console.error('Blob create error', e);
-    return jsonError(res, 502, 'Upload service error. Please try again or submit without photos.');
+    console.error('blob-upload error', e && e.message);
+    var status = (e && e.status) || 400;
+    return jsonError(res, status, (e && e.message) || 'Upload service error. Please try again or submit without photos.');
   }
 };

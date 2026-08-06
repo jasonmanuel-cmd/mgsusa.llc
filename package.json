@@ -4,6 +4,13 @@
   "private": true,
   "description": "Master Glass Solutions - static site with a serverless Google Business Profile reviews endpoint.",
   "dependencies": {
-    "@vercel/analytics": "^2.0.1"
+    "@vercel/analytics": "^2.0.1",
+    "@vercel/blob": "^2.6.1"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.1"
+  },
+  "scripts": {
+    "build:vendor": "esbuild node_modules/@vercel/blob/dist/client.js --bundle --format=iife --global-name=VercelBlob --outfile=assets/vendor/blob-client.js --alias:crypto=./node_modules/@vercel/blob/dist/crypto-browser.js --alias:undici=./node_modules/@vercel/blob/dist/undici-browser.js --alias:stream=./node_modules/@vercel/blob/dist/stream-browser.js"
   }
 }
