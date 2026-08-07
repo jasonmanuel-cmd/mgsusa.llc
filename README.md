@@ -36,14 +36,15 @@ Full strategy: `strategy/MASTER-GLASS-STRATEGY.md`.
 ## Google Reviews (serverless)
 
 The homepage "CUSTOMER REVIEWS" section and `/reviews` page are backed by two
-Vercel serverless functions that proxy the Google Business Profile (GBP) API.
-The site stays fully static — no framework, no runtime dependencies, native
+Vercel serverless functions that proxy the **Google Places API (New)**. The
+site stays fully static — no framework, no runtime dependencies, native
 `fetch` only.
 
-- `api/google-reviews.js` — OAuth token refresh (cached in memory), GBP
-  `v4.accounts.locations.reviews` list call, response normalization, and
-  graceful fallback. Responds with `source: "google"` on success or
-  `source: "fallback"` (HTTP 200) when GBP is unreachable or unconfigured.
+- `api/google-reviews.js` — server-side Places API (New) call for the
+  configured `GOOGLE_PLACE_ID`, response normalization, and graceful fallback.
+  Responds with `source: "google"` on success or `source: "fallback"` (HTTP
+  200) when the API is unreachable or unconfigured. The API key lives only in
+  the server function and never reaches the browser.
 - `api/reviews-fallback.js` — static empty-reviews fallback with the same
   shape, used for dry-run/local testing.
 
@@ -55,38 +56,27 @@ edge caches reviews for 6 hours with a 24h stale-while-revalidate window.
 
 | Variable | Purpose |
 |---|---|
-| `GOOGLE_CLIENT_ID` | OAuth client ID |
-| `GOOGLE_CLIENT_SECRET` | OAuth client secret |
-| `GOOGLE_REFRESH_TOKEN` | Long-lived OAuth refresh token |
-| `GOOGLE_BUSINESS_ACCOUNT_ID` | Numeric GBP account ID |
-| `GOOGLE_BUSINESS_LOCATION_ID` | GBP location ID |
+| `GOOGLE_PLACES_API_KEY` | Places API (New) server-side API key |
+| `GOOGLE_PLACE_ID` | The business's Google Place ID, e.g. `ChIJCQD4Q0GLXIYRMXiLuAHlNh4` |
 | `GOOGLE_REVIEW_URL` | Direct review link, e.g. `https://g.page/r/CZoDFY2uA41TEAI/review` |
 | `GOOGLE_MAPS_URL` | Public Maps link, e.g. `https://maps.google.com/?cid=6020472325090378650` |
 
-Until `GOOGLE_CLIENT_ID`/`GOOGLE_CLIENT_SECRET`/`GOOGLE_REFRESH_TOKEN` are set,
-the API returns the fallback payload and the homepage shows the "temporarily
-unavailable" message. No placeholder credentials are ever shipped.
+Until `GOOGLE_PLACES_API_KEY`/`GOOGLE_PLACE_ID` are set, the API returns the
+fallback payload and the homepage shows the "temporarily unavailable" message.
+No placeholder credentials are ever shipped.
 
-### Setting up GBP API access (one-time)
+### Setting up Places API access (one-time)
 
 1. In [Google Cloud Console](https://console.cloud.google.com), create a
-   project and enable the **My Business API** (or My Business Business
-   Information API).
-2. Configure the OAuth consent screen (External), then create an OAuth client
-   ID of type **Desktop app** (or Web app with any redirect URI).
-3. Visit the consent URL below, approve, and capture the authorization code.
-   Use the web client ID/secret if you created a Web app, or the Desktop ID if
-   not. The scope is `https://www.googleapis.com/auth/business.manage`
-   (`plus.business.manage` also works):
-   `https://accounts.google.com/o/oauth2/auth?access_type=offline&prompt=consent&client_id=CLIENT_ID&redirect_uri=REDIRECT_URI&response_type=code&scope=https://www.googleapis.com/auth/business.manage`
-4. Exchange the code for tokens (this yields the refresh token):
-   `https://oauth2.googleapis.com/token` with `grant_type=authorization_code`,
-   `client_id`, `client_secret`, `code`, and `redirect_uri`.
-5. Verify your GBP account/location IDs by listing locations:
-   `GET https://mybusinessaccountmanagement.googleapis.com/v1/accounts`
-   and
-   `GET https://mybusiness.googleapis.com/v4/accounts/{account}/locations`.
-6. Add all seven variables in Vercel → Project → Settings → Environment
+   project, enable **Places API (New)**, and create an API key.
+2. Restrict the key to the **Places API** only (API restrictions) and to your
+   domains (Website/HTTP referrer or IP restrictions) so it cannot be used
+   elsewhere.
+3. Find the business's place ID: search in Google Maps and use the URL's
+   `?cid=` value via the Places API, or query
+   `POST https://places.googleapis.com/v1/places:searchText` with the
+   business name and read the returned `id`.
+4. Add all four variables in Vercel → Project → Settings → Environment
    Variables and redeploy.
 
 ### Data layer
