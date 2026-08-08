@@ -83,6 +83,11 @@
       "permanent": true
     },
     {
+      "source": "/followup-desk.html",
+      "destination": "/followup-desk",
+      "permanent": true
+    },
+    {
       "source": "/frameless-vs-framed-glass.html",
       "destination": "/frameless-vs-framed-glass",
       "permanent": true
@@ -170,6 +175,11 @@
     {
       "source": "/resources.html",
       "destination": "/resources",
+      "permanent": true
+    },
+    {
+      "source": "/review.html",
+      "destination": "/review",
       "permanent": true
     },
     {
@@ -292,6 +302,42 @@
         {
           "key": "Cache-Control",
           "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/api/followup-desk-login",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store"
+        }
+      ]
+    },
+    {
+      "source": "/api/followup-add",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store"
+        }
+      ]
+    },
+    {
+      "source": "/api/followup-list",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store"
+        }
+      ]
+    },
+    {
+      "source": "/api/review-submit",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store"
         }
       ]
     },
