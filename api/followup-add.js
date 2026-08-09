@@ -125,7 +125,7 @@ module.exports = async function handler(req, res) {
     return res.status(422).json({ ok: false, errors: errors });
   }
 
-  var signed = followupAuth.createReviewToken(name, email);
+  var signed = followupAuth.createReviewToken({ name: name, email: email });
   var now = new Date().toISOString();
 
   var record = {

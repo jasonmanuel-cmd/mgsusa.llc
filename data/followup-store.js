@@ -8,7 +8,8 @@
  * mutates in memory, and writes back with ifMatch (etag) so concurrent writers
  * conflict instead of silently clobbering — retried a few times with backoff.
  *
- * Env: BLOB_READ_WRITE_TOKEN (already used for photo uploads). Server-only.
+ * Env: FOLLOWUP_BLOB_READ_WRITE_TOKEN (dedicated private store; falls back to
+ * BLOB_READ_WRITE_TOKEN for the photo-upload store). Server-only.
  */
 
 var crypto = require('crypto');
@@ -20,10 +21,11 @@ var MAX_RETRIES = 4;
 var BASE_BACKOFF_MS = 60;
 
 function token() {
-  if (!process.env.BLOB_READ_WRITE_TOKEN) {
-    throw new Error('BLOB_READ_WRITE_TOKEN is not configured');
+  var t = process.env.FOLLOWUP_BLOB_READ_WRITE_TOKEN || process.env.BLOB_READ_WRITE_TOKEN;
+  if (!t) {
+    throw new Error('FOLLOWUP_BLOB_READ_WRITE_TOKEN is not configured');
   }
-  return process.env.BLOB_READ_WRITE_TOKEN;
+  return t;
 }
 
 function emptyStore() {
