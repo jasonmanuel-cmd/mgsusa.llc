@@ -8,7 +8,7 @@
  * Auth'd. Returns all customer records + statuses from the Blob JSON store.
  * Never cached.
  *
- * Env: BLOB_READ_WRITE_TOKEN
+ * Env: FOLLOWUP_BLOB_READ_WRITE_TOKEN
  */
 
 var followupStore = require('../data/followup-store');

@@ -40,7 +40,11 @@ function normalize(raw) {
 }
 
 async function readStore() {
-  var result = await get(STORE_PATH, { access: 'private', token: token() });
+  var result = await get(STORE_PATH, {
+    access: 'private',
+    token: token(),
+    useCache: false
+  });
   if (!result || result.statusCode !== 200 || !result.stream) {
     return { store: emptyStore(), etag: null };
   }
@@ -95,17 +99,17 @@ async function withStore(mutate) {
   throw lastErr || new Error('Could not persist follow-up store');
 }
 
-function list() {
-  return withStore(function (store) { return store.customers; });
+async function list() {
+  var loaded = await readStore();
+  return loaded.store.customers;
 }
 
-function get(id) {
-  return withStore(function (store) {
-    for (var i = 0; i < store.customers.length; i++) {
-      if (store.customers[i].id === id) return store.customers[i];
-    }
-    return null;
-  });
+async function get(id) {
+  var loaded = await readStore();
+  for (var i = 0; i < loaded.store.customers.length; i++) {
+    if (loaded.store.customers[i].id === id) return loaded.store.customers[i];
+  }
+  return null;
 }
 
 function add(record) {

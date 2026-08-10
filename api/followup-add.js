@@ -9,7 +9,7 @@
  * Auth'd. Saves the customer record to Blob JSON (status "sent"), then emails
  * the customer a branded satisfaction link to /review?c=<token>. Never cached.
  *
- * Env: RESEND_API_KEY, LEAD_FROM_EMAIL, BLOB_READ_WRITE_TOKEN
+ * Env: RESEND_API_KEY, LEAD_FROM_EMAIL, FOLLOWUP_BLOB_READ_WRITE_TOKEN
  */
 
 var followupStore = require('../data/followup-store');
