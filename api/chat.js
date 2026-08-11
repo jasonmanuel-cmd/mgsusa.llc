@@ -98,7 +98,10 @@ function readBody(req) {
 function verifyTurnstile(token) {
   var secret = process.env.TURNSTILE_SECRET_KEY;
   if (!secret) return Promise.resolve(true);
-  if (!token) return Promise.resolve(false);
+  if (!token) {
+    console.error('Turnstile token missing (chat): no token was minted client-side');
+    return Promise.resolve(false);
+  }
   return fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

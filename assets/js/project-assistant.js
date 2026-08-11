@@ -24,6 +24,7 @@
   var tsWidgetId = null;
   var tsToken = '';
   var tsWaiters = [];
+  var tsFailed = false;
 
   function setTurnstileToken(token) {
     tsToken = token || '';
@@ -262,7 +263,9 @@
       track('mgs_chat_message', { role: 'user', emergency: detected });
 
       setBusy(true);
+      var usedToken = '';
       awaitTurnstileToken(8000).then(function (token) {
+        usedToken = token;
         return fetch('/api/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -282,7 +285,15 @@
         persist();
         track('mgs_chat_message', { role: 'assistant' });
       }).catch(function (e) {
-        addError('Sorry — the assistant is having trouble right now. Please try again, call ' + phone + ', or use the quote form.');
+        if (!usedToken) {
+          if (tsFailed) {
+            addError('Security verification isn\'t available right now. Please chat with us at www.mgsusa.llc, call ' + phone + ', or use the quote form.');
+          } else {
+            addError('Security verification didn\'t complete. Please try again, call ' + phone + ', or use the quote form.');
+          }
+        } else {
+          addError('Sorry — the assistant is having trouble right now. Please try again, call ' + phone + ', or use the quote form.');
+        }
       }).then(function () {
         // Whether it succeeded or not, that token is spent — mint a new one.
         resetTurnstile();
@@ -325,7 +336,7 @@
             track('mgs_chat_turnstile_verified', {});
           },
           'expired-callback': function () { tsToken = ''; },
-          'error-callback': function () { tsToken = ''; }
+          'error-callback': function () { tsToken = ''; tsFailed = true; }
         });
       } catch (e) { /* ignore */ }
     }
@@ -370,6 +381,7 @@
         s.async = true;
         s.defer = true;
         s.onload = function () { ensureTurnstile(); };
+        s.onerror = function () { tsFailed = true; };
         document.head.appendChild(s);
       } catch (e) { /* ignore */ }
     }
