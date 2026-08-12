@@ -37,8 +37,10 @@ var OPENROUTER_FALLBACK_MODELS = String(process.env.OPENROUTER_FALLBACK_MODELS |
   .map(function (s) { return s.trim(); })
   .filter(Boolean);
 
-// Statuses worth trying a different model or a second attempt for. A 4xx that is
-// not 429 means the request itself is wrong, so retrying would just burn time.
+// Statuses worth trying a different model or a second attempt for: the 5xx range
+// plus the two transient 4xx exceptions, 408 (timeout) and 429 (rate limited).
+// Every other 4xx means the request itself is wrong, so retrying would only burn
+// time and the remaining fallbacks.
 var RETRYABLE_STATUSES = [408, 429, 500, 502, 503, 504];
 var RETRY_DELAY_MS = 1200;
 
@@ -206,11 +208,21 @@ function callModel(model, messages) {
     headers: headers,
     body: JSON.stringify(payload)
   }).then(function (r) {
-    return r.json().then(function (data) {
+    // Read as text first: a proxy or gateway can answer with an HTML error page,
+    // and parsing that as JSON would throw. The real HTTP status is what decides
+    // whether to retry, so it must survive a body we cannot parse.
+    return r.text().then(function (raw) {
+      var data;
+      try {
+        data = JSON.parse(raw);
+      } catch (e) {
+        data = { error: { message: 'Non-JSON response from provider', body: String(raw).slice(0, 300) } };
+      }
       return { status: r.status, data: data, model: model };
     });
   }).catch(function (e) {
-    // A transport-level failure looks the same to the caller as an upstream 503.
+    // Only a genuine transport failure (DNS, socket, timeout) lands here — there
+    // is no HTTP status to preserve, so treat it as a retryable upstream outage.
     return { status: 503, data: { error: { message: e && e.message } }, model: model };
   });
 }
