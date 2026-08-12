@@ -8,7 +8,9 @@
 
   Every metrics section renders itself independently, so an unconfigured Google
   key only greys out its own card. Charts are hand-rolled SVG/CSS — no libraries.
-  The customer's review token is only ever copied to the clipboard, never printed.
+  The customer's review token never reaches the DOM — not as text, not as an
+  attribute — it stays in the in-memory record and only ever goes to the
+  clipboard, so the page's third-party scripts can't read it.
 */
 (function () {
   'use strict';
@@ -220,7 +222,6 @@
     var row = document.createElement('li');
     row.className = 'customer-row';
     row.setAttribute('data-id', String(record.id || ''));
-    if (record.token) { row.setAttribute('data-token', String(record.token)); }
 
     var html = '<div class="customer-row-top">' +
       '<div><h3 class="customer-name">' + escapeHtml(record.name) + '</h3>' +
@@ -1051,11 +1052,21 @@
     });
   }
 
+  function findCustomer(id) {
+    for (var i = 0; i < customers.length; i++) {
+      if (customers[i].id === id) { return customers[i]; }
+    }
+    return null;
+  }
+
   listEl.addEventListener('click', function (event) {
     var button = event.target.closest('[data-copy-link]');
     if (!button) { return; }
     var row = button.closest('.customer-row');
-    var token = row && row.getAttribute('data-token');
+    // The token stays in the in-memory record — never in the DOM, where the
+    // page's third-party scripts (HubSpot, GA) could read it off an attribute.
+    var record = row && findCustomer(row.getAttribute('data-id'));
+    var token = record && record.token;
     if (!token) { return; }
 
     var link = window.location.origin + '/review?c=' + encodeURIComponent(token);
