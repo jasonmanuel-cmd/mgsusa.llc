@@ -165,6 +165,8 @@
 .kpi {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
+  /* Same accent as the card this number comes from. */
+  border-top: 3px solid var(--accent, var(--color-border));
   border-radius: var(--radius-lg);
   padding: var(--space-4) var(--space-5);
   box-shadow: var(--shadow-sm);
@@ -201,30 +203,94 @@
   opacity: .85;
 }
 
-/* ── Dashboard: panels ──────────────────────────── */
+/* ── Dashboard: bands & panels ──────────────────── */
+/*
+  Accent = the data domain, so a glance tells you what you're looking at:
+    blue  visitor traffic (Google Analytics)
+    teal  technical health (Lighthouse, uptime)
+    amber something waiting on you
+    red   customers and public reviews
+  Validated for colourblind separation; every card also has an icon and a
+  title, so the colour is reinforcement and never the only signal.
+*/
+[data-accent] { --accent: var(--color-ink); --accent-soft: var(--color-muted); }
+[data-accent="blue"]  { --accent: #2563EB; --accent-soft: #EFF6FF; }
+[data-accent="teal"]  { --accent: #0D9488; --accent-soft: #EFFCF9; }
+[data-accent="amber"] { --accent: #D97706; --accent-soft: #FFFAEB; }
+[data-accent="red"]   { --accent: #C41E3A; --accent-soft: #FCEEF0; }
+
+.desk-band { margin-bottom: var(--space-10); }
+.band-head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  padding-bottom: var(--space-3);
+  margin-bottom: var(--space-5);
+  border-bottom: 1px solid var(--color-border);
+}
+.band-title {
+  margin: 0;
+  font-size: var(--text-lg);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -.01em;
+}
+.band-sub {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--color-ink-muted);
+  opacity: .7;
+}
+
 .panel-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: var(--space-6);
-  margin-bottom: var(--space-6);
+  gap: var(--space-5);
   align-items: start;
 }
 .panel {
+  position: relative;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-xl);
-  padding: var(--space-6);
+  border-top: 3px solid var(--accent, var(--color-border));
+  border-radius: var(--radius-lg);
+  padding: var(--space-5) var(--space-6) var(--space-6);
   box-shadow: var(--shadow-sm);
   min-width: 0;
 }
+.panel-wide { grid-column: 1 / -1; }
+
 .panel-head {
   display: flex;
-  align-items: baseline;
+  align-items: flex-start;
   justify-content: space-between;
   gap: var(--space-3);
   flex-wrap: wrap;
-  margin-bottom: var(--space-4);
+  margin-bottom: var(--space-5);
 }
+.panel-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+}
+.panel-title h3 {
+  margin: 0;
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--leading-snug);
+}
+.panel-icon {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-md);
+  background: var(--accent-soft, var(--color-muted));
+  color: var(--accent, var(--color-ink));
+}
+.panel-icon svg { width: 18px; height: 18px; }
 .panel-head h2 { margin: 0; font-size: var(--text-lg); }
 .panel-sub {
   margin: 0;
@@ -312,6 +378,18 @@
   opacity: .8;
 }
 
+/* ── Dashboard: traffic card split ──────────────── */
+.traffic-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(220px, 1fr);
+  gap: var(--space-6);
+  align-items: start;
+}
+.traffic-side .panel-subhead:first-child { margin-top: 0; }
+@media (max-width: 860px) {
+  .traffic-layout { grid-template-columns: 1fr; gap: var(--space-4); }
+}
+
 /* ── Dashboard: sparkline ───────────────────────── */
 .chart-figure { margin: var(--space-5) 0 0; }
 .chart-caption {
@@ -322,10 +400,10 @@
 }
 .spark-wrap { position: relative; }
 .spark { display: block; width: 100%; height: auto; overflow: visible; }
-.spark-area { fill: var(--color-brand); opacity: .10; }
+.spark-area { fill: var(--accent, var(--color-brand)); opacity: .10; }
 .spark-line {
   fill: none;
-  stroke: var(--color-brand);
+  stroke: var(--accent, var(--color-brand));
   stroke-width: 2;
   stroke-linejoin: round;
   stroke-linecap: round;
@@ -339,7 +417,7 @@
 .spark-active .spark-dot,
 .spark-active .spark-tip { visibility: visible; }
 .spark-guide { stroke: var(--color-ink); stroke-width: 1; opacity: .3; }
-.spark-dot { fill: var(--color-brand); stroke: var(--color-surface); stroke-width: 2; }
+.spark-dot { fill: var(--accent, var(--color-brand)); stroke: var(--color-surface); stroke-width: 2; }
 .spark-tip {
   position: absolute;
   top: 0;
@@ -415,7 +493,37 @@
 .bar-fill {
   height: 100%;
   border-radius: var(--radius-full);
-  background: var(--color-brand);
+  background: var(--accent, var(--color-brand));
+}
+
+/* ── Storage alert (the desk can read but not save) ─ */
+.storage-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+  padding: var(--space-4) var(--space-5);
+  border: 1px solid var(--color-error);
+  border-left-width: 4px;
+  border-radius: var(--radius-lg);
+  background: var(--color-error-light);
+}
+.storage-alert h2 {
+  margin: 0 0 var(--space-1);
+  font-size: var(--text-base);
+  color: var(--color-error);
+}
+.storage-alert p {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--color-ink);
+}
+.storage-alert code {
+  font-family: var(--font-mono);
+  font-size: .9em;
+  background: var(--color-surface);
+  padding: 1px 5px;
+  border-radius: var(--radius-sm);
 }
 
 /* ── Dashboard: Lighthouse gauges ───────────────── */
@@ -547,10 +655,14 @@
 .list-card {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-xl);
-  padding: var(--space-6);
+  border-top: 3px solid var(--accent, var(--color-border));
+  border-radius: var(--radius-lg);
+  padding: var(--space-5) var(--space-6) var(--space-6);
   box-shadow: var(--shadow-sm);
+  min-width: 0;
 }
+.add-card .panel-title,
+.list-card .panel-title { margin-bottom: var(--space-2); }
 .add-card h2,
 .list-card h2 { font-size: var(--text-xl); margin: 0 0 var(--space-2); }
 .desk-hint { margin: 0 0 var(--space-5); color: var(--color-ink-muted); font-size: var(--text-sm); }

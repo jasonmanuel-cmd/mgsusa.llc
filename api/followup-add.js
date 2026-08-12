@@ -145,8 +145,12 @@ module.exports = async function handler(req, res) {
   try {
     record = await followupStore.add(record);
   } catch (e) {
+    // This endpoint is owner-only, so name the actual failure instead of a
+    // generic message — a missing Blob token and a write conflict need
+    // completely different fixes, and the desk is the only place it shows.
     console.error('followup-add store error', e);
-    return jsonError(res, 500, 'Could not save the customer record.');
+    var detail = (e && (e.name ? e.name + ': ' : '') + (e.message || '')) || 'unknown error';
+    return jsonError(res, 500, 'Could not save the customer record — ' + detail);
   }
 
   var mail = buildSatisfactionEmail(name, record.token);

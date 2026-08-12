@@ -41,6 +41,7 @@
   var exportBtn = document.getElementById('export-csv');
 
   var kpiRow = document.getElementById('kpi-row');
+  var storageAlert = document.getElementById('storage-alert');
   var metricsUpdated = document.getElementById('metrics-updated');
   var metricsRefreshBtn = document.getElementById('metrics-refresh');
   var trafficBody = document.getElementById('traffic-body');
@@ -499,8 +500,9 @@
     return null;
   }
 
-  function tile(label, value, sub, delta) {
-    var html = '<div class="kpi"><p class="kpi-label">' + escapeHtml(label) + '</p>' +
+  function tile(label, value, sub, delta, accent) {
+    var html = '<div class="kpi" data-accent="' + escapeHtml(accent || '') + '">' +
+      '<p class="kpi-label">' + escapeHtml(label) + '</p>' +
       '<p class="kpi-value">' + escapeHtml(value) + '</p>';
     if (delta != null && isFinite(delta)) {
       var dir = delta > 0 ? 'up' : (delta < 0 ? 'down' : 'flat');
@@ -520,33 +522,36 @@
     var r = data.reviews || {};
     var h = data.health || {};
 
+    // Each tile is tinted to match the card it comes from.
     var tiles = [];
 
     tiles.push(t.status === 'ok'
-      ? tile('Page views', fmtNum(t.views), 'Last 28 days · ' + fmtNum(t.users) + ' visitors', t.views7Change)
-      : tile('Page views', '—', 'Google Analytics not connected'));
+      ? tile('Page views', fmtNum(t.views), 'Last 28 days · ' + fmtNum(t.users) + ' visitors', t.views7Change, 'blue')
+      : tile('Page views', '—', 'Google Analytics not connected', null, 'blue'));
 
     tiles.push(t.status === 'ok'
-      ? tile('Views this week', fmtNum(t.views7), fmtNum(t.sessions) + ' sessions in 28 days')
-      : tile('Views this week', '—', 'Google Analytics not connected'));
+      ? tile('Views this week', fmtNum(t.views7), fmtNum(t.sessions) + ' sessions in 28 days', null, 'blue')
+      : tile('Views this week', '—', 'Google Analytics not connected', null, 'blue'));
 
     if (f.status === 'ok') {
       tiles.push(tile('Follow-ups', fmtNum(f.total),
-        fmtNum(f.added30) + ' in the last 30 days'));
+        fmtNum(f.added30) + ' in the last 30 days', null, 'red'));
       tiles.push(tile('Avg rating',
         f.avgRating == null ? '—' : f.avgRating.toFixed(1),
-        f.rated ? fmtNum(f.rated) + ' of ' + fmtNum(f.emailed) + ' replied (' + f.responseRate + '%)' : 'No ratings yet'));
+        f.rated ? fmtNum(f.rated) + ' of ' + fmtNum(f.emailed) + ' replied (' + f.responseRate + '%)' : 'No ratings yet',
+        null, 'red'));
     }
 
     tiles.push(r.status === 'ok'
       ? tile('Google rating', r.rating == null ? '—' : r.rating.toFixed(1),
-        fmtNum(r.totalReviews) + ' public reviews')
-      : tile('Google rating', '—', 'Places API not connected'));
+        fmtNum(r.totalReviews) + ' public reviews', null, 'red')
+      : tile('Google rating', '—', 'Places API not connected', null, 'red'));
 
     if (h.status === 'ok' && h.homepage) {
       tiles.push(tile('Site status',
         h.homepage.ok ? 'Online' : 'Down',
-        h.homepage.ms != null ? 'Homepage answered in ' + fmtNum(h.homepage.ms) + ' ms' : 'No response'));
+        h.homepage.ms != null ? 'Homepage answered in ' + fmtNum(h.homepage.ms) + ' ms' : 'No response',
+        null, 'teal'));
     }
 
     kpiRow.innerHTML = tiles.join('');
@@ -595,21 +600,27 @@
       html += '</tbody></table></details>';
     }
 
+    // Chart on the left, the two breakdowns stacked on the right, so the card
+    // fills its width instead of running long and leaving a hole beside it.
+    var side = '';
     if (t.channels && t.channels.length) {
-      html += '<h3 class="panel-subhead">Where visitors come from</h3>' +
+      side += '<h3 class="panel-subhead">Where visitors come from</h3>' +
         barList(t.channels.map(function (c) {
           return { label: c.label, value: c.sessions };
         }), { asPercent: true });
     }
 
     if (t.devices && t.devices.length) {
-      html += '<h3 class="panel-subhead">Devices</h3>' +
+      side += '<h3 class="panel-subhead">Devices</h3>' +
         barList(t.devices.map(function (d) {
           return { label: d.label.charAt(0).toUpperCase() + d.label.slice(1), value: d.sessions };
         }), { asPercent: true });
     }
 
-    trafficBody.innerHTML = html;
+    trafficBody.innerHTML = side
+      ? '<div class="traffic-layout"><div class="traffic-main">' + html + '</div>' +
+        '<div class="traffic-side">' + side + '</div></div>'
+      : html;
 
     var wrap = trafficBody.querySelector('.spark-wrap');
     if (wrap && series.length) { attachSparkHover(wrap, series); }
@@ -846,8 +857,28 @@
     healthBody.innerHTML = html;
   }
 
+  // Reads can work while writes fail (a read-only Blob token, a wedged store).
+  // That shows up as "could not save" on the form with no explanation, so say
+  // it once at the top of the desk instead.
+  function renderStorage(s) {
+    if (!storageAlert) { return; }
+    if (!s || s.status === 'ok') {
+      storageAlert.hidden = true;
+      storageAlert.innerHTML = '';
+      return;
+    }
+    storageAlert.innerHTML = '<div><h2>Customers are not being saved</h2>' +
+      '<p>' + escapeHtml(s.error || 'The customer store is not writable.') + '</p>' +
+      (s.canRead
+        ? '<p>Existing customers still load, so this is the write side only — usually a Blob token without write access, or one set for Preview but not Production. Check <code>FOLLOWUP_BLOB_READ_WRITE_TOKEN</code> in Vercel and redeploy.</p>'
+        : '') +
+      '</div>';
+    storageAlert.hidden = false;
+  }
+
   function renderMetrics(data) {
     metrics = data;
+    renderStorage(data.storage);
     renderKpis(data);
     renderTraffic(data.traffic);
     renderTopPages(data.traffic);

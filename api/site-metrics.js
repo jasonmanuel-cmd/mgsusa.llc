@@ -23,6 +23,8 @@
  *               data, top opportunities. Cached in Blob (runs take 10-30s);
  *               `refresh: "lighthouse"` re-runs the requested page only.
  *   health      Live probe of the public site: status code, TTFB, sitemap size.
+ *   storage     Read + write round-trip against the Blob store, so a desk that
+ *               lists customers but cannot save them says exactly why.
  *
  * Env: FOLLOWUP_SESSION_SECRET, FOLLOWUP_BLOB_READ_WRITE_TOKEN,
  *      GOOGLE_PLACES_API_KEY, GOOGLE_PLACE_ID,
@@ -39,7 +41,7 @@ var metricsCache = require('../data/metrics-cache');
 var SITE_ORIGIN = 'https://www.mgsusa.llc';
 var LIGHTHOUSE_TTL_MS = 12 * 3600 * 1000;
 var LIGHTHOUSE_TIMEOUT_MS = 55000;
-var ALL_SECTIONS = ['followups', 'reviews', 'traffic', 'lighthouse', 'health'];
+var ALL_SECTIONS = ['followups', 'reviews', 'traffic', 'lighthouse', 'health', 'storage'];
 
 // The pages worth watching. The desk shows whichever of these have a cached
 // run and re-runs one at a time (a PSI pass is far too slow to batch).
@@ -615,6 +617,66 @@ function buildHealth() {
   });
 }
 
+/* ---------- storage (can the desk actually save?) ---------- */
+
+/**
+ * Reads and writes are separate failure modes: the desk can list customers
+ * perfectly while every save dies on a read-only token or a write conflict.
+ * Probe both against the real cache blob so "it isn't saving" turns into a
+ * named cause on the dashboard instead of a generic 500 on the form.
+ */
+function buildStorage() {
+  var configured = Boolean(process.env.FOLLOWUP_BLOB_READ_WRITE_TOKEN || process.env.BLOB_READ_WRITE_TOKEN);
+  if (!configured) {
+    return Promise.resolve({
+      status: 'error',
+      canRead: false,
+      canWrite: false,
+      error: 'No Blob token. Set FOLLOWUP_BLOB_READ_WRITE_TOKEN in Vercel (Project → Storage → connect a Blob store), then redeploy.'
+    });
+  }
+
+  var dedicated = Boolean(process.env.FOLLOWUP_BLOB_READ_WRITE_TOKEN);
+  var readOk = false;
+  var count = null;
+
+  return followupStore.list().then(function (customers) {
+    readOk = true;
+    count = Array.isArray(customers) ? customers.length : 0;
+  }).catch(function (e) {
+    console.error('site-metrics storage read failed', e && e.message);
+  }).then(function () {
+    // Round-trip through the metrics cache: same store, same token, same
+    // put() options as the customer write, but nothing important to lose.
+    var probe = { at: new Date().toISOString() };
+    return metricsCache.write('storage-probe', probe).then(function (written) {
+      if (!written) { throw new Error('write returned nothing'); }
+      return metricsCache.read('storage-probe');
+    }).then(function (back) {
+      var roundTripped = Boolean(back && back.value && back.value.at === probe.at);
+      return {
+        status: readOk && roundTripped ? 'ok' : 'error',
+        canRead: readOk,
+        canWrite: roundTripped,
+        dedicatedToken: dedicated,
+        customers: count,
+        error: readOk && roundTripped ? null
+          : (!readOk ? 'The store could not be read.' : 'The store accepted no writes.')
+      };
+    });
+  }).catch(function (e) {
+    var detail = (e && (e.name ? e.name + ': ' : '') + (e.message || '')) || 'unknown error';
+    return {
+      status: 'error',
+      canRead: readOk,
+      canWrite: false,
+      dedicatedToken: dedicated,
+      customers: count,
+      error: 'Saving is failing — ' + detail
+    };
+  });
+}
+
 /* ---------- handler ---------- */
 
 module.exports = async function handler(req, res) {
@@ -651,7 +713,8 @@ module.exports = async function handler(req, res) {
         refresh: body.refresh
       });
     },
-    health: buildHealth
+    health: buildHealth,
+    storage: buildStorage
   };
 
   var payload = { ok: true, generatedAt: new Date().toISOString(), sections: requested };

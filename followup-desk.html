@@ -17,7 +17,7 @@
   <meta name="robots" content="noindex,nofollow">
   <link rel="canonical" href="https://www.mgsusa.llc/followup-desk">
   <link rel="stylesheet" href="assets/styles.min.css">
-  <link rel="stylesheet" href="assets/css/followup-desk.css?v=3">
+  <link rel="stylesheet" href="assets/css/followup-desk.css?v=4">
   <script>
     window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
   </script>
@@ -162,88 +162,153 @@
             </div>
           </div>
 
+          <div class="storage-alert" id="storage-alert" hidden></div>
+
           <section class="kpi-row" id="kpi-row" aria-label="Key numbers">
             <p class="panel-loading">Loading your numbers…</p>
           </section>
 
-          <div class="panel-grid">
-            <section class="panel panel-traffic" aria-labelledby="traffic-title">
-              <div class="panel-head">
-                <h2 id="traffic-title">Website traffic</h2>
-                <p class="panel-sub" id="traffic-range">Last 28 days</p>
-              </div>
-              <div class="panel-body" id="traffic-body">
-                <p class="panel-loading">Loading traffic…</p>
-              </div>
-            </section>
+          <!-- Colour is the data domain, not decoration: blue = visitor
+               traffic, teal = technical health, amber = needs your action,
+               red = customers & reviews. Each card also carries an icon and a
+               title, so colour is never the only signal. -->
+          <div class="desk-band">
+            <div class="band-head">
+              <h2 class="band-title">Website performance</h2>
+              <p class="band-sub">How mgsusa.llc is doing with visitors and with Google</p>
+            </div>
 
-            <section class="panel panel-lighthouse" aria-labelledby="lh-title">
-              <div class="panel-head">
-                <h2 id="lh-title">Lighthouse scores</h2>
-                <div class="panel-head-controls">
-                  <label class="sr-only" for="lh-page">Page to score</label>
-                  <select id="lh-page"></select>
-                  <label class="sr-only" for="lh-strategy">Device</label>
-                  <select id="lh-strategy">
-                    <option value="mobile">Mobile</option>
-                    <option value="desktop">Desktop</option>
-                  </select>
-                  <button class="btn btn-outline btn-sm" id="lh-run" type="button">Run test</button>
+            <div class="panel-grid">
+              <section class="panel panel-wide" data-accent="blue" aria-labelledby="traffic-title">
+                <div class="panel-head">
+                  <div class="panel-title">
+                    <span class="panel-icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+                    </span>
+                    <div>
+                      <h3 id="traffic-title">Website traffic</h3>
+                      <p class="panel-sub" id="traffic-range">Last 28 days</p>
+                    </div>
+                  </div>
                 </div>
-              </div>
-              <div class="panel-body" id="lighthouse-body">
-                <p class="panel-loading">Loading scores…</p>
-              </div>
-            </section>
+                <div class="panel-body" id="traffic-body">
+                  <p class="panel-loading">Loading traffic…</p>
+                </div>
+              </section>
+
+              <section class="panel" data-accent="blue" aria-labelledby="pages-title">
+                <div class="panel-head">
+                  <div class="panel-title">
+                    <span class="panel-icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16"/><path d="M4 12h10"/><path d="M4 18h7"/></svg>
+                    </span>
+                    <div>
+                      <h3 id="pages-title">Most-viewed pages</h3>
+                      <p class="panel-sub">Last 28 days</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="panel-body" id="pages-body">
+                  <p class="panel-loading">Loading pages…</p>
+                </div>
+              </section>
+
+              <section class="panel" data-accent="teal" aria-labelledby="health-title">
+                <div class="panel-head">
+                  <div class="panel-title">
+                    <span class="panel-icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                    </span>
+                    <div>
+                      <h3 id="health-title">Site health</h3>
+                      <p class="panel-sub">Live check of the public site</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="panel-body" id="health-body">
+                  <p class="panel-loading">Checking the site…</p>
+                </div>
+              </section>
+              <section class="panel panel-wide" data-accent="teal" aria-labelledby="lh-title">
+                <div class="panel-head">
+                  <div class="panel-title">
+                    <span class="panel-icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9z"/></svg>
+                    </span>
+                    <div>
+                      <h3 id="lh-title">Speed &amp; SEO scores</h3>
+                      <p class="panel-sub">Google Lighthouse, per page</p>
+                    </div>
+                  </div>
+                  <div class="panel-head-controls">
+                    <label class="sr-only" for="lh-page">Page to score</label>
+                    <select id="lh-page"></select>
+                    <label class="sr-only" for="lh-strategy">Device</label>
+                    <select id="lh-strategy">
+                      <option value="mobile">Mobile</option>
+                      <option value="desktop">Desktop</option>
+                    </select>
+                    <button class="btn btn-outline btn-sm" id="lh-run" type="button">Run test</button>
+                  </div>
+                </div>
+                <div class="panel-body" id="lighthouse-body">
+                  <p class="panel-loading">Loading scores…</p>
+                </div>
+              </section>
+            </div>
           </div>
 
-          <div class="panel-grid">
-            <section class="panel" aria-labelledby="pages-title">
-              <div class="panel-head">
-                <h2 id="pages-title">Most-viewed pages</h2>
-                <p class="panel-sub">Last 28 days</p>
-              </div>
-              <div class="panel-body" id="pages-body">
-                <p class="panel-loading">Loading pages…</p>
-              </div>
-            </section>
+          <div class="desk-band">
+            <div class="band-head">
+              <h2 class="band-title">Customers &amp; reviews</h2>
+              <p class="band-sub">Who needs a follow-up, and what people are saying publicly</p>
+            </div>
 
-            <section class="panel" aria-labelledby="attention-title">
-              <div class="panel-head">
-                <h2 id="attention-title">Needs attention</h2>
-                <p class="panel-sub">Unhappy customers and stale requests</p>
-              </div>
-              <div class="panel-body" id="attention-body">
-                <p class="panel-loading">Loading follow-ups…</p>
-              </div>
-            </section>
-          </div>
+            <div class="panel-grid">
+              <section class="panel" data-accent="amber" aria-labelledby="attention-title">
+                <div class="panel-head">
+                  <div class="panel-title">
+                    <span class="panel-icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+                    </span>
+                    <div>
+                      <h3 id="attention-title">Needs attention</h3>
+                      <p class="panel-sub">Unhappy customers and stale requests</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="panel-body" id="attention-body">
+                  <p class="panel-loading">Loading follow-ups…</p>
+                </div>
+              </section>
 
-          <div class="panel-grid">
-            <section class="panel" aria-labelledby="reviews-title">
-              <div class="panel-head">
-                <h2 id="reviews-title">Google reviews</h2>
-                <p class="panel-sub">Live from your Business Profile</p>
-              </div>
-              <div class="panel-body" id="reviews-body">
-                <p class="panel-loading">Loading reviews…</p>
-              </div>
-            </section>
-
-            <section class="panel" aria-labelledby="health-title">
-              <div class="panel-head">
-                <h2 id="health-title">Site health</h2>
-                <p class="panel-sub">Checked just now</p>
-              </div>
-              <div class="panel-body" id="health-body">
-                <p class="panel-loading">Checking the site…</p>
-              </div>
-            </section>
+              <section class="panel" data-accent="red" aria-labelledby="reviews-title">
+                <div class="panel-head">
+                  <div class="panel-title">
+                    <span class="panel-icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 2.9 5.9 6.5.9-4.7 4.6 1.1 6.5-5.8-3-5.8 3 1.1-6.5L2.6 9.8l6.5-.9z"/></svg>
+                    </span>
+                    <div>
+                      <h3 id="reviews-title">Google reviews</h3>
+                      <p class="panel-sub">Live from your Business Profile</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="panel-body" id="reviews-body">
+                  <p class="panel-loading">Loading reviews…</p>
+                </div>
+              </section>
+            </div>
           </div>
 
           <div class="desk-grid">
-            <aside class="add-card" aria-labelledby="add-title">
-              <h2 id="add-title">Add a customer</h2>
+            <aside class="add-card" data-accent="red" aria-labelledby="add-title">
+              <div class="panel-title">
+                <span class="panel-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6"/><path d="M22 11h-6"/></svg>
+                </span>
+                <h3 id="add-title">Add a customer</h3>
+              </div>
               <p class="desk-hint">They'll get a branded satisfaction email right away.</p>
               <form id="add-form" novalidate>
                 <label class="desk-label" for="cust-name">Customer name</label>
@@ -257,9 +322,14 @@
               </form>
             </aside>
 
-            <section class="list-card" aria-labelledby="list-title">
+            <section class="list-card" data-accent="red" aria-labelledby="list-title">
               <div class="list-head">
-                <h2 id="list-title">Customers</h2>
+                <div class="panel-title">
+                  <span class="panel-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9"/></svg>
+                  </span>
+                  <h3 id="list-title">Customers</h3>
+                </div>
                 <p class="list-count" id="list-count" aria-live="polite"></p>
               </div>
 
@@ -329,7 +399,7 @@
   </a>
 
   <script src="assets/scripts.min.js" defer></script>
-  <script src="assets/js/followup-desk.js?v=3" defer></script>
+  <script src="assets/js/followup-desk.js?v=4" defer></script>
 <!-- Start of HubSpot Embed Code -->
   <script type="text/javascript" id="hs-script-loader" async defer src="//js-na2.hs-scripts.com/246993365.js"></script>
 <!-- End of HubSpot Embed Code -->
