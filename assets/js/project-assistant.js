@@ -1,13 +1,16 @@
 /* Master Glass Solutions - AI website assistant (chat widget).
    Renders a floating launcher + dialog, talks to POST /api/chat (OpenAI),
    shows quick questions, persists the conversation per session, and fires
-   GA4 events. Positioned clear of the mobile call FAB. */
+   GA4 events. Positioned clear of the mobile call FAB.
+
+   No bot-protection challenge runs in the chat: Turnstile was removed because a
+   failing widget blocked every message. /api/chat matches this and does not
+   verify a token. */
 
 (function () {
   'use strict';
 
   var STORAGE_KEY = 'mgs-chat-history-v1';
-  var TURNSTILE_SITE_KEY = '0x4AAAAAAEGumU2z9QHnLmlL';
   var PHONE = '210-370-3700';
   var EMERGENCY_URL = '/emergency-glass-repair';
 
@@ -17,64 +20,6 @@
 
   function getKnowledge() {
     return (window.MGS && window.MGS.companyKnowledge) || null;
-  }
-
-  // Turnstile tokens are single-use. The chat sends repeatedly, so we hold one
-  // fresh token, hand it over, then reset the widget to mint the next one.
-  var tsWidgetId = null;
-  var tsToken = '';
-  var tsWaiters = [];
-  var tsFailed = false;
-
-  function setTurnstileToken(token) {
-    tsToken = token || '';
-    if (!tsToken) return;
-    var waiting = tsWaiters.splice(0, tsWaiters.length);
-    for (var i = 0; i < waiting.length; i++) waiting[i](tsToken);
-  }
-
-  function getTurnstileToken() {
-    if (tsToken) return tsToken;
-    try {
-      if (!window.turnstile) return '';
-      return (tsWidgetId == null
-        ? window.turnstile.getResponse()
-        : window.turnstile.getResponse(tsWidgetId)) || '';
-    } catch (e) { /* ignore */ }
-    return '';
-  }
-
-  // Resolves with a token, or '' once timed out so the request still goes
-  // through and the server decides (fails closed) instead of hanging.
-  function awaitTurnstileToken(timeoutMs) {
-    var existing = getTurnstileToken();
-    if (existing || !TURNSTILE_SITE_KEY || !window.turnstile) {
-      return Promise.resolve(existing);
-    }
-    return new Promise(function (resolve) {
-      var settled = false;
-      function onToken(token) {
-        if (settled) return;
-        settled = true;
-        clearTimeout(timer);
-        resolve(token || '');
-      }
-      var timer = setTimeout(function () {
-        if (settled) return;
-        settled = true;
-        var idx = tsWaiters.indexOf(onToken);
-        if (idx > -1) tsWaiters.splice(idx, 1);
-        resolve('');
-      }, timeoutMs || 8000);
-      tsWaiters.push(onToken);
-    });
-  }
-
-  function resetTurnstile() {
-    tsToken = '';
-    try {
-      if (window.turnstile && tsWidgetId != null) window.turnstile.reset(tsWidgetId);
-    } catch (e) { /* ignore */ }
   }
 
   function track(event, params) {
@@ -138,7 +83,6 @@
             '<svg aria-hidden="true" width="18" height="18" viewBox="0 0 18 18"><path d="M1 9l16-7-6 15-3-6-7-2z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>' +
           '</button>' +
         '</form>' +
-        '<div class="mgs-chat__verify"></div>' +
         '<div class="mgs-chat__footer">' +
           '<a href="tel:' + phone.replace(/[^+\d]/g, '') + '">Call ' + phone + '</a> ' +
           '<a href="/request-quote">Get a quote</a>' +
@@ -263,17 +207,10 @@
       track('mgs_chat_message', { role: 'user', emergency: detected });
 
       setBusy(true);
-      var usedToken = '';
-      awaitTurnstileToken(8000).then(function (token) {
-        usedToken = token;
-        return fetch('/api/chat', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            messages: history.slice(-20),
-            turnstileToken: token
-          })
-        });
+      fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: history.slice(-20) })
       }).then(function (r) {
         return r.json().then(function (data) {
           if (!r.ok) throw new Error((data && data.error) || 'Request failed.');
@@ -285,18 +222,8 @@
         persist();
         track('mgs_chat_message', { role: 'assistant' });
       }).catch(function (e) {
-        if (!usedToken) {
-          if (tsFailed) {
-            addError('Security verification isn\'t available right now. Please chat with us at www.mgsusa.llc, call ' + phone + ', or use the quote form.');
-          } else {
-            addError('Security verification didn\'t complete. Please try again, call ' + phone + ', or use the quote form.');
-          }
-        } else {
-          addError('Sorry — the assistant is having trouble right now. Please try again, call ' + phone + ', or use the quote form.');
-        }
+        addError('Sorry — the assistant is having trouble right now. Please try again, call ' + phone + ', or use the quote form.');
       }).then(function () {
-        // Whether it succeeded or not, that token is spent — mint a new one.
-        resetTurnstile();
         setBusy(false);
         renderQuick();
         input.focus();
@@ -320,32 +247,10 @@
       }, 0);
     });
 
-    // Turnstile only renders reliably in a visible container, so mount it the
-    // first time the panel opens instead of into the hidden panel on load.
-    // (It used to mount on the launcher button, which inflated the button.)
-    function ensureTurnstile() {
-      if (!TURNSTILE_SITE_KEY || tsWidgetId !== null) return;
-      var verifyEl = root.querySelector('.mgs-chat__verify');
-      if (!window.turnstile || !verifyEl || panel.hidden) return;
-      try {
-        tsWidgetId = window.turnstile.render(verifyEl, {
-          sitekey: TURNSTILE_SITE_KEY,
-          action: 'turnstile-spin-v2',
-          callback: function (token) {
-            setTurnstileToken(token);
-            track('mgs_chat_turnstile_verified', {});
-          },
-          'expired-callback': function () { tsToken = ''; },
-          'error-callback': function () { tsToken = ''; tsFailed = true; }
-        });
-      } catch (e) { /* ignore */ }
-    }
-
     function openPanel() {
       if (open) return;
       open = true;
       panel.hidden = false;
-      ensureTurnstile();
       launcher.setAttribute('aria-expanded', 'true');
       renderHistory();
       renderQuick();
@@ -373,17 +278,5 @@
     panel.addEventListener('click', function (e) {
       if (e.target === panel) closePanel();
     });
-
-    if (TURNSTILE_SITE_KEY) {
-      try {
-        var s = document.createElement('script');
-        s.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
-        s.async = true;
-        s.defer = true;
-        s.onload = function () { ensureTurnstile(); };
-        s.onerror = function () { tsFailed = true; };
-        document.head.appendChild(s);
-      } catch (e) { /* ignore */ }
-    }
   });
 })();

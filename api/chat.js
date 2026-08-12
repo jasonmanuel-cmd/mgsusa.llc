@@ -2,16 +2,18 @@
  * Master Glass Solutions - AI website chat.
  *
  * POST /api/chat
- * Body: { messages: [{ role: 'user'|'assistant', content: string }], turnstileToken?: string }
+ * Body: { messages: [{ role: 'user'|'assistant', content: string }] }
  *
- * Verifies a Cloudflare Turnstile token (when TURNSTILE_SECRET_KEY is set),
- * grounds the conversation in data/company-knowledge.js, and returns the AI
+ * Grounds the conversation in data/company-knowledge.js and returns the AI
  * answer from OpenAI. Never cached (no-store).
+ *
+ * No Turnstile check: the widget failed to load for real visitors and blocked
+ * every message, so it was removed from the chat on both ends. The quote and
+ * photo-upload endpoints still verify their own tokens.
  *
  * Env: OPENROUTER_API_KEY (preferred) with OPENROUTER_MODEL (optional, default a
  *      free OpenRouter model), or OPENAI_API_KEY fallback with OPENAI_MODEL
- *      (optional, default gpt-4o-mini),
- *      TURNSTILE_SECRET_KEY (optional; skip verification when unset)
+ *      (optional, default gpt-4o-mini)
  */
 
 var companyKnowledge = require('../data/company-knowledge');
@@ -95,28 +97,6 @@ function readBody(req) {
   });
 }
 
-function verifyTurnstile(token) {
-  var secret = process.env.TURNSTILE_SECRET_KEY;
-  if (!secret) return Promise.resolve(true);
-  if (!token) {
-    console.error('Turnstile token missing (chat): no token was minted client-side');
-    return Promise.resolve(false);
-  }
-  return fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ secret: secret, response: token })
-  }).then(function (r) { return r.json(); }).then(function (d) {
-    if (d.success !== true) {
-      console.error('Turnstile verify failed (chat):', JSON.stringify(d['error-codes'] || d));
-    }
-    return d.success === true;
-  }).catch(function (e) {
-    console.error('Turnstile verify error (chat):', e && e.message);
-    return false;
-  });
-}
-
 function callOpenAI(messages) {
   var messagesList = [{ role: 'system', content: SYSTEM_PROMPT }].concat(messages);
   var payload = {
@@ -184,11 +164,6 @@ module.exports = async function handler(req, res) {
     if (m.content.length > 2000) {
       return jsonError(res, 400, 'Message too long.');
     }
-  }
-
-  var ok = await verifyTurnstile(body.turnstileToken);
-  if (!ok) {
-    return jsonError(res, 403, 'Verification failed. Please refresh and try again.');
   }
 
   var result = await callOpenAI(messages);

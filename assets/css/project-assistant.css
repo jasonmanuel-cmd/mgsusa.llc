@@ -12,10 +12,6 @@
 .mgs-chat__panel[hidden]{display:none}
 @keyframes mgsPanelIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 
-/* Turnstile mounts here (inside the panel), never on the launcher button. */
-.mgs-chat__verify{flex:0 0 auto;display:flex;justify-content:center;padding:0 1rem .55rem}
-.mgs-chat__verify:empty{display:none}
-
 .mgs-chat__header{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.85rem 1rem;background:var(--ink);color:#fff}
 .mgs-chat__title{font-size:.92rem;font-weight:800;letter-spacing:.02em}
 .mgs-chat__close{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;width:32px;height:32px;border:0;border-radius:50%;background:transparent;color:#fff;cursor:pointer;transition:background .15s ease}
