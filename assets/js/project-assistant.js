@@ -226,6 +226,8 @@
       }).catch(function (e) {
         if (status === 429) {
           addError('That\'s a lot of messages in a short time. Please wait a moment and try again, or call ' + phone + '.');
+        } else if (status === 503) {
+          addError('The assistant is busy right now. Please try again in a few seconds, or call ' + phone + '.');
         } else {
           addError('Sorry — the assistant is having trouble right now. Please try again, call ' + phone + ', or use the quote form.');
         }
