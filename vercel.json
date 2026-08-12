@@ -1,6 +1,11 @@
 {
   "cleanUrls": true,
   "trailingSlash": false,
+  "functions": {
+    "api/site-metrics.js": {
+      "maxDuration": 60
+    }
+  },
   "redirects": [
     {
       "source": "/emergency",
@@ -334,6 +339,15 @@
     },
     {
       "source": "/api/review-submit",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store"
+        }
+      ]
+    },
+    {
+      "source": "/api/site-metrics",
       "headers": [
         {
           "key": "Cache-Control",
