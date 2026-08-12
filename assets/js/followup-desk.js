@@ -143,18 +143,35 @@
     setTimeout(function () { t.remove(); }, 3500);
   }
 
+  // /api/followup-desk-login answers { session: "<hmac-token>" } — a bare
+  // string. Older code here assumed { token }, so nothing was ever sent in the
+  // Authorization header and the first data call bounced straight back to the
+  // gate. Accept either shape and always store the same one.
+  function normalizeSession(raw) {
+    var token = typeof raw === 'string' ? raw : (raw && raw.token) || null;
+    return token ? { token: String(token) } : null;
+  }
+
   function getSession() {
     try {
       var raw = sessionStorage.getItem(SESSION_KEY);
-      return raw ? JSON.parse(raw) : null;
+      if (!raw) { return null; }
+      var parsed;
+      try {
+        parsed = JSON.parse(raw);
+      } catch (e) {
+        parsed = raw; // a plain token string was stored by an older build
+      }
+      return normalizeSession(parsed);
     } catch (e) {
       return null;
     }
   }
 
-  function setSession(s) {
-    session = s;
-    try { sessionStorage.setItem(SESSION_KEY, JSON.stringify(s)); } catch (e) {}
+  function setSession(raw) {
+    session = normalizeSession(raw);
+    try { sessionStorage.setItem(SESSION_KEY, JSON.stringify(session)); } catch (e) {}
+    return session;
   }
 
   function clearSession() {
@@ -936,8 +953,7 @@
     }).then(function (res) {
       return res.json().then(function (data) { return { ok: res.ok, status: res.status, data: data }; });
     }).then(function (result) {
-      if (result.ok && result.data && result.data.ok && result.data.session) {
-        setSession(result.data.session);
+      if (result.ok && result.data && result.data.ok && setSession(result.data.session)) {
         passcodeEl.value = '';
         loginBtn.disabled = false;
         loginBtn.textContent = 'Unlock desk';
@@ -1141,6 +1157,19 @@
         lighthouseBody.innerHTML = '<p class="panel-note panel-note-error">' +
           'The test timed out. Try again in a minute.</p>';
       });
+    });
+  }
+
+  /* ---------- passcode visibility ---------- */
+
+  var passcodeToggle = document.getElementById('passcode-toggle');
+  if (passcodeToggle && passcodeEl) {
+    passcodeToggle.addEventListener('click', function () {
+      var showing = passcodeEl.type === 'text';
+      passcodeEl.type = showing ? 'password' : 'text';
+      passcodeToggle.textContent = showing ? 'Show' : 'Hide';
+      passcodeToggle.setAttribute('aria-pressed', showing ? 'false' : 'true');
+      passcodeEl.focus();
     });
   }
 

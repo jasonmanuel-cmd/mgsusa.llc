@@ -17,7 +17,7 @@
   <meta name="robots" content="noindex,nofollow">
   <link rel="canonical" href="https://www.mgsusa.llc/followup-desk">
   <link rel="stylesheet" href="assets/styles.min.css">
-  <link rel="stylesheet" href="assets/css/followup-desk.css?v=2">
+  <link rel="stylesheet" href="assets/css/followup-desk.css?v=3">
   <script>
     window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
   </script>
@@ -80,16 +80,73 @@
     <section class="section desk-section">
       <div class="shell">
 
-        <div class="desk-card" id="login-gate">
-          <p class="eyebrow"><span></span>OWNER ONLY</p>
-          <h1>Follow-Up Desk</h1>
-          <p class="desk-intro">Enter the passcode to open the customer follow-up dashboard.</p>
-          <form id="login-form" novalidate>
-            <label class="desk-label" for="passcode">Passcode</label>
-            <input type="password" id="passcode" name="passcode" autocomplete="current-password" maxlength="100" required>
-            <p class="desk-error" id="login-error" role="alert" hidden></p>
-            <button class="btn btn-dark btn-block" id="login-btn" type="submit">Unlock desk</button>
-          </form>
+        <div class="login-gate" id="login-gate">
+          <div class="login-intro">
+            <p class="eyebrow"><span></span>OWNER ONLY</p>
+            <h1>Welcome to your command center</h1>
+            <p class="login-lede">
+              Everything about mgsusa.llc in one place — how many people are finding
+              the site, how fast it loads, what customers are saying, and who still
+              needs a follow-up. Please log in to continue.
+            </p>
+
+            <ul class="login-features">
+              <li>
+                <span class="login-feature-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+                </span>
+                <div>
+                  <strong>Traffic</strong>
+                  <span>Visitors, page views and where they came from, over the last 28 days.</span>
+                </div>
+              </li>
+              <li>
+                <span class="login-feature-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9z"/></svg>
+                </span>
+                <div>
+                  <strong>Speed &amp; SEO</strong>
+                  <span>Google Lighthouse scores for any page, on mobile or desktop.</span>
+                </div>
+              </li>
+              <li>
+                <span class="login-feature-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 2.9 5.9 6.5.9-4.7 4.6 1.1 6.5-5.8-3-5.8 3 1.1-6.5L2.6 9.8l6.5-.9z"/></svg>
+                </span>
+                <div>
+                  <strong>Reviews</strong>
+                  <span>Your live Google rating, plus the newest reviews as they land.</span>
+                </div>
+              </li>
+              <li>
+                <span class="login-feature-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9"/></svg>
+                </span>
+                <div>
+                  <strong>Customer follow-ups</strong>
+                  <span>Send a satisfaction email after a job and see who needs attention.</span>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <div class="login-card">
+            <h2>Sign in</h2>
+            <p class="login-card-note">This dashboard is private to Master Glass Solutions.</p>
+            <form id="login-form" novalidate>
+              <label class="desk-label" for="passcode">Passcode</label>
+              <div class="passcode-field">
+                <input type="password" id="passcode" name="passcode" autocomplete="current-password" maxlength="100" required>
+                <button type="button" class="passcode-toggle" id="passcode-toggle" aria-pressed="false">Show</button>
+              </div>
+              <p class="desk-error" id="login-error" role="alert" hidden></p>
+              <button class="btn btn-dark btn-block" id="login-btn" type="submit">Unlock desk</button>
+            </form>
+            <p class="login-help">
+              Trouble getting in? The passcode is set in your hosting dashboard.
+              For anything else, call <a href="tel:+12106737343">(210) 673-7343</a>.
+            </p>
+          </div>
         </div>
 
         <div id="desk-app" hidden>
@@ -272,7 +329,7 @@
   </a>
 
   <script src="assets/scripts.min.js" defer></script>
-  <script src="assets/js/followup-desk.js?v=2" defer></script>
+  <script src="assets/js/followup-desk.js?v=3" defer></script>
 <!-- Start of HubSpot Embed Code -->
   <script type="text/javascript" id="hs-script-loader" async defer src="//js-na2.hs-scripts.com/246993365.js"></script>
 <!-- End of HubSpot Embed Code -->
