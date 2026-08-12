@@ -17,7 +17,7 @@
   <meta name="robots" content="noindex,nofollow">
   <link rel="canonical" href="https://www.mgsusa.llc/followup-desk">
   <link rel="stylesheet" href="assets/styles.min.css">
-  <link rel="stylesheet" href="assets/css/followup-desk.css?v=1">
+  <link rel="stylesheet" href="assets/css/followup-desk.css?v=2">
   <script>
     window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
   </script>
@@ -98,7 +98,90 @@
               <p class="eyebrow"><span></span>OWNER DASHBOARD</p>
               <h1>Follow-Up Desk</h1>
             </div>
-            <button class="btn btn-ghost" id="logout-btn" type="button">Log out</button>
+            <div class="desk-toolbar-actions">
+              <p class="desk-updated" id="metrics-updated" aria-live="polite"></p>
+              <button class="btn btn-outline btn-sm" id="metrics-refresh" type="button">Refresh data</button>
+              <button class="btn btn-ghost btn-sm" id="logout-btn" type="button">Log out</button>
+            </div>
+          </div>
+
+          <section class="kpi-row" id="kpi-row" aria-label="Key numbers">
+            <p class="panel-loading">Loading your numbers…</p>
+          </section>
+
+          <div class="panel-grid">
+            <section class="panel panel-traffic" aria-labelledby="traffic-title">
+              <div class="panel-head">
+                <h2 id="traffic-title">Website traffic</h2>
+                <p class="panel-sub" id="traffic-range">Last 28 days</p>
+              </div>
+              <div class="panel-body" id="traffic-body">
+                <p class="panel-loading">Loading traffic…</p>
+              </div>
+            </section>
+
+            <section class="panel panel-lighthouse" aria-labelledby="lh-title">
+              <div class="panel-head">
+                <h2 id="lh-title">Lighthouse scores</h2>
+                <div class="panel-head-controls">
+                  <label class="sr-only" for="lh-page">Page to score</label>
+                  <select id="lh-page"></select>
+                  <label class="sr-only" for="lh-strategy">Device</label>
+                  <select id="lh-strategy">
+                    <option value="mobile">Mobile</option>
+                    <option value="desktop">Desktop</option>
+                  </select>
+                  <button class="btn btn-outline btn-sm" id="lh-run" type="button">Run test</button>
+                </div>
+              </div>
+              <div class="panel-body" id="lighthouse-body">
+                <p class="panel-loading">Loading scores…</p>
+              </div>
+            </section>
+          </div>
+
+          <div class="panel-grid">
+            <section class="panel" aria-labelledby="pages-title">
+              <div class="panel-head">
+                <h2 id="pages-title">Most-viewed pages</h2>
+                <p class="panel-sub">Last 28 days</p>
+              </div>
+              <div class="panel-body" id="pages-body">
+                <p class="panel-loading">Loading pages…</p>
+              </div>
+            </section>
+
+            <section class="panel" aria-labelledby="attention-title">
+              <div class="panel-head">
+                <h2 id="attention-title">Needs attention</h2>
+                <p class="panel-sub">Unhappy customers and stale requests</p>
+              </div>
+              <div class="panel-body" id="attention-body">
+                <p class="panel-loading">Loading follow-ups…</p>
+              </div>
+            </section>
+          </div>
+
+          <div class="panel-grid">
+            <section class="panel" aria-labelledby="reviews-title">
+              <div class="panel-head">
+                <h2 id="reviews-title">Google reviews</h2>
+                <p class="panel-sub">Live from your Business Profile</p>
+              </div>
+              <div class="panel-body" id="reviews-body">
+                <p class="panel-loading">Loading reviews…</p>
+              </div>
+            </section>
+
+            <section class="panel" aria-labelledby="health-title">
+              <div class="panel-head">
+                <h2 id="health-title">Site health</h2>
+                <p class="panel-sub">Checked just now</p>
+              </div>
+              <div class="panel-body" id="health-body">
+                <p class="panel-loading">Checking the site…</p>
+              </div>
+            </section>
           </div>
 
           <div class="desk-grid">
@@ -118,7 +201,32 @@
             </aside>
 
             <section class="list-card" aria-labelledby="list-title">
-              <h2 id="list-title">Customers</h2>
+              <div class="list-head">
+                <h2 id="list-title">Customers</h2>
+                <p class="list-count" id="list-count" aria-live="polite"></p>
+              </div>
+
+              <div class="list-controls">
+                <label class="sr-only" for="list-search">Search customers</label>
+                <input type="search" id="list-search" placeholder="Search name, email or notes" autocomplete="off">
+                <label class="sr-only" for="list-status">Filter by status</label>
+                <select id="list-status">
+                  <option value="all">All statuses</option>
+                  <option value="sent">Awaiting reply</option>
+                  <option value="review-link-sent">Review link sent</option>
+                  <option value="low-rating-alerted">Low rating</option>
+                </select>
+                <label class="sr-only" for="list-sort">Sort</label>
+                <select id="list-sort">
+                  <option value="newest">Newest first</option>
+                  <option value="oldest">Oldest first</option>
+                  <option value="rating-low">Lowest rating</option>
+                  <option value="rating-high">Highest rating</option>
+                  <option value="name">Name A–Z</option>
+                </select>
+                <button class="btn btn-outline btn-sm" id="export-csv" type="button">Export CSV</button>
+              </div>
+
               <div class="desk-empty" id="list-empty" hidden>
                 <p>No customers yet. Add your first one to get started.</p>
               </div>
@@ -164,7 +272,7 @@
   </a>
 
   <script src="assets/scripts.min.js" defer></script>
-  <script src="assets/js/followup-desk.js" defer></script>
+  <script src="assets/js/followup-desk.js?v=2" defer></script>
 <!-- Start of HubSpot Embed Code -->
   <script type="text/javascript" id="hs-script-loader" async defer src="//js-na2.hs-scripts.com/246993365.js"></script>
 <!-- End of HubSpot Embed Code -->

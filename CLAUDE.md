@@ -12,7 +12,8 @@ client into `assets/vendor/blob-client.js` with esbuild.
   landing pages, legal pages, `followup-desk.html`, `review.html`.
 - `api/` — serverless functions (see table below).
 - `data/` — UMD modules shared by browser and functions: exposed as `window.MGS.*`
-  in the browser, `module.exports` on Vercel. Includes the followup store/auth helpers.
+  in the browser, `module.exports` on Vercel. Includes the followup store/auth helpers
+  and `metrics-cache.js` (server-only Blob TTL cache for dashboard reads).
 - `assets/js/`, `assets/css/` — per-feature client code and styles.
 - `vercel.json` — `cleanUrls`, `.html` → extensionless redirects for every page,
   and per-endpoint `Cache-Control` headers.
@@ -30,6 +31,7 @@ client into `assets/vendor/blob-client.js` with esbuild.
 | `api/followup-add.js` | Auth'd: save customer, send satisfaction email |
 | `api/followup-list.js` | Auth'd: list customer records (pure read, cache disabled) |
 | `api/review-submit.js` | Public: 4–5★ → Google review link email; 1–3★ → private owner alert |
+| `api/site-metrics.js` | Auth'd: dashboard aggregator — follow-up funnel, Google rating, GA4 traffic, Lighthouse/PSI, live site probe. `maxDuration: 60` (a PSI run takes 10-30s) |
 
 All write/auth endpoints get `Cache-Control: no-store` in `vercel.json`; the
 generic `/api/(.*)` rule caches for 6h with a 24h stale-while-revalidate window.
@@ -41,6 +43,11 @@ generic `/api/(.*)` rule caches for 6h with a 24h stale-while-revalidate window.
 `BLOB_READ_WRITE_TOKEN`, `FOLLOWUP_BLOB_READ_WRITE_TOKEN` (dedicated store),
 `FOLLOWUP_DESK_PASSCODE`, `FOLLOWUP_SESSION_SECRET`, `TURNSTILE_SECRET_KEY`,
 `GOOGLE_PLACES_API_KEY`, `GOOGLE_PLACE_ID`, `GOOGLE_REVIEW_URL`, `GOOGLE_MAPS_URL`.
+
+Dashboard-only, all optional — the matching card shows a setup hint instead of data:
+`GA4_PROPERTY_ID`, `GA4_CLIENT_EMAIL`, `GA4_PRIVATE_KEY` (service account with
+Viewer on the GA4 property; the PEM goes in with `\n` escapes) and
+`PAGESPEED_API_KEY` (PSI works unkeyed but is rate limited).
 
 The Turnstile **site** key is inlined in `assets/js/quote-form.js` and
 `assets/js/review-page.js` — change it in both when it rotates. Secrets stay in
