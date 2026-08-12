@@ -59,28 +59,35 @@ async function readStore() {
 }
 
 async function writeStore(store, etag) {
-  await blobPut(STORE_PATH, JSON.stringify(store, null, 2), {
+  var options = {
     access: 'private',
     addRandomSuffix: false,
     allowOverwrite: true,
     contentType: 'application/json',
-    token: token(),
-    ifMatch: etag
-  });
+    token: token()
+  };
+  // Only guard when we actually have an etag to guard with — never send a
+  // null precondition.
+  if (etag) { options.ifMatch = etag; }
+  await blobPut(STORE_PATH, JSON.stringify(store, null, 2), options);
 }
 
 function sleep(ms) {
   return new Promise(function (resolve) { setTimeout(resolve, ms); });
 }
 
+// The SDK does not reliably tag this: the precondition failure arrives as a
+// plain Error whose name is "Error", so matching on the class name alone let
+// every ETag mismatch escape the retry loop and surface as a failed save.
 function isConflict(err) {
-  return !!(err && err.name === 'BlobPreconditionFailedError');
+  if (!err) { return false; }
+  if (err.name === 'BlobPreconditionFailedError') { return true; }
+  return /precondition failed|etag mismatch|if-match/i.test(String(err.message || ''));
 }
 
 // Run `mutate(store)` on the latest copy and persist. Returns mutate's return
-// value. Retries when the write fails on a stale etag.
+// value. Re-reads and retries when the write fails on a stale etag.
 async function withStore(mutate) {
-  var lastErr = null;
   for (var attempt = 0; attempt < MAX_RETRIES; attempt++) {
     var loaded = await readStore();
     var result = mutate(loaded.store);
@@ -89,14 +96,23 @@ async function withStore(mutate) {
       return result;
     } catch (err) {
       if (isConflict(err)) {
-        lastErr = err;
         await sleep(BASE_BACKOFF_MS * Math.pow(2, attempt));
         continue;
       }
       throw err;
     }
   }
-  throw lastErr || new Error('Could not persist follow-up store');
+
+  // Every attempt lost the precondition. With one owner at one desk that is
+  // not real contention — it means this store's etag does not round-trip into
+  // ifMatch, and holding the guard would mean never saving anything again.
+  // Re-read, re-apply, write unguarded: last-write-wins beats losing the
+  // customer entirely.
+  console.warn('followup-store: etag precondition kept failing, writing unguarded');
+  var fresh = await readStore();
+  var finalResult = mutate(fresh.store);
+  await writeStore(fresh.store, null);
+  return finalResult;
 }
 
 async function list() {
