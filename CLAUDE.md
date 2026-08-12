@@ -21,7 +21,7 @@ client into `assets/vendor/blob-client.js` with esbuild.
 
 | Endpoint | Purpose |
 |---|---|
-| `api/chat.js` | Project Assistant chat; **OpenRouter** provider (was OpenAI), grounded in `data/company-knowledge.js`, Turnstile-verified |
+| `api/chat.js` | Project Assistant chat; **OpenRouter** provider (was OpenAI), grounded in `data/company-knowledge.js`. **No Turnstile** — it was removed after the widget failed to load and 403'd every message; guarded instead by a per-IP rate limit (10/min, 60/hr, in-lambda memory) |
 | `api/submit-quote.js` | Quote form: validate → Blob photo upload → Resend lead email |
 | `api/blob-upload.js` | Single-photo client upload token handler |
 | `api/google-reviews.js` | Google **Places API (New)** proxy; server-side key only |
@@ -42,8 +42,16 @@ generic `/api/(.*)` rule caches for 6h with a 24h stale-while-revalidate window.
 `FOLLOWUP_DESK_PASSCODE`, `FOLLOWUP_SESSION_SECRET`, `TURNSTILE_SECRET_KEY`,
 `GOOGLE_PLACES_API_KEY`, `GOOGLE_PLACE_ID`, `GOOGLE_REVIEW_URL`, `GOOGLE_MAPS_URL`.
 
-The Turnstile **site** key is inlined in `assets/js/project-assistant.js` and
-`assets/js/quote-form.js` — change it in both when it rotates. Secrets stay in Vercel.
+The Turnstile **site** key is inlined in `assets/js/quote-form.js` and
+`assets/js/review-page.js` — change it in both when it rotates. Secrets stay in
+Vercel. `TURNSTILE_SECRET_KEY` is still verified by `submit-quote` and
+`blob-upload`; the chat no longer uses it.
+
+**Known risk:** the quote form and review page share the site key
+`0x4AAAAAAEGumU2z9QHnLmlL`, the same one whose widget failure broke the chat.
+`quote-form.js` blocks submission when no token is minted, so if that key is
+misconfigured the quote form is silently dropping leads — worth verifying in the
+Cloudflare Turnstile dashboard (allowed hostnames must include the live domain).
 
 ## Conventions
 

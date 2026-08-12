@@ -81,6 +81,66 @@ function jsonError(res, status, message) {
   res.status(status).json({ ok: false, error: message });
 }
 
+/* Per-IP rate limiting.
+ *
+ * This endpoint is public and unauthenticated (no Turnstile), so it needs some
+ * ceiling on how fast one source can spend LLM credits. Two windows: a short one
+ * that stops rapid scripted bursts, and an hourly one that caps sustained abuse.
+ *
+ * Counters live in the lambda's memory, so they are per warm instance rather
+ * than global — a determined attacker spread across cold starts gets more than
+ * the nominal budget. That is an accepted trade-off: it costs nothing, adds no
+ * dependency, and blunts the realistic case (one script hammering the endpoint).
+ * Move to a shared store (Vercel KV/Upstash) if abuse ever shows up in practice.
+ */
+var MINUTE_MS = 60 * 1000;
+var HOUR_MS = 60 * MINUTE_MS;
+var MAX_PER_MINUTE = 10;
+var MAX_PER_HOUR = 60;
+var MAX_TRACKED_IPS = 5000;
+
+var hitsByIp = new Map();
+
+function clientIp(req) {
+  var xff = req.headers['x-forwarded-for'];
+  if (xff) return String(xff).split(',')[0].trim();
+  return req.headers['x-real-ip'] ||
+    (req.socket && req.socket.remoteAddress) ||
+    'unknown';
+}
+
+// Drop IPs whose most recent hit has aged out, so the map cannot grow forever
+// on a long-lived instance.
+function pruneHits(now) {
+  hitsByIp.forEach(function (times, ip) {
+    if (!times.length || now - times[times.length - 1] >= HOUR_MS) {
+      hitsByIp.delete(ip);
+    }
+  });
+}
+
+// Returns 0 when allowed (and records the hit), or the seconds to wait.
+function rateLimitRetryAfter(ip, now) {
+  var times = (hitsByIp.get(ip) || []).filter(function (t) {
+    return now - t < HOUR_MS;
+  });
+
+  var inMinute = times.filter(function (t) { return now - t < MINUTE_MS; });
+  if (inMinute.length >= MAX_PER_MINUTE) {
+    hitsByIp.set(ip, times);
+    return Math.max(1, Math.ceil((MINUTE_MS - (now - inMinute[0])) / 1000));
+  }
+  if (times.length >= MAX_PER_HOUR) {
+    hitsByIp.set(ip, times);
+    return Math.max(1, Math.ceil((HOUR_MS - (now - times[0])) / 1000));
+  }
+
+  times.push(now);
+  hitsByIp.set(ip, times);
+  if (hitsByIp.size > MAX_TRACKED_IPS) pruneHits(now);
+  return 0;
+}
+
 function readBody(req) {
   return new Promise(function (resolve, reject) {
     var chunks = [];
@@ -136,6 +196,13 @@ module.exports = async function handler(req, res) {
 
   if (req.method !== 'POST') {
     return jsonError(res, 405, 'Method not allowed. Use POST.');
+  }
+
+  // Cheapest rejection first: before parsing the body or calling the model.
+  var retryAfter = rateLimitRetryAfter(clientIp(req), Date.now());
+  if (retryAfter) {
+    res.setHeader('Retry-After', String(retryAfter));
+    return jsonError(res, 429, 'That is a lot of messages in a short time. Please wait a moment and try again, or call 210-370-3700.');
   }
 
   if (!LLM_PROVIDER) {

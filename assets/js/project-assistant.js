@@ -207,11 +207,13 @@
       track('mgs_chat_message', { role: 'user', emergency: detected });
 
       setBusy(true);
+      var status = 0;
       fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ messages: history.slice(-20) })
       }).then(function (r) {
+        status = r.status;
         return r.json().then(function (data) {
           if (!r.ok) throw new Error((data && data.error) || 'Request failed.');
           return data;
@@ -222,7 +224,11 @@
         persist();
         track('mgs_chat_message', { role: 'assistant' });
       }).catch(function (e) {
-        addError('Sorry — the assistant is having trouble right now. Please try again, call ' + phone + ', or use the quote form.');
+        if (status === 429) {
+          addError('That\'s a lot of messages in a short time. Please wait a moment and try again, or call ' + phone + '.');
+        } else {
+          addError('Sorry — the assistant is having trouble right now. Please try again, call ' + phone + ', or use the quote form.');
+        }
       }).then(function () {
         setBusy(false);
         renderQuick();
