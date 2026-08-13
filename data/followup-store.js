@@ -12,8 +12,10 @@
  * BLOB_READ_WRITE_TOKEN for the photo-upload store). Server-only.
  */
 
-// Aliased on import: the module also exports its own get(id) record lookup, and
-// an unaliased `get` here would be clobbered by that function declaration.
+var crypto = require('crypto');
+
+// Aliased on import: this module exports its own get(), and a bare `get` here
+// would be clobbered by the destructured one (same var scope).
 var { get: blobGet, put: blobPut } = require('@vercel/blob');
 
 var STORE_PATH = 'followup/customers.json';
@@ -59,35 +61,28 @@ async function readStore() {
 }
 
 async function writeStore(store, etag) {
-  var options = {
+  await blobPut(STORE_PATH, JSON.stringify(store, null, 2), {
     access: 'private',
     addRandomSuffix: false,
     allowOverwrite: true,
     contentType: 'application/json',
-    token: token()
-  };
-  // Only guard when we actually have an etag to guard with — never send a
-  // null precondition.
-  if (etag) { options.ifMatch = etag; }
-  await blobPut(STORE_PATH, JSON.stringify(store, null, 2), options);
+    token: token(),
+    ifMatch: etag
+  });
 }
 
 function sleep(ms) {
   return new Promise(function (resolve) { setTimeout(resolve, ms); });
 }
 
-// The SDK does not reliably tag this: the precondition failure arrives as a
-// plain Error whose name is "Error", so matching on the class name alone let
-// every ETag mismatch escape the retry loop and surface as a failed save.
 function isConflict(err) {
-  if (!err) { return false; }
-  if (err.name === 'BlobPreconditionFailedError') { return true; }
-  return /precondition failed|etag mismatch|if-match/i.test(String(err.message || ''));
+  return !!(err && err.name === 'BlobPreconditionFailedError');
 }
 
 // Run `mutate(store)` on the latest copy and persist. Returns mutate's return
-// value. Re-reads and retries when the write fails on a stale etag.
+// value. Retries when the write fails on a stale etag.
 async function withStore(mutate) {
+  var lastErr = null;
   for (var attempt = 0; attempt < MAX_RETRIES; attempt++) {
     var loaded = await readStore();
     var result = mutate(loaded.store);
@@ -96,23 +91,14 @@ async function withStore(mutate) {
       return result;
     } catch (err) {
       if (isConflict(err)) {
+        lastErr = err;
         await sleep(BASE_BACKOFF_MS * Math.pow(2, attempt));
         continue;
       }
       throw err;
     }
   }
-
-  // Every attempt lost the precondition. With one owner at one desk that is
-  // not real contention — it means this store's etag does not round-trip into
-  // ifMatch, and holding the guard would mean never saving anything again.
-  // Re-read, re-apply, write unguarded: last-write-wins beats losing the
-  // customer entirely.
-  console.warn('followup-store: etag precondition kept failing, writing unguarded');
-  var fresh = await readStore();
-  var finalResult = mutate(fresh.store);
-  await writeStore(fresh.store, null);
-  return finalResult;
+  throw lastErr || new Error('Could not persist follow-up store');
 }
 
 async function list() {
