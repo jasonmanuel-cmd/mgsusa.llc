@@ -26,6 +26,32 @@ var LLM_PROVIDER = process.env.OPENROUTER_API_KEY ? 'openrouter' : (process.env.
 var OPENROUTER_MODEL = process.env.OPENROUTER_MODEL || 'google/gemma-4-26b-a4b-it:free';
 var OPENAI_MODEL = process.env.OPENAI_MODEL || 'gpt-4o-mini';
 
+// OpenRouter's ":free" models sit on a shared upstream pool that returns 429
+// ("temporarily rate-limited upstream") whenever the pool is saturated — that
+// alone was taking the whole chat down. Try the configured model first, then any
+// comma-separated slugs in OPENROUTER_FALLBACK_MODELS, then one short retry.
+// Setting that env var (or a paid OPENROUTER_MODEL, or your own provider key in
+// OpenRouter) is the durable fix; this just keeps a blip from being an outage.
+var OPENROUTER_FALLBACK_MODELS = String(process.env.OPENROUTER_FALLBACK_MODELS || '')
+  .split(',')
+  .map(function (s) { return s.trim(); })
+  .filter(Boolean);
+
+// Statuses worth trying a different model or a second attempt for: the 5xx range
+// plus the two transient 4xx exceptions, 408 (timeout) and 429 (rate limited).
+// Every other 4xx means the request itself is wrong, so retrying would only burn
+// time and the remaining fallbacks.
+var RETRYABLE_STATUSES = [408, 429, 500, 502, 503, 504];
+var RETRY_DELAY_MS = 1200;
+
+function isRetryable(status) {
+  return RETRYABLE_STATUSES.indexOf(status) !== -1;
+}
+
+function delay(ms) {
+  return new Promise(function (resolve) { setTimeout(resolve, ms); });
+}
+
 function buildSystemPrompt() {
   var k = companyKnowledge;
   var services = k.services.map(function (s) {
@@ -157,10 +183,10 @@ function readBody(req) {
   });
 }
 
-function callOpenAI(messages) {
-  var messagesList = [{ role: 'system', content: SYSTEM_PROMPT }].concat(messages);
+function callModel(model, messages) {
   var payload = {
-    messages: messagesList,
+    model: model,
+    messages: [{ role: 'system', content: SYSTEM_PROMPT }].concat(messages),
     max_tokens: 420,
     temperature: 0.3
   };
@@ -169,13 +195,11 @@ function callOpenAI(messages) {
 
   if (LLM_PROVIDER === 'openrouter') {
     url = 'https://openrouter.ai/api/v1/chat/completions';
-    payload.model = OPENROUTER_MODEL;
     headers.Authorization = 'Bearer ' + process.env.OPENROUTER_API_KEY;
     headers['HTTP-Referer'] = 'https://www.mgsusa.llc';
     headers['X-Title'] = 'Master Glass Solutions';
   } else {
     url = 'https://api.openai.com/v1/chat/completions';
-    payload.model = OPENAI_MODEL;
     headers.Authorization = 'Bearer ' + process.env.OPENAI_API_KEY;
   }
 
@@ -184,10 +208,48 @@ function callOpenAI(messages) {
     headers: headers,
     body: JSON.stringify(payload)
   }).then(function (r) {
-    return r.json().then(function (data) {
-      return { status: r.status, data: data };
+    // Read as text first: a proxy or gateway can answer with an HTML error page,
+    // and parsing that as JSON would throw. The real HTTP status is what decides
+    // whether to retry, so it must survive a body we cannot parse.
+    return r.text().then(function (raw) {
+      var data;
+      try {
+        data = JSON.parse(raw);
+      } catch (e) {
+        data = { error: { message: 'Non-JSON response from provider', body: String(raw).slice(0, 300) } };
+      }
+      return { status: r.status, data: data, model: model };
     });
+  }).catch(function (e) {
+    // Only a genuine transport failure (DNS, socket, timeout) lands here — there
+    // is no HTTP status to preserve, so treat it as a retryable upstream outage.
+    return { status: 503, data: { error: { message: e && e.message } }, model: model };
   });
+}
+
+// Walks the model list, then retries the last one once, stopping at the first
+// success or the first non-retryable error.
+function callOpenAI(messages) {
+  var models = LLM_PROVIDER === 'openrouter'
+    ? [OPENROUTER_MODEL].concat(OPENROUTER_FALLBACK_MODELS)
+    : [OPENAI_MODEL];
+
+  function attempt(index, retried) {
+    return callModel(models[index], messages).then(function (result) {
+      if (result.status === 200 || !isRetryable(result.status)) return result;
+
+      console.error('Model call failed (chat):', result.model, result.status,
+        JSON.stringify((result.data && result.data.error) || {}).slice(0, 500));
+
+      if (index + 1 < models.length) return attempt(index + 1, retried);
+      if (!retried) {
+        return delay(RETRY_DELAY_MS).then(function () { return attempt(index, true); });
+      }
+      return result;
+    });
+  }
+
+  return attempt(0, false);
 }
 
 module.exports = async function handler(req, res) {
@@ -236,7 +298,13 @@ module.exports = async function handler(req, res) {
   var result = await callOpenAI(messages);
   if (result.status !== 200) {
     var err = result.data && result.data.error;
-    console.error('OpenAI call failed (chat):', result.status, JSON.stringify(err || {}));
+    console.error('All model attempts failed (chat):', result.status, JSON.stringify(err || {}));
+    // A saturated upstream clears on its own, so tell the visitor to retry
+    // rather than implying the assistant is broken.
+    if (isRetryable(result.status)) {
+      res.setHeader('Retry-After', '15');
+      return jsonError(res, 503, 'The assistant is busy right now. Please try again in a few seconds, or call 210-370-3700.');
+    }
     return jsonError(res, 502, 'The assistant is unavailable right now. Please try again shortly, or call 210-370-3700.');
   }
 

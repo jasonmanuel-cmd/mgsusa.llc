@@ -208,12 +208,17 @@
 
       setBusy(true);
       var status = 0;
+      var retryAfter = '';
       fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ messages: history.slice(-20) })
       }).then(function (r) {
         status = r.status;
+        // The endpoint answers 503 both for a saturated upstream and for missing
+        // provider keys. Only the former sets Retry-After, and only the former
+        // is worth telling the visitor to wait out.
+        try { retryAfter = r.headers.get('Retry-After') || ''; } catch (e) { retryAfter = ''; }
         return r.json().then(function (data) {
           if (!r.ok) throw new Error((data && data.error) || 'Request failed.');
           return data;
@@ -226,6 +231,8 @@
       }).catch(function (e) {
         if (status === 429) {
           addError('That\'s a lot of messages in a short time. Please wait a moment and try again, or call ' + phone + '.');
+        } else if (status === 503 && retryAfter) {
+          addError('The assistant is busy right now. Please try again in a few seconds, or call ' + phone + '.');
         } else {
           addError('Sorry — the assistant is having trouble right now. Please try again, call ' + phone + ', or use the quote form.');
         }

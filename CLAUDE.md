@@ -38,7 +38,8 @@ generic `/api/(.*)` rule caches for 6h with a 24h stale-while-revalidate window.
 
 ## Environment variables (Vercel)
 
-`OPENROUTER_API_KEY`, `OPENROUTER_MODEL`, `OPENAI_API_KEY`, `OPENAI_MODEL`,
+`OPENROUTER_API_KEY`, `OPENROUTER_MODEL`, `OPENROUTER_FALLBACK_MODELS`,
+`OPENAI_API_KEY`, `OPENAI_MODEL`,
 `RESEND_API_KEY`, `LEAD_FROM_EMAIL`, `LEAD_NOTIFICATION_EMAIL`,
 `BLOB_READ_WRITE_TOKEN`, `FOLLOWUP_BLOB_READ_WRITE_TOKEN` (dedicated store),
 `FOLLOWUP_DESK_PASSCODE`, `FOLLOWUP_SESSION_SECRET`, `TURNSTILE_SECRET_KEY`,
@@ -53,6 +54,15 @@ The Turnstile **site** key is inlined in `assets/js/quote-form.js` and
 `assets/js/review-page.js` — change it in both when it rotates. Secrets stay in
 Vercel. `TURNSTILE_SECRET_KEY` is still verified by `submit-quote` and
 `blob-upload`; the chat no longer uses it.
+
+**Chat model reliability:** `OPENROUTER_MODEL` defaults to a `:free` slug, and
+OpenRouter's free tier sits on a shared upstream pool that returns 429
+("temporarily rate-limited upstream") under load — this took the chat down on
+2026-08-12 even after Turnstile was removed. `api/chat.js` now falls through
+`OPENROUTER_FALLBACK_MODELS` (comma-separated) and retries once before giving up
+with a 503. The durable fixes are config, not code: set a paid `OPENROUTER_MODEL`,
+populate `OPENROUTER_FALLBACK_MODELS`, or add your own provider key at
+openrouter.ai/settings/integrations to get dedicated limits on the free model.
 
 **Known risk:** the quote form and review page share the site key
 `0x4AAAAAAEGumU2z9QHnLmlL`, the same one whose widget failure broke the chat.
