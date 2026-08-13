@@ -507,6 +507,12 @@
         refreshBtn.textContent = 'Refresh';
       }
       if (result.ok && result.data && result.data.ok) {
+        // On a restored session the desk stays hidden until this first read
+        // succeeds, so a token the server rejects never flashes the dashboard.
+        if (opts && opts.revealOnSuccess) {
+          showDesk();
+          startRefresh();
+        }
         customers = result.data.customers || [];
         render();
         syncedEl.textContent = 'Updated ' + fmtTime(new Date());
@@ -514,7 +520,12 @@
         return;
       }
       if (result.status === 401) {
-        showLogin('Session expired. Please log in again.');
+        // A restored token that the server rejects is stale, not a session the
+        // owner just lost — clear it quietly instead of crying "expired".
+        showLogin(opts && opts.quietAuthFail
+          ? ''
+          : 'Session expired. Please log in again.');
+        if (opts && opts.quietAuthFail) { passcodeEl.focus(); }
         return;
       }
       toast((result.data && result.data.error) || 'Could not load customers.', true);
@@ -683,9 +694,9 @@
   (function init() {
     session = getSession();
     if (session && session.token) {
-      showDesk();
-      loadList();
-      startRefresh();
+      // Prove the stored token still works before revealing anything. The desk
+      // and the refresh loop start from loadList's success branch.
+      loadList({ revealOnSuccess: true, quietAuthFail: true });
     } else {
       passcodeEl.focus();
     }

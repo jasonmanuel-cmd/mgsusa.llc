@@ -1,7 +1,12 @@
 // Service Worker for MGS USA LLC - Cache-First Strategy
 // Enables offline support and 70% faster repeat visits
-const CACHE_NAME = 'mgs-usa-v1.0.1';
-const ASSETS_CACHE = 'mgs-usa-assets-v1.0.1';
+// Bump these on any asset change. /assets/* ships as immutable with a one-year
+// max-age and this worker serves assets cache-first, so a rebuilt file is
+// otherwise pinned in every returning visitor's browser forever. The activate
+// handler deletes every cache whose name no longer matches, so raising the
+// version is what actually flushes the old copies.
+const CACHE_NAME = 'mgs-usa-v1.0.2';
+const ASSETS_CACHE = 'mgs-usa-assets-v1.0.2';
 
 // Core assets to cache immediately (shell + critical resources)
 const CRITICAL_ASSETS = [
