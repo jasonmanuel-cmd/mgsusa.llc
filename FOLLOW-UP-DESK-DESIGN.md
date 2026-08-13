@@ -142,6 +142,28 @@ Body: `{ token, rating, comments? }`
 → 200 `{ ok: true, redirect: "/thank-you" }`
 → 400 bad token | 422 invalid rating | 502 Resend failure.
 
+### `POST /api/site-metrics`  (header `Authorization: Bearer <session>`)  — added 2026-08-12
+Body: `{ sections?, strategy?, page?, refresh? }`
+→ 200 `{ ok: true, generatedAt, followups, reviews, traffic, lighthouse, health, pages }`
+→ 401 bad session | 405 wrong method.
+
+Read-only aggregator for the dashboard at the top of the desk. Each section is
+independent and answers with its own `status`:
+
+| Section | Source | Unconfigured behaviour |
+|---|---|---|
+| `followups` | the Blob store | always available |
+| `reviews` | Google Places API (New) | `status: "unconfigured"` + hint |
+| `traffic` | GA4 Data API (service-account JWT) | `status: "unconfigured"` + hint |
+| `lighthouse` | PageSpeed Insights, cached 12h in Blob | pages report `status: "empty"` until run |
+| `health` | live fetch of `/` and `/sitemap.xml` | always available |
+
+A section that throws returns `status: "error"` — the endpoint itself still
+answers 200, so one dead Google key can never blank the desk. Lighthouse runs
+take 10-30s, so only the page named in `page` is re-run (`refresh: "lighthouse"`)
+and the rest are served from `followup/metrics/*.json`; `vercel.json` gives the
+function `maxDuration: 60`.
+
 ---
 
 ## Email templates (Resend)
@@ -198,6 +220,22 @@ Reused (already set): `RESEND_API_KEY`, `LEAD_FROM_EMAIL`, `LEAD_NOTIFICATION_EM
 `GOOGLE_REVIEW_URL`, `BLOB_READ_WRITE_TOKEN`. `GOOGLE_REVIEW_URL` overrides the
 hardcoded `g.page` link if the owner ever changes it.
 
+**Dashboard extras (all optional).** Leave any of these unset and that card shows
+a setup hint instead of numbers — nothing else on the desk is affected.
+
+| Variable | Purpose |
+|---|---|
+| `GA4_PROPERTY_ID` | GA4 property behind the `G-C7XXMF1P52` tag, e.g. `123456789` |
+| `GA4_CLIENT_EMAIL` | Service-account address, added as a **Viewer** on that property |
+| `GA4_PRIVATE_KEY` | That account's PEM key, pasted with `\n` escapes |
+| `PAGESPEED_API_KEY` | Raises the PageSpeed quota; PSI works unkeyed but is rate limited |
+
+Setting up GA4 access: Google Cloud console → **APIs & Services → Credentials →
+Create service account** (no project roles needed) → **Keys → Add key → JSON**;
+then in GA4 → **Admin → Property access management**, add the service-account
+email as a Viewer. Enable the **Google Analytics Data API** on the project. Copy
+`client_email` and `private_key` out of the JSON into the two env vars.
+
 ---
 
 ## Day-to-day use (~20 seconds per job)
@@ -209,6 +247,15 @@ hardcoded `g.page` link if the owner ever changes it.
 **Tips:** send same-day while the job is fresh; attach the desk link to the
 invoice/final-payment workflow; check the desk weekly to catch any
 `low-rating-alerted` follow-ups.
+
+**The dashboard above the form** answers "how is the site doing?" at a glance:
+page views and where visitors came from, the pages they land on, Lighthouse
+scores per page (press **Run test** — it takes ~30s and the result is kept for
+12 hours), the Google rating, and a live up/down check. **Needs attention** is
+the one to read first: it lists unhappy customers and anyone who has not replied
+in over a week. The customer list can be searched, filtered by status, sorted,
+and exported to CSV; **Copy review link** puts a customer's personal rating link
+on the clipboard for texting.
 
 ---
 
