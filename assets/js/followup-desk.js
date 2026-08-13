@@ -11,8 +11,18 @@
 
   var SESSION_KEY = 'mgs.followup.session';
   var REFRESH_MS = 30000;
-
   var GOOGLE_REVIEW_URL = 'https://g.page/r/CZoDFY2uA41TEAI/review';
+
+  /* Fallback memory storage when sessionStorage is blocked */
+  var memorySession = null;
+  var canUseStorage = false;
+  try {
+    sessionStorage.setItem('_test', '1');
+    sessionStorage.removeItem('_test');
+    canUseStorage = true;
+  } catch (e) {
+    canUseStorage = false;
+  }
 
   var loginGate = document.getElementById('login-gate');
   var deskApp = document.getElementById('desk-app');
@@ -88,22 +98,31 @@
   }
 
   function getSession() {
-    try {
-      var raw = sessionStorage.getItem(SESSION_KEY);
-      return raw ? JSON.parse(raw) : null;
-    } catch (e) {
-      return null;
+    if (canUseStorage) {
+      try {
+        var raw = sessionStorage.getItem(SESSION_KEY);
+        return raw ? JSON.parse(raw) : null;
+      } catch (e) {
+        return memorySession;
+      }
     }
+    return memorySession;
   }
 
   function setSession(s) {
     session = s;
-    try { sessionStorage.setItem(SESSION_KEY, JSON.stringify(s)); } catch (e) {}
+    memorySession = s;
+    if (canUseStorage) {
+      try { sessionStorage.setItem(SESSION_KEY, JSON.stringify(s)); } catch (e) {}
+    }
   }
 
   function clearSession() {
     session = null;
-    try { sessionStorage.removeItem(SESSION_KEY); } catch (e) {}
+    memorySession = null;
+    if (canUseStorage) {
+      try { sessionStorage.removeItem(SESSION_KEY); } catch (e) {}
+    }
   }
 
   function authHeaders() {
