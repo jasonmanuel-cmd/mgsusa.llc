@@ -14,7 +14,9 @@
 
 var crypto = require('crypto');
 
-var { get, put } = require('@vercel/blob');
+// Aliased on import: this module exports its own get(), and a bare `get` here
+// would be clobbered by the destructured one (same var scope).
+var { get: blobGet, put: blobPut } = require('@vercel/blob');
 
 var STORE_PATH = 'followup/customers.json';
 var MAX_RETRIES = 4;
@@ -40,7 +42,7 @@ function normalize(raw) {
 }
 
 async function readStore() {
-  var result = await get(STORE_PATH, {
+  var result = await blobGet(STORE_PATH, {
     access: 'private',
     token: token(),
     useCache: false
@@ -59,7 +61,7 @@ async function readStore() {
 }
 
 async function writeStore(store, etag) {
-  await put(STORE_PATH, JSON.stringify(store, null, 2), {
+  await blobPut(STORE_PATH, JSON.stringify(store, null, 2), {
     access: 'private',
     addRandomSuffix: false,
     allowOverwrite: true,
