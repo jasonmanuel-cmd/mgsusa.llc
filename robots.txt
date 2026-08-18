@@ -62,6 +62,43 @@ User-agent: Googlebot
 Allow: /
 
 # Rate limiting for aggressive crawlers (optional)
+# Additional AI assistants and user-triggered fetchers
+User-agent: Perplexity-User
+Allow: /
+
+User-agent: MistralAI-User
+Allow: /
+
+User-agent: Meta-ExternalFetcher
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+User-agent: YouBot
+Allow: /
+
+User-agent: Bytespider
+Allow: /
+
+User-agent: Diffbot
+Allow: /
+
+User-agent: omgili
+Allow: /
+
+User-agent: Timpibot
+Allow: /
+
+User-agent: ImagesiftBot
+Allow: /
+
+User-agent: Google-CloudVertexBot
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
 User-agent: AhrefsBot
 Crawl-delay: 10
 
