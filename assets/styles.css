@@ -60,7 +60,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 .hero-grid{position:relative;z-index:1;display:grid;grid-template-columns:minmax(0,1.25fr) minmax(300px,.55fr);align-items:center;gap:4rem;min-height:calc(100vh - 148px);padding:3.5rem 0 3.5rem}
 .hero-copy{max-width:755px}
 .eyebrow>span{display:inline-block;width:29px;height:2px;background:currentColor}
-.hero-home .eyebrow,.section-ink .eyebrow,.location-section .location-grid>div:last-child .eyebrow,.final-cta .eyebrow,.inner-hero .eyebrow,.emergency-band .eyebrow{color:var(--color-accent-soft)}
+.hero-home .eyebrow,.cost-section .eyebrow,.section-ink .eyebrow,.location-section .location-grid>div:last-child .eyebrow,.final-cta .eyebrow,.inner-hero .eyebrow,.emergency-band .eyebrow{color:var(--color-accent-soft)}
 h1,h2,h3,p{margin-top:0}
 h1,h2,h3{text-wrap:balance}
 h1,h2{font-family:var(--serif);font-weight:400;letter-spacing:-.047em;line-height:.99}
@@ -188,7 +188,7 @@ details[open] summary span{transform:rotate(45deg)}
 .compact-steps{padding:0;margin:1.8rem 0 0;list-style:none}
 .compact-steps li{display:flex;gap:1rem;padding:1rem 0;border-top:1px solid var(--line)}
 .compact-steps li:last-child{border-bottom:1px solid var(--line)}
-.compact-steps>li>span{padding-top:.18rem;color:var(--metal);font-size:.68rem;letter-spacing:.1em;font-weight:800}
+.compact-steps>li>span{padding-top:.18rem;color:var(--color-brand-hover);font-size:.68rem;letter-spacing:.1em;font-weight:800}
 .compact-steps h3{margin:0 0 .25rem;font-size:1.2rem}
 .compact-steps p{margin:0;color:var(--color-ink);font-size:.9rem;line-height:1.6}
 .related-section{background:var(--warm-white);position:relative}
@@ -410,7 +410,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
 .video-showcase-player{position:relative;border:1px solid rgba(230,57,70,0.2);border-radius:2px;overflow:hidden;background:#f9f9f9}
 .video-showcase-player video{width:100%;height:auto;display:block}
 .video-caption{margin-top:1rem;font-size:.82rem;color:var(--color-ink);line-height:1.6;padding:0 1rem 1rem}
-.text-link{margin-top:1rem;display:inline-flex;align-items:center;gap:.6rem;padding-bottom:.25rem;border-bottom:1px solid var(--metal);color:var(--metal);font-size:.74rem;letter-spacing:.06em;text-transform:uppercase;font-weight:800;transition:color .2s ease,border .2s ease}
+.text-link{margin-top:1rem;display:inline-flex;align-items:center;gap:.6rem;padding-bottom:.25rem;border-bottom:1px solid var(--color-brand-hover);color:var(--color-brand-hover);font-size:.74rem;letter-spacing:.06em;text-transform:uppercase;font-weight:800;transition:color .2s ease,border .2s ease}
 .text-link:hover{color:var(--metal-light);border-color:var(--metal-light)}
 .section{padding:clamp(5rem,10vw,9rem) 0;position:relative;content-visibility:auto;border-top:1px solid rgba(230,57,70,0.08)}
 .hero-panel{align-self:center;border:1px solid rgba(255,255,255,.26);padding:1.2rem 1.35rem;max-width:380px;background:rgba(10,10,10,.62);box-shadow:0 22px 55px rgba(0,0,0,.28);backdrop-filter:blur(6px);border-top:2px solid var(--metal)}
@@ -482,7 +482,7 @@ img[loading="lazy"]{background:var(--stone)}
 .footer-logo{display:inline-flex}
 .footer-logo-img{height:75px;width:auto;object-fit:contain}
 .footer-description{margin:.75rem 0 1.25rem;color:rgba(255,255,255,.72);font-size:.95rem;line-height:1.6}
-.footer-phone{display:inline-flex;align-items:center;color:var(--metal-light);font-weight:750;font-size:.95rem;white-space:nowrap}
+.footer-phone{display:inline-flex;align-items:center;color:var(--metal);font-weight:750;font-size:.95rem;white-space:nowrap}
 .footer-column h3{margin:0 0 .75rem;font-family:var(--sans);font-size:.95rem;font-weight:700;color:#fff;letter-spacing:.02em}
 .footer-column ul{list-style:none;margin:0;padding:0}
 .footer-column li{margin:0}
@@ -537,7 +537,7 @@ img[loading="lazy"]{background:var(--stone)}
 .hero-home ~ .section.introduction .lead,.section.introduction .lead{color:var(--color-ink)}
 .hero-home ~ .section.introduction p:not(.lead),.section.introduction p:not(.lead){color:var(--color-ink)}
 .hero-home ~ .section.introduction p.eyebrow,.section.introduction p.eyebrow{color:var(--color-brand-hover)}
-.hero-home ~ .section.introduction .text-link,.section.introduction .text-link{color:var(--color-brand);border-bottom-color:var(--color-brand)}
+.hero-home ~ .section.introduction .text-link,.section.introduction .text-link{color:var(--color-brand-hover);border-bottom-color:var(--color-brand-hover)}
 .city-service-grid .service-card h3,.city-service-grid .service-card p{color:var(--color-ink)}
 .city-service-grid .service-card:hover h3,.city-service-grid .service-card:hover p{color:#fff}
 .section-ink .section-heading>p,.section-ink .split-heading>div>p{color:#fff}
