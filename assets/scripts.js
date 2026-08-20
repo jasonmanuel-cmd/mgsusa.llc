@@ -159,7 +159,15 @@
         item.el.classList.add('is-zoomable');
         item.el.setAttribute('role', 'button');
         item.el.setAttribute('tabindex', '0');
-        item.el.setAttribute('aria-label', 'View larger image: ' + (item.label || item.tag));
+        /* No aria-label here on purpose. The figcaption already names the
+           tile, and any label we invent has to contain that visible text
+           verbatim - including the run-together kicker - or it trips
+           label-content-name-mismatch. A hidden span keeps the hint while
+           letting the name come from content. */
+        var hint = document.createElement('span');
+        hint.className = 'visually-hidden';
+        hint.textContent = ', view larger image';
+        item.el.appendChild(hint);
         item.el.addEventListener('click', function() { openItem(i); });
         item.el.addEventListener('keydown', function(e) {
           if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openItem(i); }
