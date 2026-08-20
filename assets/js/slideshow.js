@@ -13,7 +13,7 @@
 (function () {
   'use strict';
 
-  var AUTOPLAY_MS = 6000;
+  var AUTOPLAY_MS = 3000;
   var DOTS_MAX = 12;
   var SWIPE_MIN = 40;
 
