@@ -5,14 +5,14 @@
 // otherwise pinned in every returning visitor's browser forever. The activate
 // handler deletes every cache whose name no longer matches, so raising the
 // version is what actually flushes the old copies.
-const CACHE_NAME = 'mgs-usa-v1.0.2';
-const ASSETS_CACHE = 'mgs-usa-assets-v1.0.2';
+const CACHE_NAME = 'mgs-usa-v1.0.3';
+const ASSETS_CACHE = 'mgs-usa-assets-v1.0.3';
 
 // Core assets to cache immediately (shell + critical resources)
 const CRITICAL_ASSETS = [
   '/',
   '/index.html',
-  '/assets/styles.min.css',
+  '/assets/styles.min.css?v=2',
   '/assets/images/brand-video-poster.webp',
   '/assets/images/commercial-video-poster.webp',
   '/assets/images/shower-video-poster.webp'
@@ -78,7 +78,25 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // Assets: Cache-First (use cache, fallback to network)
+  // CSS and JS: Network-First. These two decide whether the page renders at
+  // all, so a stale copy is a broken site, not a slow one. Cache is only the
+  // offline fallback.
+  if (request.destination === 'style' || request.destination === 'script') {
+    event.respondWith(
+      fetch(request)
+        .then(response => {
+          if (response.status === 200) {
+            const copy = response.clone();
+            caches.open(ASSETS_CACHE).then(c => c.put(request, copy));
+          }
+          return response;
+        })
+        .catch(() => caches.match(request))
+    );
+    return;
+  }
+
+  // Everything else (images, fonts, media): Cache-First
   event.respondWith(
     caches.match(request).then(cachedResponse => {
       if (cachedResponse) {
