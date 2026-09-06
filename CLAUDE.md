@@ -36,6 +36,7 @@ client into `assets/vendor/blob-client.js` with esbuild.
 | `api/followup-add.js` | Auth'd: save customer, send satisfaction email |
 | `api/followup-list.js` | Auth'd: list customer records (pure read, cache disabled). The desk's "Export customer list" tile turns this into a CSV client-side — quoted, formula-injection guarded, BOM for Excel, and deliberately without the review token |
 | `api/review-submit.js` | Public: 4–5★ → Google review link email; 1–3★ → private owner alert |
+| `api/health-check.js` | Daily Vercel cron (14:00 UTC). POSTs a tokenless synthetic quote to the live `/api/submit-quote` in probe mode and flags a lead drought. Silent when healthy; emails the owner only on failure. Guarded by `CRON_SECRET` |
 | `api/site-metrics.js` | Auth'd: dashboard aggregator — follow-up funnel, Google rating, GA4 traffic, Lighthouse/PSI, live site probe. `maxDuration: 60` (a PSI run takes 10-30s) |
 
 All write/auth endpoints get `Cache-Control: no-store` in `vercel.json`; the
@@ -48,6 +49,11 @@ generic `/api/(.*)` rule caches for 6h with a 24h stale-while-revalidate window.
 `BLOB_READ_WRITE_TOKEN`, `FOLLOWUP_BLOB_READ_WRITE_TOKEN` (dedicated store),
 `FOLLOWUP_DESK_PASSCODE`, `FOLLOWUP_SESSION_SECRET`, `TURNSTILE_SECRET_KEY`,
 `GOOGLE_PLACES_API_KEY`, `GOOGLE_PLACE_ID`, `GOOGLE_REVIEW_URL`, `GOOGLE_MAPS_URL`.
+
+Monitoring, all optional — the cron degrades rather than failing: `CRON_SECRET`
+(sent by the Vercel cron as a bearer token; unset means the endpoint is open,
+fine for preview but not production), `SITE_URL` (default
+`https://www.mgsusa.llc`), `LEAD_DROUGHT_DAYS` (default 7).
 
 Dashboard-only, all optional — the matching card shows a setup hint instead of data:
 `GA4_PROPERTY_ID`, `GA4_CLIENT_EMAIL`, `GA4_PRIVATE_KEY` (service account with
@@ -88,6 +94,12 @@ Cloudflare Turnstile dashboard (allowed hostnames must include the live domain).
   on white and with white on it. Small text uses `--color-brand-hover`
   (#D62828), which passes ~4.96:1 either way. On near-black, the brighter
   `--metal` is the legible one. Keep #E63946 for fills and large text.
+- **Never let a bot check refuse a lead.** Turnstile blocking the quote form
+  cost roughly 25 days of submissions: the widget failed, no token was minted,
+  and both the client gate and the server's 403 turned real customers away.
+  Verification is advisory now — an unverified lead arrives with an
+  `[unverified]` subject prefix and per-IP rate limits bound abuse instead.
+  `/api/health-check` exists to catch a regression here.
 - **Graceful degradation** is the house style: `/api/submit-quote` 503 falls back
   to Formspree, reviews fall back to a static payload, chat degrades to phone/quote CTAs.
 - Commit messages follow `type(scope): summary`.

@@ -371,6 +371,15 @@
       ]
     },
     {
+      "source": "/api/health-check",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store"
+        }
+      ]
+    },
+    {
       "source": "/api/(.*)",
       "headers": [
         {
@@ -396,6 +405,12 @@
           "value": "public, max-age=0, must-revalidate, s-maxage=86400"
         }
       ]
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/health-check",
+      "schedule": "0 14 * * *"
     }
   ]
 }
