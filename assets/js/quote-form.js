@@ -553,9 +553,14 @@
             fields.consent.focus();
             return 'Please check the consent box so we can follow up with you.';
           }
-          if (TURNSTILE_SITE_KEY && !getTurnstileToken()) {
-            return 'Please complete the security check.';
-          }
+          // Deliberately no Turnstile gate here. When the widget fails to
+          // load -- bad site key, hostname not on the allow list, ad blocker,
+          // flaky network -- getResponse() returns '' forever, and this used
+          // to hand the customer "Please complete the security check." with
+          // nothing they could do about it. A customer hit that three times
+          // and gave up. The token still rides along when it exists; the
+          // server treats its absence as unverified rather than as a reason
+          // to refuse the lead.
           if (state.uploading > 0) return 'Please wait — photos are still uploading.';
           return '';
         }
@@ -839,7 +844,11 @@
         setBusy(false);
         // The token was consumed by the failed attempt; issue a fresh one for the retry.
         resetTurnstile();
-        if (e && e.status === 503) {
+        // 422 is the customer's to fix, so it falls through to the message
+        // below. Everything else is ours -- API down, verification refused,
+        // an unhandled 500 -- and a lead is worth more than a tidy error, so
+        // hand it to Formspree rather than losing it.
+        if (e && (e.status === 503 || e.status === 403 || e.status >= 500)) {
           nativeFallback();
           return;
         }

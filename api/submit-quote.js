@@ -10,8 +10,15 @@
  *   page, turnstileToken
  * }
  *
- * Verifies Cloudflare Turnstile (when TURNSTILE_SECRET_KEY is set), validates,
- * and sends a formatted lead email via Resend. Never cached (no-store).
+ * Validates, then sends a formatted lead email via Resend. Never cached.
+ *
+ * Turnstile is checked but is NEVER a reason to refuse a lead. It used to be:
+ * a missing token, a Cloudflare rejection and a network error all collapsed to
+ * `false` and the handler answered 403, so an outage or a misconfigured site
+ * key silently threw away real customers. One got three errors and gave up.
+ * The verdict now rides along to the owner's inbox as a subject prefix, and
+ * abuse is bounded by the per-IP rate limit below -- the same trade the chat
+ * endpoint already makes.
  *
  * Env: RESEND_API_KEY, LEAD_NOTIFICATION_EMAIL, LEAD_FROM_EMAIL,
  *      TURNSTILE_SECRET_KEY (optional; skip verification when unset)
@@ -42,23 +49,62 @@ function readBody(req) {
   });
 }
 
+/* Resolves to a verdict rather than a boolean, because "no token" and
+   "Cloudflare says forged" and "Cloudflare did not answer" need to be told
+   apart in the logs. None of them stop the lead. */
 function verifyTurnstile(token) {
   var secret = process.env.TURNSTILE_SECRET_KEY;
-  if (!secret) return Promise.resolve(true);
-  if (!token) return Promise.resolve(false);
+  if (!secret) return Promise.resolve('skipped');
+  if (!token) return Promise.resolve('missing');
   return fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ secret: secret, response: token })
   }).then(function (r) { return r.json(); }).then(function (d) {
-    if (d.success !== true) {
-      console.error('Turnstile verify failed (submit-quote):', JSON.stringify(d['error-codes'] || d));
-    }
-    return d.success === true;
+    if (d.success === true) return 'passed';
+    console.error('Turnstile rejected (submit-quote):', JSON.stringify(d['error-codes'] || d));
+    return 'failed';
   }).catch(function (e) {
-    console.error('Turnstile verify error (submit-quote):', e && e.message);
-    return false;
+    console.error('Turnstile unreachable (submit-quote):', e && e.message);
+    return 'unavailable';
   });
+}
+
+/* Per-IP limits, in lambda memory like api/chat.js. A real customer sends one
+   request and occasionally retries; these numbers leave that untouched while
+   capping what a script can push through now that Turnstile cannot refuse. */
+var MINUTE_MS = 60 * 1000;
+var HOUR_MS = 60 * MINUTE_MS;
+var MAX_PER_MINUTE = 5;
+var MAX_PER_HOUR = 20;
+var MAX_TRACKED_IPS = 5000;
+var hitsByIp = new Map();
+
+function clientIp(req) {
+  var fwd = req.headers['x-forwarded-for'];
+  if (fwd) return String(fwd).split(',')[0].trim();
+  return req.headers['x-real-ip'] || (req.socket && req.socket.remoteAddress) || 'unknown';
+}
+
+function rateLimitRetryAfter(ip, now) {
+  var times = (hitsByIp.get(ip) || []).filter(function (t) { return now - t < HOUR_MS; });
+  var inMinute = times.filter(function (t) { return now - t < MINUTE_MS; });
+  if (inMinute.length >= MAX_PER_MINUTE) {
+    hitsByIp.set(ip, times);
+    return Math.max(1, Math.ceil((MINUTE_MS - (now - inMinute[0])) / 1000));
+  }
+  if (times.length >= MAX_PER_HOUR) {
+    hitsByIp.set(ip, times);
+    return Math.max(1, Math.ceil((HOUR_MS - (now - times[0])) / 1000));
+  }
+  times.push(now);
+  hitsByIp.set(ip, times);
+  if (hitsByIp.size > MAX_TRACKED_IPS) {
+    hitsByIp.forEach(function (v, k) {
+      if (!v.length || now - v[v.length - 1] > HOUR_MS) hitsByIp.delete(k);
+    });
+  }
+  return 0;
 }
 
 function escapeHtml(value) {
@@ -214,6 +260,16 @@ module.exports = async function handler(req, res) {
     return jsonError(res, 503, 'Form submission is not configured yet. Please call 210-370-3700 or email ' + process.env.LEAD_NOTIFICATION_EMAIL || 'masterglassllc@aol.com');
   }
 
+  // Now that a failed bot check cannot refuse a lead, this is what bounds
+  // abuse. The message names the phone number so a real person who somehow
+  // trips it still has a way through.
+  var retryAfter = rateLimitRetryAfter(clientIp(req), Date.now());
+  if (retryAfter) {
+    res.setHeader('Retry-After', String(retryAfter));
+    return jsonError(res, 429,
+      'That is a lot of requests in a short time. Please wait a moment and try again, or call 210-370-3700.');
+  }
+
   var body;
   try {
     body = await readBody(req);
@@ -228,14 +284,17 @@ module.exports = async function handler(req, res) {
     return res.status(422).json({ ok: false, errors: result.errors });
   }
 
-  var ok = await verifyTurnstile(body.turnstileToken);
-  if (!ok) {
-    return jsonError(res, 403, 'Verification failed. Please refresh and try again.');
-  }
+  var verdict = await verifyTurnstile(body.turnstileToken);
 
   var mail = kind === 'checklist'
     ? buildChecklistEmail(result.data, body.page)
     : buildQuoteEmail(result.data, body.page);
+
+  // Say so in the subject rather than in a 403. The owner can judge a lead on
+  // its contents; losing it outright leaves nothing to judge.
+  if (verdict !== 'passed' && verdict !== 'skipped') {
+    mail.subject = '[unverified] ' + mail.subject;
+  }
 
   try {
     var sent = await sendEmail(mail);

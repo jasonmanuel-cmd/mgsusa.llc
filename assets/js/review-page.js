@@ -128,10 +128,11 @@
       showError('Please choose a rating from 1 to 5 stars.');
       return;
     }
-    if (turnstileReady && !turnstileToken) {
-      showError('Please complete the security check.');
-      return;
-    }
+    // No Turnstile gate, for the same reason the quote form has none: when the
+    // widget renders but never resolves, this blocked the customer with an
+    // error they could not clear. The token still goes up when it exists and
+    // the server records the verdict. A review lost to a bot check is a review
+    // the follow-up desk never sees.
 
     setFormEnabled(false);
     submitBtn.textContent = 'Sending…';
