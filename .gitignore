@@ -32,3 +32,7 @@ shots.mjs
 shots/
 master-glass-site/
 .env*
+
+# Skills ship their own Python helpers. The blanket *.py above exists to keep
+# stray build scripts out of the repo, not to exclude bundled skill tooling.
+!.claude/skills/**/*.py
