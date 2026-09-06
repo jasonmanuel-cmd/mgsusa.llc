@@ -9,9 +9,13 @@
  * The browser then PUTs the raw file bytes directly to https://vercel.com/api/blob,
  * so uploads are NOT limited by the serverless function body size limit (4.5 MB).
  *
- * The Turnstile response token is passed through clientPayload and verified here
- * (in onBeforeGenerateToken) BEFORE any client token is issued. Allowed content
- * types and the size cap are enforced server-side by the signed token.
+ * The Turnstile response token is passed through clientPayload and checked here,
+ * but a failed check no longer refuses the upload. Photos hang off a quote
+ * request, and a customer whose Turnstile widget is broken was getting a 403
+ * per photo after an 8 second wait -- which reads as "this form is broken" and
+ * costs the lead. Abuse is bounded instead by the per-IP rate limit below,
+ * alongside the allowed content types and size cap that the signed token
+ * already enforces server-side.
  *
  * Env: BLOB_READ_WRITE_TOKEN, TURNSTILE_SECRET_KEY (optional)
  */
@@ -43,15 +47,53 @@ function readBody(req) {
 
 function verifyTurnstile(token) {
   var secret = process.env.TURNSTILE_SECRET_KEY;
-  if (!secret) return Promise.resolve(true);
-  if (!token) return Promise.resolve(false);
+  if (!secret) return Promise.resolve('skipped');
+  if (!token) return Promise.resolve('missing');
   return fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ secret: secret, response: token })
   }).then(function (r) { return r.json(); }).then(function (d) {
-    return d.success === true;
-  }).catch(function () { return false; });
+    return d.success === true ? 'passed' : 'failed';
+  }).catch(function () { return 'unavailable'; });
+}
+
+/* What actually bounds abuse now. Six photos per quote is the form's cap, so
+   these limits leave a real customer -- even one who retries a couple of
+   uploads -- well clear, while stopping a script from using this as free
+   image hosting. In lambda memory, same as api/chat.js. */
+var MINUTE_MS = 60 * 1000;
+var HOUR_MS = 60 * MINUTE_MS;
+var MAX_PER_MINUTE = 15;
+var MAX_PER_HOUR = 60;
+var MAX_TRACKED_IPS = 5000;
+var hitsByIp = new Map();
+
+function clientIp(req) {
+  var fwd = req.headers['x-forwarded-for'];
+  if (fwd) return String(fwd).split(',')[0].trim();
+  return req.headers['x-real-ip'] || (req.socket && req.socket.remoteAddress) || 'unknown';
+}
+
+function rateLimitRetryAfter(ip, now) {
+  var times = (hitsByIp.get(ip) || []).filter(function (t) { return now - t < HOUR_MS; });
+  var inMinute = times.filter(function (t) { return now - t < MINUTE_MS; });
+  if (inMinute.length >= MAX_PER_MINUTE) {
+    hitsByIp.set(ip, times);
+    return Math.max(1, Math.ceil((MINUTE_MS - (now - inMinute[0])) / 1000));
+  }
+  if (times.length >= MAX_PER_HOUR) {
+    hitsByIp.set(ip, times);
+    return Math.max(1, Math.ceil((HOUR_MS - (now - times[0])) / 1000));
+  }
+  times.push(now);
+  hitsByIp.set(ip, times);
+  if (hitsByIp.size > MAX_TRACKED_IPS) {
+    hitsByIp.forEach(function (v, k) {
+      if (!v.length || now - v[v.length - 1] > HOUR_MS) hitsByIp.delete(k);
+    });
+  }
+  return 0;
 }
 
 module.exports = async function handler(req, res) {
@@ -64,6 +106,13 @@ module.exports = async function handler(req, res) {
 
   if (!process.env.BLOB_READ_WRITE_TOKEN) {
     return jsonError(res, 503, 'Photo uploads are not configured yet. You can still submit the form without photos.');
+  }
+
+  var retryAfter = rateLimitRetryAfter(clientIp(req), Date.now());
+  if (retryAfter) {
+    res.setHeader('Retry-After', String(retryAfter));
+    return jsonError(res, 429,
+      'Too many photo uploads at once. Please wait a moment, or submit the form without photos and email them to us.');
   }
 
   var body;
@@ -79,11 +128,11 @@ module.exports = async function handler(req, res) {
       request: req,
       body: body,
       onBeforeGenerateToken: async function (pathname, clientPayload) {
-        var ok = await verifyTurnstile(clientPayload);
-        if (!ok) {
-          var err = new Error('Verification failed. Please refresh and try again.');
-          err.status = 403;
-          throw err;
+        var verdict = await verifyTurnstile(clientPayload);
+        if (verdict !== 'passed' && verdict !== 'skipped') {
+          // Logged, not enforced: the content type and size cap below still
+          // apply, and the rate limit above is what keeps volume sane.
+          console.warn('blob-upload: unverified photo upload (' + verdict + ')');
         }
         return {
           access: 'public',
