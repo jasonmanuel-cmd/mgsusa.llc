@@ -15,6 +15,11 @@ client into `assets/vendor/blob-client.js` with esbuild.
   in the browser, `module.exports` on Vercel. Includes the followup store/auth helpers
   and `metrics-cache.js` (server-only Blob TTL cache for dashboard reads).
 - `assets/js/`, `assets/css/` — per-feature client code and styles.
+  `slideshow.js` drives the project carousel that sits under the hero on every
+  service page.
+- `service-worker.js` — cache-first for images, network-first for HTML, CSS and JS.
+- `.claude/skills/add-project-photos/` — the photo pipeline as a runnable skill,
+  with `optimize_images.py` and `verify_site.py` in its `scripts/`.
 - `vercel.json` — `cleanUrls`, `.html` → extensionless redirects for every page,
   and per-endpoint `Cache-Control` headers.
 
@@ -29,7 +34,7 @@ client into `assets/vendor/blob-client.js` with esbuild.
 | `api/reviews-fallback.js` | Static empty-review payload, same shape |
 | `api/followup-desk-login.js` | Passcode → HMAC session token |
 | `api/followup-add.js` | Auth'd: save customer, send satisfaction email |
-| `api/followup-list.js` | Auth'd: list customer records (pure read, cache disabled) |
+| `api/followup-list.js` | Auth'd: list customer records (pure read, cache disabled). The desk's "Export customer list" tile turns this into a CSV client-side — quoted, formula-injection guarded, BOM for Excel, and deliberately without the review token |
 | `api/review-submit.js` | Public: 4–5★ → Google review link email; 1–3★ → private owner alert |
 | `api/site-metrics.js` | Auth'd: dashboard aggregator — follow-up funnel, Google rating, GA4 traffic, Lighthouse/PSI, live site probe. `maxDuration: 60` (a PSI run takes 10-30s) |
 
@@ -65,8 +70,24 @@ Cloudflare Turnstile dashboard (allowed hostnames must include the live domain).
 - **CSS:** edit `assets/design-tokens.css` (source of truth) and
   `assets/styles.css`, then re-inline tokens and regenerate `assets/styles.min.css`
   — that's what pages actually load. Never patch the `.min` file directly.
+- **Bump the service worker on any CSS or JS change.** `service-worker.js`
+  caches by version; raise `CACHE_NAME` *and* `ASSETS_CACHE` together. HTML is
+  network-first, so skipping this hands returning visitors new markup with an
+  old stylesheet — that is how every slideshow once rendered as a vertical
+  column of photos. A hard refresh looks fine, so testing will not catch it.
+  `styles.min.css` is also requested as `?v=N`; raise that when the file changes.
 - **Site-wide changes** (nav, footer, tracking snippets, social links) must be
   applied across all 50 HTML pages — e.g. the HubSpot snippet is on all 50.
+- **Photos:** run the `add-project-photos` skill rather than doing it by hand.
+  Budgets are 1400px/180 KB full and 800px/80 KB for `-sm` thumbnails, and
+  every photo needs both. Encode first, then write `srcset` width descriptors
+  from the files on disk — writing them first and re-encoding after makes them
+  lie. A `<source>` needs descriptors and `sizes`, or a `media` query; a bare
+  one-URL srcset beats the `<img>` and pins the full-size file for everyone.
+- **Brand red:** `--color-brand` (#E63946) fails AA as small text — 4.16:1 both
+  on white and with white on it. Small text uses `--color-brand-hover`
+  (#D62828), which passes ~4.96:1 either way. On near-black, the brighter
+  `--metal` is the legible one. Keep #E63946 for fills and large text.
 - **Graceful degradation** is the house style: `/api/submit-quote` 503 falls back
   to Formspree, reviews fall back to a static payload, chat degrades to phone/quote CTAs.
 - Commit messages follow `type(scope): summary`.
@@ -95,3 +116,12 @@ Static pages render; anything under `api/` needs a Vercel deploy (or preview) to
 - `test-blob-e2e.cjs` and `test-real-module.cjs` at the root are tracked debugging
   scratch scripts, not a test suite. There is no automated test or CI setup;
   the only Actions workflow is the Copilot PR reviewer.
+- Verification is manual and worth doing: `python3 -m http.server 8080`, then
+  Chromium at `/opt/pw-browsers/chromium` via Playwright, plus
+  `.claude/skills/add-project-photos/scripts/verify_site.py --since origin/main`.
+  Lighthouse runs locally too; service pages should sit in the mid-to-high 90s
+  on mobile. `content-visibility: auto` makes axe misread backgrounds behind
+  skipped sections, so the odd contrast "failure" is a false positive — check
+  the computed colours before chasing one.
+- A CLA bot (`open-cla`) marks every PR red because commits are authored by
+  `@claude`. It does not block merging.
