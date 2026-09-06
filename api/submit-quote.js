@@ -70,6 +70,25 @@ function verifyTurnstile(token) {
   });
 }
 
+/* Leaves a timestamp behind after each lead so /api/health-check can notice a
+   drought. Deliberately fire-and-forget and wrapped twice: this runs on the
+   path we just spent a release making unbreakable, and a monitoring nicety
+   must never be the thing that loses the next lead. */
+function recordLeadPulse(kind, verdict) {
+  try {
+    var cache = require('../data/metrics-cache');
+    Promise.resolve(cache.write('lead-pulse', {
+      at: new Date().toISOString(),
+      kind: kind,
+      turnstile: verdict
+    })).catch(function (e) {
+      console.error('lead pulse write failed', e && e.message);
+    });
+  } catch (e) {
+    console.error('lead pulse unavailable', e && e.message);
+  }
+}
+
 /* Per-IP limits, in lambda memory like api/chat.js. A real customer sends one
    request and occasionally retries; these numbers leave that untouched while
    capping what a script can push through now that Turnstile cannot refuse. */
@@ -296,12 +315,29 @@ module.exports = async function handler(req, res) {
     mail.subject = '[unverified] ' + mail.subject;
   }
 
+  /* A probe runs everything above -- routing, validation, the Turnstile verdict,
+     building the email -- and stops short of sending, so /api/health-check can
+     prove the funnel accepts a tokenless submission without putting a fake lead
+     in the owner's inbox. It deliberately reports the verdict: a probe that
+     starts coming back 'passed' means Turnstile is working again. */
+  if (body.probe === true) {
+    return res.status(200).json({
+      ok: true,
+      probe: true,
+      kind: kind,
+      turnstile: verdict,
+      emailConfigured: !!process.env.RESEND_API_KEY,
+      subject: mail.subject
+    });
+  }
+
   try {
     var sent = await sendEmail(mail);
     if (sent.status >= 400) {
       console.error('Resend error', sent.status, JSON.stringify(sent.data).slice(0, 500));
       return jsonError(res, 502, 'We could not send your request right now. Please call 210-370-3700.');
     }
+    recordLeadPulse(kind, verdict);
     return res.status(200).json({ ok: true, redirect: '/thank-you', kind: kind });
   } catch (e) {
     console.error('Email send failed', e);
