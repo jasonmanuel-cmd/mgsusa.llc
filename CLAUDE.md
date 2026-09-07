@@ -36,7 +36,7 @@ client into `assets/vendor/blob-client.js` with esbuild.
 | `api/followup-add.js` | Auth'd: save customer, send satisfaction email |
 | `api/followup-list.js` | Auth'd: list customer records (pure read, cache disabled). The desk's "Export customer list" tile turns this into a CSV client-side — quoted, formula-injection guarded, BOM for Excel, and deliberately without the review token |
 | `api/review-submit.js` | Public: 4–5★ → Google review link email; 1–3★ → private owner alert |
-| `api/health-check.js` | Daily Vercel cron (14:00 UTC). POSTs a tokenless synthetic quote to the live `/api/submit-quote` in probe mode and flags a lead drought. Silent when healthy; emails the owner only on failure. Guarded by `CRON_SECRET` |
+| `api/health-check.js` | Daily Vercel cron (14:00 UTC). Three checks: POSTs a tokenless synthetic quote to the live `/api/submit-quote` in probe mode, asks Resend whether the `LEAD_FROM_EMAIL` domain is verified, and flags a lead drought. Silent when healthy; emails the owner only on failure, falling back to `onboarding@resend.dev` when the normal sender is the thing that broke. Guarded by `CRON_SECRET` |
 | `api/site-metrics.js` | Auth'd: dashboard aggregator — follow-up funnel, Google rating, GA4 traffic, Lighthouse/PSI, live site probe. `maxDuration: 60` (a PSI run takes 10-30s) |
 
 All write/auth endpoints get `Cache-Control: no-store` in `vercel.json`; the
@@ -53,7 +53,10 @@ generic `/api/(.*)` rule caches for 6h with a 24h stale-while-revalidate window.
 Monitoring, all optional — the cron degrades rather than failing: `CRON_SECRET`
 (sent by the Vercel cron as a bearer token; unset means the endpoint is open,
 fine for preview but not production), `SITE_URL` (default
-`https://www.mgsusa.llc`), `LEAD_DROUGHT_DAYS` (default 7).
+`https://www.mgsusa.llc`), `LEAD_DROUGHT_DAYS` (default 7), `HEALTH_PROBE_EMAIL`
+(an address that is safe to receive a daily test message; setting it makes the
+funnel probe perform a real Resend send instead of only reporting that a key
+exists — the difference between "configured" and "actually delivers").
 
 Dashboard-only, all optional — the matching card shows a setup hint instead of data:
 `GA4_PROPERTY_ID`, `GA4_CLIENT_EMAIL`, `GA4_PRIVATE_KEY` (service account with
@@ -100,6 +103,11 @@ Cloudflare Turnstile dashboard (allowed hostnames must include the live domain).
   Verification is advisory now — an unverified lead arrives with an
   `[unverified]` subject prefix and per-IP rate limits bound abuse instead.
   `/api/health-check` exists to catch a regression here.
+- **A configured integration is not a working one.** `RESEND_API_KEY` being set
+  says nothing about whether Resend will *accept* the send: an unverified From
+  domain is refused at the API, `submit-quote` answers 502, and the owner's
+  inbox stays empty while every page looks fine. Health checks here assert
+  delivery, not configuration.
 - **Graceful degradation** is the house style: `/api/submit-quote` 503 falls back
   to Formspree, reviews fall back to a static payload, chat degrades to phone/quote CTAs.
 - Commit messages follow `type(scope): summary`.
