@@ -254,9 +254,9 @@ function buildChecklistEmail(d, page) {
   };
 }
 
-function sendEmail(mail) {
+function sendEmail(mail, overrideTo) {
   var from = process.env.LEAD_FROM_EMAIL || 'quotes@mgsusa.llc';
-  var to = process.env.LEAD_NOTIFICATION_EMAIL || 'masterglassllc@aol.com';
+  var to = overrideTo || process.env.LEAD_NOTIFICATION_EMAIL || 'masterglassllc@aol.com';
   return fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: {
@@ -316,19 +316,50 @@ module.exports = async function handler(req, res) {
   }
 
   /* A probe runs everything above -- routing, validation, the Turnstile verdict,
-     building the email -- and stops short of sending, so /api/health-check can
-     prove the funnel accepts a tokenless submission without putting a fake lead
-     in the owner's inbox. It deliberately reports the verdict: a probe that
-     starts coming back 'passed' means Turnstile is working again. */
+     building the email -- then, when HEALTH_PROBE_EMAIL names somewhere safe to
+     put it, actually sends through Resend and reports the status.
+
+     Reporting only `emailConfigured` was not enough. A working RESEND_API_KEY
+     says nothing about whether Resend will *accept* the send: if the From
+     domain is not verified on the account, every lead is rejected at the API,
+     submit-quote answers 502, and the owner's inbox stays empty while the
+     probe cheerfully reports a healthy funnel. That is the shape of the bug
+     this endpoint exists to catch, so the probe has to exercise the send. */
   if (body.probe === true) {
-    return res.status(200).json({
+    var probeTo = process.env.HEALTH_PROBE_EMAIL || '';
+    var out = {
       ok: true,
       probe: true,
       kind: kind,
       turnstile: verdict,
       emailConfigured: !!process.env.RESEND_API_KEY,
+      from: process.env.LEAD_FROM_EMAIL || 'quotes@mgsusa.llc',
       subject: mail.subject
-    });
+    };
+    if (!probeTo) {
+      out.emailChecked = false;
+      out.emailNote = 'HEALTH_PROBE_EMAIL is not set, so delivery was not exercised.';
+      return res.status(200).json(out);
+    }
+    try {
+      var probeSent = await sendEmail({
+        subject: '[probe] quote funnel check',
+        text: mail.text,
+        html: mail.html
+      }, probeTo);
+      out.emailChecked = true;
+      out.emailStatus = probeSent.status;
+      if (probeSent.status >= 400) {
+        out.ok = false;
+        out.emailError = JSON.stringify(probeSent.data).slice(0, 300);
+      }
+    } catch (e) {
+      out.ok = false;
+      out.emailChecked = true;
+      out.emailStatus = 0;
+      out.emailError = (e && e.message) || 'send threw';
+    }
+    return res.status(200).json(out);
   }
 
   try {
