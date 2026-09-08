@@ -2,10 +2,17 @@
    Progressive enhancement over the static #quote-form used on the five quote
    pages. Turns the long form into a guided step flow, submits to
    POST /api/submit-quote, supports Cloudflare Turnstile + photo uploads
-   (via window.MGS.photoUpload), fires GA4 mgs_quote_* events, and falls
-   back to the original Formspree submission when the API is not deployed
-   (HTTP 503). The original fields are reused (moved, not cloned) so values
-   and names always stay in sync with the DOM. */
+   (via window.MGS.photoUpload), fires GA4 mgs_quote_* events, and degrades
+   when the API cannot take the lead (503, 500, 502). The original fields are
+   reused (moved, not cloned) so values and names always stay in sync with
+   the DOM.
+
+   On failure it submits natively ONLY if the form carries an action pointing
+   somewhere off this page -- add action="https://formspree.io/f/<id>" to the
+   five quote forms to turn that safety net on. With no action, a native
+   submit posts to the static page itself and the lead disappears, so instead
+   the customer is kept on the page and handed their own request with a phone
+   number and a prefilled email. */
 
 (function () {
   'use strict';
@@ -13,6 +20,7 @@
   var TURNSTILE_SITE_KEY = '0x4AAAAAAEGumU2z9QHnLmlL';
   var MAX_PHOTOS = 6;          // keep in sync with api/submit-quote.js
   var PHONE = '210-370-3700';
+  var CONTACT_EMAIL = 'masterglassllc@aol.com';
   var EMERGENCY_URL = '/emergency-glass-repair';
   var PHONE_RE = /^[+()\-.\s\d]{7,20}$/;
   var FALLBACK_MESSAGE =
@@ -794,13 +802,90 @@
       };
     }
 
-    function nativeFallback() {
+    /* A <form> with no action attribute posts to the page it is already on.
+       These five quote pages are static HTML on a CDN, so that POST is
+       answered with the page itself -- the browser navigates, the fields are
+       gone, and the lead is destroyed in silence. No email, no record
+       anywhere, and a customer looking at what appears to be a reload.
+
+       The comments in this file promised a Formspree fallback, but no
+       endpoint was ever put on the forms, so "graceful degradation" has
+       actually meant "delete the lead" for every 500, 502 and 503 the API
+       returned. A 502 is exactly what submit-quote returns when Resend
+       refuses the send, which is the failure being chased right now.
+
+       So check before handing the browser a lead: submit natively only when
+       there is somewhere real to send it. */
+    function fallbackTarget() {
+      var a = (form.getAttribute('action') || '').trim();
+      if (!a) return '';
+      try {
+        var url = new URL(a, window.location.href);
+        var here = new URL(window.location.href);
+        if (url.origin === here.origin && url.pathname === here.pathname) return '';
+        return url.href;
+      } catch (e) {
+        return '';
+      }
+    }
+
+    function nativeFallback(payload) {
+      if (!fallbackTarget()) { rescueLead(payload); return; }
+      /* form.submit(), not a dispatched submit event. Dispatching runs the
+         listeners but never navigates, and dispatchEvent does not throw, so
+         the form.submit() that used to sit in the catch block was dead code:
+         with an action configured this whole path quietly did nothing -- no
+         post, no error, just a form sitting there. submit() skips listeners
+         (our own capture-phase interceptor included) and actually posts. */
       form.setAttribute('data-mgs-native', '1');
       try {
-        form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
-      } catch (e) {
         form.submit();
+      } catch (e) {
+        rescueLead(payload);
       }
+    }
+
+    /* Last line of defence. We could not send it and there is nowhere to fall
+       back to, so hand the customer their own request and two ways to deliver
+       it. They stay on the page with every field intact. A lead the customer
+       can still act on beats a tidy error message and an empty inbox. */
+    function rescueLead(payload) {
+      var name = [payload['first-name'], payload['last-name']].filter(Boolean).join(' ');
+      var body = [
+        'Name: ' + (name || '-'),
+        'Email: ' + (payload.email || '-'),
+        'Phone: ' + (payload.phone || '-'),
+        'Service: ' + (payload.service || '-'),
+        'Project type: ' + (payload.projectType || '-'),
+        'Location: ' + (payload.location || '-'),
+        'Timeline: ' + (payload.timeline || '-'),
+        'Company / property: ' + (payload.business || '-'),
+        '',
+        'Details:',
+        payload.details || '-'
+      ].join('\n');
+
+      errBox.hidden = false;
+      errBox.textContent = '';
+      make('p', {
+        class: 'quote-wizard__rescue-lead',
+        text: 'We could not send your request just now — that is on us, not you. ' +
+          'Your answers are still here. Please reach us one of these ways and we will take care of it right away:'
+      }, errBox);
+      var actions = make('p', { class: 'quote-wizard__rescue' }, errBox);
+      make('a', {
+        class: 'quote-wizard__rescue-link',
+        href: 'tel:' + PHONE.replace(/[^\d+]/g, ''),
+        text: 'Call ' + PHONE
+      }, actions);
+      make('a', {
+        class: 'quote-wizard__rescue-link',
+        href: 'mailto:' + CONTACT_EMAIL +
+          '?subject=' + encodeURIComponent('Quote request from ' + (name || 'the website')) +
+          '&body=' + encodeURIComponent(body),
+        text: 'Email your request'
+      }, actions);
+      track('mgs_quote_rescue', { kind: kind });
     }
 
     function setBusy(busy) {
@@ -846,10 +931,11 @@
         resetTurnstile();
         // 422 is the customer's to fix, so it falls through to the message
         // below. Everything else is ours -- API down, verification refused,
-        // an unhandled 500 -- and a lead is worth more than a tidy error, so
-        // hand it to Formspree rather than losing it.
+        // an unhandled 500, or a 502 because the mail provider refused the
+        // send -- and a lead is worth more than a tidy error, so pass it to
+        // the fallback rather than losing it.
         if (e && (e.status === 503 || e.status === 403 || e.status >= 500)) {
-          nativeFallback();
+          nativeFallback(payload);
           return;
         }
         if (e && e.status === 422 && e.data && e.data.errors && e.data.errors.length) {

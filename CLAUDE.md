@@ -108,8 +108,18 @@ Cloudflare Turnstile dashboard (allowed hostnames must include the live domain).
   domain is refused at the API, `submit-quote` answers 502, and the owner's
   inbox stays empty while every page looks fine. Health checks here assert
   delivery, not configuration.
-- **Graceful degradation** is the house style: `/api/submit-quote` 503 falls back
-  to Formspree, reviews fall back to a static payload, chat degrades to phone/quote CTAs.
+- **Graceful degradation** is the house style: reviews fall back to a static
+  payload, chat degrades to phone/quote CTAs, and a quote the API cannot take
+  falls back rather than vanishing. **A fallback nobody wired up is worse than
+  none** — the quote forms carry no `action`, and for months `nativeFallback()`
+  posted them to the static page they sit on, so every 500/502/503 deleted the
+  lead in silence while the code claimed it went to Formspree. `quote-form.js`
+  now submits natively only when the form has an `action` that leaves the page;
+  otherwise it keeps the customer put and hands them their request back with a
+  phone number and a prefilled email. To turn the Formspree net on, put
+  `action="https://formspree.io/f/<id>"` on the five `#quote-form` forms.
+  Related: `form.dispatchEvent(new Event('submit'))` runs listeners but never
+  navigates — use `form.submit()` when you mean to post.
 - Commit messages follow `type(scope): summary`.
 
 ## Local preview
