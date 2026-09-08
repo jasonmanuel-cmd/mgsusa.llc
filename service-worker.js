@@ -5,8 +5,8 @@
 // otherwise pinned in every returning visitor's browser forever. The activate
 // handler deletes every cache whose name no longer matches, so raising the
 // version is what actually flushes the old copies.
-const CACHE_NAME = 'mgs-usa-v1.0.4';
-const ASSETS_CACHE = 'mgs-usa-assets-v1.0.4';
+const CACHE_NAME = 'mgs-usa-v1.0.5';
+const ASSETS_CACHE = 'mgs-usa-assets-v1.0.5';
 
 // Core assets to cache immediately (shell + critical resources)
 const CRITICAL_ASSETS = [

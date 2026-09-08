@@ -276,7 +276,11 @@ module.exports = async function handler(req, res) {
   }
 
   if (!process.env.RESEND_API_KEY) {
-    return jsonError(res, 503, 'Form submission is not configured yet. Please call 210-370-3700 or email ' + process.env.LEAD_NOTIFICATION_EMAIL || 'masterglassllc@aol.com');
+    // `+` binds tighter than `||`, so the old form here read
+    // ('...email ' + undefined) || '...' and told the customer to write to
+    // "undefined" whenever LEAD_NOTIFICATION_EMAIL was unset.
+    return jsonError(res, 503, 'Form submission is not configured yet. Please call 210-370-3700 or email ' +
+      (process.env.LEAD_NOTIFICATION_EMAIL || 'masterglassllc@aol.com'));
   }
 
   // Now that a failed bot check cannot refuse a lead, this is what bounds
