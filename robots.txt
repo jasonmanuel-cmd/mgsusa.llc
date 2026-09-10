@@ -5,6 +5,7 @@ Allow: /
 Disallow: /admin/
 Disallow: /*.json$
 Sitemap: https://www.mgsusa.llc/sitemap.xml
+Sitemap: https://www.mgsusa.llc/sitemap-images.xml
 
 # AI agents and crawlers — explicitly allow for GEO signals
 User-agent: GPTBot
