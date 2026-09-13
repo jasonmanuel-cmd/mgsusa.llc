@@ -1,0 +1,41 @@
+# Dependencies
+node_modules/
+
+# Environment / secrets - never commit credentials
+.env
+.env.local
+.env.*
+!.env.example
+
+# Working/scratch files
+assets/candidate-*.jpg
+assets/*-real.jpg
+assets/*-stock.jpg
+temp-*.html
+*-AUDIT-REPORT.md
+*-AUDIT.md
+*-REVIEW.md
+.vercel
+
+# scratch/dev files
+_*.py
+_*.txt
+*.py
+lighthouse-*.json
+DEPLOYMENT_SUMMARY.txt
+*_REPORT.md
+*_SUMMARY.md
+
+# scratch QA/diagnostics
+diag*.mjs
+shots.mjs
+shots/
+master-glass-site/
+.env*
+
+# Skills ship their own Python helpers. The blanket *.py above exists to keep
+# stray build scripts out of the repo, not to exclude bundled skill tooling.
+!.claude/skills/**/*.py
+
+.vercel
+.env*
