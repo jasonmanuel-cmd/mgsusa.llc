@@ -258,6 +258,31 @@
       "permanent": true
     },
     {
+      "source": "/commercial-glass-guide.html",
+      "destination": "/commercial-glass-guide",
+      "permanent": true
+    },
+    {
+      "source": "/glass-cleaning-maintenance.html",
+      "destination": "/glass-cleaning-maintenance",
+      "permanent": true
+    },
+    {
+      "source": "/glass-types.html",
+      "destination": "/glass-types",
+      "permanent": true
+    },
+    {
+      "source": "/hill-country-glass.html",
+      "destination": "/hill-country-glass",
+      "permanent": true
+    },
+    {
+      "source": "/storm-damage-glass.html",
+      "destination": "/storm-damage-glass",
+      "permanent": true
+    },
+    {
       "source": "/residential",
       "destination": "/residential-glass",
       "permanent": true

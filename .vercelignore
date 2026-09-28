@@ -1,0 +1,28 @@
+# What must NOT be published to the live site.
+#
+# Everything here still lives in the repo and in git history; it is simply not
+# uploaded to Vercel, so it cannot be fetched, crawled or indexed.
+
+# 92 near-duplicate pages built for sanantonioglasssolutions.com and
+# masterglasssolutionsusa.com. Nothing routes those hostnames to this folder --
+# vercel.json has no rewrites and no host matching -- so on the live site these
+# were simply duplicate content sitting at mgsusa.llc/secondary-domain/..., with
+# canonicals pointing at URLs that serve something else. If those domains are
+# ever genuinely served from this project, add the host rewrites to vercel.json
+# and drop this line in the same change.
+secondary-domain/
+
+# Internal audits, checklists and the customer-facing update report. Useful to
+# keep, never meant to be served from the marketing site.
+docs/
+
+# Build and repair scripts, including the add-gtm*.ps1 injectors that put the
+# GTM snippet on every page twice and broke an HTML comment on the homepage.
+tools/
+
+# Agent and editor config.
+.claude/
+CLAUDE.md
+
+# Local only.
+node_modules/
