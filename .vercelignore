@@ -26,3 +26,6 @@ CLAUDE.md
 
 # Local only.
 node_modules/
+
+# Astro rebuild, concept stage. Not deployed until a direction is chosen.
+web/

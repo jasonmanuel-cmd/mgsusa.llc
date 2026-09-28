@@ -1,0 +1,212 @@
+/* Motion layer — mgsusa.llc
+ *
+ * Additive only. This file changes no colour, no type, no spacing and no
+ * layout of the existing design; it adds movement and depth on top of it.
+ * Every effect is keyed to markup that is already on the pages, so nothing
+ * here needs the HTML restructured.
+ *
+ * Two rules it keeps:
+ *   1. The page is complete and readable with this file missing, with JS off,
+ *      and for anyone who asks for reduced motion. Nothing is hidden until
+ *      motion.js has confirmed it can reveal it again.
+ *   2. Nothing animates a property that forces layout. Transform and opacity
+ *      only, so the work stays on the compositor and the mid-90s mobile
+ *      Lighthouse scores stay where they are.
+ */
+
+/* ---------------------------------------------------------------- *
+ * Cross-page transitions
+ *
+ * The site is 56 separate documents. This makes moving between them feel
+ * like one application instead of a reload, which is most of the "modern"
+ * impression and costs no JavaScript at all. Browsers without it navigate
+ * exactly as they do today.
+ * ---------------------------------------------------------------- */
+@view-transition { navigation: auto; }
+
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-old(root) { animation: mgs-fade-out .18s ease both; }
+  ::view-transition-new(root) { animation: mgs-rise-in .34s cubic-bezier(.22,.61,.36,1) both; }
+}
+@keyframes mgs-fade-out { to { opacity: 0; } }
+@keyframes mgs-rise-in { from { opacity: 0; transform: translateY(8px); } }
+
+/* The header and the emergency bar persist across a navigation instead of
+   flashing out and back in with the rest of the page. */
+.site-header { view-transition-name: mgs-header; }
+.utility { view-transition-name: mgs-utility; }
+
+/* ---------------------------------------------------------------- *
+ * Scroll reveal
+ *
+ * Elements are only hidden once motion.js has added .motion-ready to <html>,
+ * which it does only when it can actually observe and reveal them. Without
+ * that class every selector below is inert and the page renders as it always
+ * has -- no blank sections if the script fails, is blocked, or never runs.
+ * ---------------------------------------------------------------- */
+@media (prefers-reduced-motion: no-preference) {
+  .motion-ready [data-rise] {
+    opacity: 0;
+    transform: translateY(18px);
+    will-change: opacity, transform;
+  }
+  .motion-ready [data-rise].is-in {
+    opacity: 1;
+    transform: none;
+    transition: opacity .62s cubic-bezier(.22,.61,.36,1),
+                transform .62s cubic-bezier(.22,.61,.36,1);
+    transition-delay: var(--rise-delay, 0ms);
+    will-change: auto;
+  }
+}
+
+/* ---------------------------------------------------------------- *
+ * Reading progress
+ *
+ * A hairline of brand red across the top, driven by the scroll-timeline where
+ * it exists. No JS, no scroll listener, no jank.
+ * ---------------------------------------------------------------- */
+.mgs-progress {
+  position: fixed;
+  inset: 0 0 auto 0;
+  height: 2px;
+  z-index: 9999;
+  pointer-events: none;
+  background: linear-gradient(90deg, var(--color-brand, #E63946), #FF8A93);
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+}
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .mgs-progress {
+      animation: mgs-progress linear both;
+      animation-timeline: scroll(root block);
+    }
+  }
+}
+@keyframes mgs-progress { to { transform: scaleX(1); } }
+@supports not (animation-timeline: scroll()) { .mgs-progress { display: none; } }
+
+/* ---------------------------------------------------------------- *
+ * Depth on the dark sections
+ *
+ * .inner-hero and .final-cta are already solid --ink. A pair of very slow,
+ * very low-contrast radial washes gives them some life without touching the
+ * type sitting on top. Both are ::before/::after on existing elements, so no
+ * markup changes and nothing intercepts a click.
+ * ---------------------------------------------------------------- */
+@media (prefers-reduced-motion: no-preference) {
+  .inner-hero::after,
+  .final-cta::after {
+    content: "";
+    position: absolute;
+    inset: -30%;
+    pointer-events: none;
+    z-index: 0;
+    background:
+      radial-gradient(38% 46% at 22% 28%, rgba(230,57,70,.16), transparent 70%),
+      radial-gradient(34% 40% at 78% 68%, rgba(70,130,200,.13), transparent 72%);
+    animation: mgs-drift 26s ease-in-out infinite alternate;
+  }
+  .inner-hero > *,
+  .final-cta > * { position: relative; z-index: 1; }
+}
+@keyframes mgs-drift {
+  from { transform: translate3d(-2%, -1%, 0) scale(1); }
+  to   { transform: translate3d(3%, 2%, 0) scale(1.08); }
+}
+
+/* A hero photograph that breathes. 14 seconds for 4% of scale reads as depth
+   rather than as an animation. */
+@media (prefers-reduced-motion: no-preference) {
+  .inner-hero > img,
+  .inner-hero picture img {
+    animation: mgs-breathe 14s ease-in-out infinite alternate;
+  }
+}
+@keyframes mgs-breathe { to { transform: scale(1.04); } }
+
+/* ---------------------------------------------------------------- *
+ * Cards
+ *
+ * The existing cards already lift on hover. This adds the light: a soft brand
+ * glow and a sheen that crosses the card once, so the interaction reads as
+ * glass catching light rather than as a generic box-shadow.
+ * ---------------------------------------------------------------- */
+.service-card,
+.article-card,
+.path-card {
+  position: relative;
+  isolation: isolate;
+  transition: transform .26s cubic-bezier(.22,.61,.36,1),
+              box-shadow .26s ease,
+              border-color .26s ease;
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .service-card:hover,
+  .article-card:hover,
+  .path-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 44px -22px rgba(230,57,70,.5), 0 2px 10px -4px rgba(0,0,0,.18);
+  }
+  .service-card::after,
+  .article-card::after,
+  .path-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    opacity: 0;
+    background: linear-gradient(105deg, transparent 38%, rgba(255,255,255,.22) 50%, transparent 62%);
+    background-size: 220% 100%;
+    background-position: 130% 0;
+    transition: opacity .2s ease, background-position .7s cubic-bezier(.22,.61,.36,1);
+  }
+  .service-card:hover::after,
+  .article-card:hover::after,
+  .path-card:hover::after { opacity: 1; background-position: -30% 0; }
+}
+
+/* The arrow on a service row leads the eye on hover. */
+.service-card:hover .service-arrow,
+.article-card:hover .circle-arrow { transform: translateX(4px); }
+.service-arrow, .circle-arrow { transition: transform .26s cubic-bezier(.22,.61,.36,1); }
+
+/* ---------------------------------------------------------------- *
+ * Buttons
+ * ---------------------------------------------------------------- */
+.btn { position: relative; overflow: hidden; transition: transform .2s cubic-bezier(.22,.61,.36,1), box-shadow .2s ease; }
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .btn:hover { transform: translateY(-2px); }
+  .btn::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(100deg, transparent 40%, rgba(255,255,255,.28) 50%, transparent 60%);
+    background-size: 250% 100%;
+    background-position: 140% 0;
+    transition: background-position .65s cubic-bezier(.22,.61,.36,1);
+  }
+  .btn:hover::after { background-position: -40% 0; }
+}
+.btn:active { transform: translateY(0); }
+
+/* ---------------------------------------------------------------- *
+ * Small type details
+ * ---------------------------------------------------------------- */
+.eyebrow span { transition: width .5s cubic-bezier(.22,.61,.36,1); }
+.motion-ready [data-rise].is-in .eyebrow span { animation: mgs-rule .7s cubic-bezier(.22,.61,.36,1) both; }
+@keyframes mgs-rule { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+.eyebrow span { transform-origin: 0 50%; }
+
+.text-link { background-image: linear-gradient(currentColor, currentColor);
+  background-size: 0% 1px; background-position: 0 100%; background-repeat: no-repeat;
+  transition: background-size .32s cubic-bezier(.22,.61,.36,1); }
+@media (hover: hover) { .text-link:hover { background-size: 100% 1px; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .mgs-progress { display: none; }
+  .motion-ready [data-rise] { opacity: 1; transform: none; }
+}

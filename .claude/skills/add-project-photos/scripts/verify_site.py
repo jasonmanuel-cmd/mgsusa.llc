@@ -96,10 +96,12 @@ def check_sw(root, since):
         return None
     diff = subprocess.run(["git", "diff", "--name-only", f"{since}..HEAD"],
                           capture_output=True, text=True, cwd=root).stdout.split()
-    # Only files the worker actually caches. api/ runs server-side and is
-    # never in the browser's asset cache, so touching it is not a cache event.
+    # Only files the worker actually caches. api/ runs server-side, tools/ and
+    # web/ are excluded from the deploy entirely (.vercelignore), and none of
+    # them ever reach the browser's asset cache, so touching them is not a
+    # cache event.
     assets_changed = [f for f in diff if f.endswith((".css", ".js"))
-                      and not f.startswith((".claude/", "api/"))]
+                      and not f.startswith((".claude/", "api/", "tools/", "web/"))]
     if not assets_changed:
         return None
     sw_changed = any(f.endswith("service-worker.js") for f in diff)
