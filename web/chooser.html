@@ -1,0 +1,129 @@
+<title>Two Directions for MGS</title>
+<style>
+  :root{
+    color-scheme: light;
+    --bg:#F5F6F7;
+    --surface:#FFFFFF;
+    --ink:#15181C;
+    --muted:#5C6570;
+    --line:#DDE1E5;
+    --red:#C81E2B;
+    --shadow:0 1px 2px rgba(16,20,26,.06), 0 12px 30px -18px rgba(16,20,26,.35);
+    --sans:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+    --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      color-scheme: dark;
+      --bg:#101216; --surface:#181B20; --ink:#EDEFF2; --muted:#98A1AC;
+      --line:#2A2F36; --red:#FF6470;
+      --shadow:0 1px 2px rgba(0,0,0,.5), 0 14px 34px -18px rgba(0,0,0,.8);
+    }
+  }
+  :root[data-theme="dark"]{
+    color-scheme: dark;
+    --bg:#101216; --surface:#181B20; --ink:#EDEFF2; --muted:#98A1AC;
+    --line:#2A2F36; --red:#FF6470;
+    --shadow:0 1px 2px rgba(0,0,0,.5), 0 14px 34px -18px rgba(0,0,0,.8);
+  }
+
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:var(--sans); line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{ width:min(1080px, 100%); margin-inline:auto; padding-inline:20px; padding-block:clamp(2rem,6vw,4rem); }
+
+  .kicker{
+    font-family:var(--mono); font-size:.7rem; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--red); margin:0 0 .9rem;
+  }
+  h1{
+    font-size:clamp(1.7rem,4.4vw,2.6rem); line-height:1.12; letter-spacing:-.025em;
+    margin:0 0 .8rem; text-wrap:balance; font-weight:800;
+  }
+  .lede{ color:var(--muted); max-width:62ch; margin:0 0 .6rem; }
+  .note{
+    margin:1.6rem 0 0; padding:.9rem 1.1rem; border-left:3px solid var(--red);
+    background:var(--surface); border-radius:0 8px 8px 0; font-size:.9rem; color:var(--muted);
+    box-shadow:var(--shadow);
+  }
+  .note b{ color:var(--ink); }
+
+  .grid{ display:grid; grid-template-columns:1fr 1fr; gap:1.4rem; margin-top:2.4rem; }
+  @media (max-width:760px){ .grid{ grid-template-columns:1fr; } }
+
+  .card{
+    display:flex; flex-direction:column; background:var(--surface);
+    border:1px solid var(--line); border-radius:14px; overflow:hidden;
+    box-shadow:var(--shadow); text-decoration:none; color:inherit;
+    transition:transform .18s ease, border-color .18s ease;
+  }
+  .card:hover{ transform:translateY(-3px); border-color:var(--red); }
+  .card:focus-visible{ outline:3px solid var(--red); outline-offset:3px; }
+  .shot{ display:block; width:100%; aspect-ratio:390/700; object-fit:cover; object-position:top center;
+         max-width:100%; border-bottom:1px solid var(--line); background:var(--bg); }
+  .card-body{ padding:1.2rem 1.25rem 1.35rem; display:flex; flex-direction:column; gap:.5rem; }
+  .label{ font-family:var(--mono); font-size:.72rem; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); }
+  .card h2{ margin:0; font-size:1.18rem; letter-spacing:-.015em; font-weight:800; }
+  .card p{ margin:0; font-size:.9rem; color:var(--muted); }
+  ul{ margin:.4rem 0 0; padding-left:1.1rem; font-size:.86rem; color:var(--muted); }
+  li{ margin-bottom:.2rem; }
+  .open{ margin-top:.9rem; font-weight:700; font-size:.88rem; color:var(--red); }
+
+  .foot{ margin-top:2.6rem; padding-top:1.4rem; border-top:1px solid var(--line); font-size:.86rem; color:var(--muted); }
+  .foot p{ margin:0 0 .5rem; }
+  code{ font-family:var(--mono); font-size:.85em; background:var(--bg); padding:.12em .4em; border-radius:4px; border:1px solid var(--line); }
+</style>
+
+<div class="wrap">
+  <p class="kicker">Master Glass Solutions · Astro rebuild</p>
+  <h1>Two directions for the new site</h1>
+  <p class="lede">
+    Same content, same photography, same facts — 4.4★ from 76 reviews, serving 21 cities since 2004.
+    Only the design differs, so the comparison is fair. Both are real Astro pages, not mockups.
+  </p>
+
+  <div class="note">
+    <b>Nothing here is live yet.</b> mgsusa.llc is still the current site, untouched. Pick a direction
+    and the migration starts from it — marketing pages first, the quote funnel last.
+  </div>
+
+  <div class="grid">
+    <a class="card" href="a/index.html" target="_blank" rel="noopener">
+      <img class="shot" src="preview-a.png" alt="Direction A homepage: dark background, large white headline, red accent" width="390" height="700" loading="lazy" decoding="async">
+      <div class="card-body">
+        <span class="label">Direction A</span>
+        <h2>Dark, glassy, high-contrast</h2>
+        <p>Leans into the material. Near-black ground, frosted panels, red used as a glow.</p>
+        <ul>
+          <li>Feels current and premium; stands apart from every other glass company in San Antonio</li>
+          <li>Photography reads as lit work at night</li>
+          <li>Riskier with an older residential customer</li>
+        </ul>
+        <span class="open">Open Direction A →</span>
+      </div>
+    </a>
+
+    <a class="card" href="b/index.html" target="_blank" rel="noopener">
+      <img class="shot" src="preview-b.png" alt="Direction B homepage: light background, serif headline, large photograph" width="390" height="700" loading="lazy" decoding="async">
+      <div class="card-body">
+        <span class="label">Direction B</span>
+        <h2>Light, architectural, editorial</h2>
+        <p>Reads like an architecture practice. Warm white, serif display, photography doing the work.</p>
+        <ul>
+          <li>Safest for conversions; nothing gets in the way of the phone number</li>
+          <li>Services as a precise index rather than card soup</li>
+          <li>Closer to the site you have, so the migration is lower risk</li>
+        </ul>
+        <span class="open">Open Direction B →</span>
+      </div>
+    </a>
+  </div>
+
+  <div class="foot">
+    <p>Both pages carry the real quote and call links, so <code>Start your quote</code> and the phone
+      number point where they will in production.</p>
+    <p>Tell me A or B — or which parts of each — and I'll scaffold the full Astro site around it.</p>
+  </div>
+</div>
