@@ -27,5 +27,8 @@ CLAUDE.md
 # Local only.
 node_modules/
 
-# Astro rebuild, concept stage. Not deployed until a direction is chosen.
-web/
+# web/ (the Astro rebuild concept) is deliberately NOT ignored here. This file
+# applies to every Vercel project built from this repo, including the separate
+# `web` project whose Root Directory is web/. Ignoring web/ stripped that
+# project's package.json before install, so every build failed with
+# "astro: command not found". The live site instead blocks /web in vercel.json.
