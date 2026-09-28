@@ -141,6 +141,17 @@
     return written.concat(rest).slice(0, MAX_REVIEWS);
   }
 
+  function appendGoogleLink(payload) {
+    if (!SUMMARY || !payload || !payload.reviewUrl) { return; }
+    var a = document.createElement('a');
+    a.href = payload.reviewUrl;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    a.textContent = 'Read reviews on Google';
+    a.addEventListener('click', function () { track('google_reviews_click'); });
+    SUMMARY.appendChild(a);
+  }
+
   function showUnavailable(payload) {
     if (!SUMMARY) { return; }
     SUMMARY.textContent = '';
@@ -150,15 +161,7 @@
     p.textContent = 'Our Google reviews are temporarily unavailable here. You can still read them directly on Google.';
     SUMMARY.appendChild(p);
 
-    if (payload && payload.reviewUrl) {
-      var a = document.createElement('a');
-      a.href = payload.reviewUrl;
-      a.target = '_blank';
-      a.rel = 'noopener noreferrer';
-      a.textContent = 'Read reviews on Google';
-      a.addEventListener('click', function () { track('google_reviews_click'); });
-      SUMMARY.appendChild(a);
-    }
+    appendGoogleLink(payload);
 
     GRID.textContent = '';
   }
@@ -189,10 +192,39 @@
     SUMMARY.appendChild(row);
   }
 
+  /* Baseline-only state: the Places API is down or unconfigured, so we have no
+   * quotes to show, but we do have the aggregate the page JSON-LD already
+   * declares. Render stars + count and link out to Google rather than claiming
+   * the reviews are unavailable -- the markup and the visible block agree, which
+   * is what Google's self-serving review policy actually requires. We never
+   * invent review text here.
+   */
+  function renderBaselineOnly(payload) {
+    renderSummary(payload);
+
+    if (SUMMARY) {
+      var p = document.createElement('p');
+      p.className = 'mgs-reviews-unavailable';
+      p.textContent = 'Recent quotes load live from Google.';
+      SUMMARY.appendChild(p);
+    }
+
+    appendGoogleLink(payload);
+
+    GRID.textContent = '';
+  }
+
   function render(payload) {
     var hasReviews = payload && payload.reviews && payload.reviews.length > 0;
-    if (!payload || payload.source === 'fallback' || !hasReviews) {
+    var hasBaseline = payload && typeof payload.rating === 'number' && payload.rating > 0;
+
+    if (!payload || (!hasReviews && !hasBaseline)) {
       showUnavailable(payload);
+      return;
+    }
+
+    if (!hasReviews) {
+      renderBaselineOnly(payload);
       return;
     }
 

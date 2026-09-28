@@ -22,6 +22,8 @@
  *   GOOGLE_REVIEW_URL, GOOGLE_MAPS_URL (optional, defaulted below)
  */
 
+var reviewsBaseline = require('../data/reviews-baseline');
+
 var PLACES_BASE = 'https://places.googleapis.com/v1/places/';
 
 var DATE_FORMAT = new Intl.DateTimeFormat('en-US', {
@@ -31,7 +33,7 @@ var DATE_FORMAT = new Intl.DateTimeFormat('en-US', {
   year: 'numeric'
 });
 
-var FALLBACK_REVIEW_URL = 'https://g.page/r/CZoDFY2uA41TEAI/review';
+var FALLBACK_REVIEW_URL = 'https://g.page/r/CZoDFY2uA41TEBM/review';
 var FALLBACK_MAPS_URL = 'https://maps.google.com/?cid=6020472325090378650';
 
 var CACHE_HEADER = 'public, s-maxage=21600, stale-while-revalidate=86400';
@@ -89,10 +91,15 @@ function normalize(data, cfg) {
   };
 }
 
+/* The Places API is the source of truth. When it is unreachable we fall back to
+ * the same baseline the page JSON-LD declares, so the visible rating never
+ * contradicts the structured data. See data/reviews-baseline.js.
+ */
 function fallbackPayload(cfg) {
+  var base = reviewsBaseline.baseline();
   return {
-    rating: 0,
-    totalReviews: 0,
+    rating: base.rating,
+    totalReviews: base.totalReviews,
     reviews: [],
     reviewUrl: (cfg && cfg.reviewUrl) || FALLBACK_REVIEW_URL,
     mapsUrl: (cfg && cfg.mapsUrl) || FALLBACK_MAPS_URL,
