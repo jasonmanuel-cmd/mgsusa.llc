@@ -2,7 +2,7 @@
  * Master Glass Solutions - Follow-Up Desk storage helper.
  *
  * JSON-on-Vercel-Blob store at followup/customers.json (private blob).
- * Shape: { version: 1, customers: [...] } (see FOLLOW-UP-DESK-DESIGN.md).
+ * Shape: { version: 1, customers: [...] } (see docs/FOLLOW-UP-DESK-DESIGN.md).
  *
  * Exposes list()/get(id)/add(record)/update(id, patch). Reads the whole blob,
  * mutates in memory, and writes back with ifMatch (etag) so concurrent writers

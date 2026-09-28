@@ -591,3 +591,14 @@ img[loading="lazy"]{background:var(--stone)}
 .slideshow-toggle[data-state="playing"] .icon-play,.slideshow-toggle[data-state="paused"] .icon-pause{display:none}
 @media(prefers-reduced-motion:reduce){.project-slideshow.is-ready .slideshow-track{transition:none}}
 @media(max-width:590px){.slideshow-slide img{aspect-ratio:4/3}.slideshow-nav{width:38px;height:38px}.slideshow-caption{padding:1rem}.slideshow-caption b{font-size:1rem}}
+
+/* Workspace section (about.html). The markup arrived with the office photo but
+   no styles, so the image rendered unconstrained -- a portrait shot 1180px wide
+   and 1573px tall, taller than the viewport. Two columns on desktop, stacked on
+   narrow screens, with the photo held to a sane height and cropped rather than
+   stretched. */
+.workspace-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(2rem,5vw,4rem);align-items:center}
+.workspace-image{margin:0}
+.workspace-image img{width:100%;height:auto;max-height:520px;object-fit:cover;object-position:center;border-radius:var(--radius-md,12px)}
+.workspace-content p{margin:0 0 1rem}
+@media(max-width:900px){.workspace-grid{grid-template-columns:1fr;gap:1.75rem}.workspace-image img{max-height:380px}}

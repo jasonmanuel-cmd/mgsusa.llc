@@ -178,15 +178,29 @@ async function checkSending() {
       headers: { 'Authorization': 'Bearer ' + process.env.RESEND_API_KEY },
       signal: controller.signal
     });
-    if (r.status === 401 || r.status === 403) {
-      return { ok: false, detail: 'Resend rejected RESEND_API_KEY with HTTP ' + r.status + '. Lead email cannot be sent until the key is replaced.' };
-    }
+    /* A 401 or 403 here does NOT mean the key is dead.
+       Resend answers exactly that to a restricted, sending-only key -- which
+       is the recommended way to hold one -- and such a key still sends mail
+       perfectly well. The first version of this check called that a revoked
+       key and told the owner lead email was down while leads were in fact
+       being delivered; the alert saying so was itself sent with the very key
+       it was declaring dead. Crying wolf here is worse than staying quiet,
+       because it trains her to ignore the one message that means something.
 
-    // A restricted (sending-only) key cannot list domains. That is a fine way
-    // to run, so treat it as unknown rather than broken -- the probe's real
-    // send still covers this ground when HEALTH_PROBE_EMAIL is set.
+       Listing domains is a convenience, not proof of anything. The only
+       honest proof that the key can send is a send, which is what the funnel
+       probe does when HEALTH_PROBE_EMAIL is set. So: report, never fail. */
     if (r.status !== 200) {
-      return { ok: true, unknown: true, detail: 'Could not read the domain list (HTTP ' + r.status + '); the API key may be sending-only.' };
+      var why = (r.status === 401 || r.status === 403)
+        ? 'the key is restricted to sending and cannot list domains, which is normal and fine'
+        : 'Resend answered HTTP ' + r.status;
+      return {
+        ok: true,
+        unknown: true,
+        detail: 'Could not confirm the sending domain: ' + why + '. ' +
+          'This says nothing about whether mail is going out -- set HEALTH_PROBE_EMAIL ' +
+          'to have the daily probe prove delivery with a real send.'
+      };
     }
 
     var body = await r.json();
