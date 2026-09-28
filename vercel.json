@@ -8,6 +8,16 @@
   },
   "redirects": [
     {
+      "source": "/web",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/web/:path*",
+      "destination": "/",
+      "permanent": false
+    },
+    {
       "source": "/emergency",
       "destination": "/emergency-glass-repair",
       "permanent": true
