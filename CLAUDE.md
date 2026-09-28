@@ -120,6 +120,22 @@ Cloudflare Turnstile dashboard (allowed hostnames must include the live domain).
   `action="https://formspree.io/f/<id>"` on the five `#quote-form` forms.
   Related: `form.dispatchEvent(new Event('submit'))` runs listeners but never
   navigates — use `form.submit()` when you mean to post.
+- **Motion layer.** `assets/css/motion.css` + `assets/js/motion.js`, loaded on
+  all 54 real pages (not `emergency.html`, a redirect stub, nor the Google
+  verification file). It is purely additive: it changes no colour, type,
+  spacing or layout, and attaches to markup that already exists. The rule that
+  makes it safe is the ordering — `motion.js` adds `.motion-ready` to `<html>`
+  only after it has found its targets and confirmed IntersectionObserver, and
+  every hiding rule in the CSS is scoped under that class. So with the script
+  blocked, JS off, or reduced motion requested, nothing is ever hidden. There
+  is also a 4s failsafe that reveals anything still hidden. Never write a
+  `[data-rise]` rule that hides outside `.motion-ready`.
+  Note `.section` sets `content-visibility: auto`, so scrolling straight to the
+  bottom and then reading computed styles reports skipped sections as
+  un-transitioned — that is a measurement artifact, not a bug. Check motion
+  with `tools/motion-inview.cjs` (measures in-viewport, as a visitor sees it);
+  `tools/motion-check.cjs` covers the JS-off and reduced-motion cases, where
+  nothing may ever be hidden.
 - Commit messages follow `type(scope): summary`.
 
 ## Local preview
