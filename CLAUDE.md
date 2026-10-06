@@ -181,10 +181,14 @@ Static pages render; anything under `api/` needs a Vercel deploy (or preview) to
   `add-project-photos` skill's `verify_site.py`, run by hand.
 - **One** Vercel project builds this repo: `mgsusa-llc`, from the root. Keep it
   that way — a second project (`web`, pointing at an Astro concept folder)
-  existed briefly and failed every build, so do not add a sub-folder with its
-  own `package.json` that invites another. Commits from 2026-10-06 and earlier
-  still carry a red `Vercel – web` status; commit statuses are immutable, so
-  that is frozen history, not a current failure.
+  existed and failed every build, so do not add a sub-folder with its own
+  `package.json` that invites another.
+  Reading a red `Vercel – web` check: compare its timestamp to the commit's.
+  GitHub cannot retract a status once posted, so old commits keep theirs
+  forever — but a status posted *seconds after a new commit*, carrying a live
+  `vercel.com/.../web/<id>` target URL, means the project still exists and is
+  still building. An earlier version of this note called all of them frozen
+  history; that was wrong, and it hid a project that was still running.
 - Six domains serve this one project, `mgsusa.llc` plus
   `masterglasssolutionsusa.com`, `sanantonioglasssolutions.com` and their `www`
   forms. They all serve identical content and every canonical points at
