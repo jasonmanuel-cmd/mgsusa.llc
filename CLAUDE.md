@@ -8,7 +8,7 @@ client into `assets/vendor/blob-client.js` with esbuild.
 
 ## Layout
 
-- `*.html` (50 pages) at the repo root — services, ~25 `<city>-tx.html` local
+- `*.html` (56 pages) at the repo root — services, ~25 `<city>-tx.html` local
   landing pages, legal pages, `followup-desk.html`, `review.html`.
 - `api/` — serverless functions (see table below).
 - `data/` — UMD modules shared by browser and functions: exposed as `window.MGS.*`
@@ -68,11 +68,21 @@ The Turnstile **site** key is inlined in `assets/js/quote-form.js` and
 Vercel. `TURNSTILE_SECRET_KEY` is still verified by `submit-quote` and
 `blob-upload`; the chat no longer uses it.
 
-**Known risk:** the quote form and review page share the site key
+The quote form and review page share the site key
 `0x4AAAAAAEGumU2z9QHnLmlL`, the same one whose widget failure broke the chat.
-`quote-form.js` blocks submission when no token is minted, so if that key is
-misconfigured the quote form is silently dropping leads — worth verifying in the
-Cloudflare Turnstile dashboard (allowed hostnames must include the live domain).
+That key failing no longer costs a lead: both pages had their blocking gate
+removed (see the comment at `quote-form.js:564`), so a missing token now rides
+along as absent and the server treats the lead as unverified rather than
+refusing it. Still worth keeping the allowed hostnames correct in the
+Cloudflare dashboard — an unverified lead arrives with an `[unverified]`
+subject prefix, which is noise, not loss.
+
+(This paragraph used to say the form "blocks submission when no token is
+minted, so the quote form is silently dropping leads". That was true when it
+was written and was fixed weeks before this correction. It is called out
+rather than quietly deleted because a stale warning about a fixed bug is
+worse than no warning: it contradicts the "never let a bot check refuse a
+lead" rule below, and it invites someone to re-fix what is already fixed.)
 
 ## Conventions
 
@@ -86,7 +96,7 @@ Cloudflare Turnstile dashboard (allowed hostnames must include the live domain).
   column of photos. A hard refresh looks fine, so testing will not catch it.
   `styles.min.css` is also requested as `?v=N`; raise that when the file changes.
 - **Site-wide changes** (nav, footer, tracking snippets, social links) must be
-  applied across all 50 HTML pages — e.g. the HubSpot snippet is on all 50.
+  applied across all 56 HTML pages — e.g. the HubSpot snippet is on all of them.
 - **Photos:** run the `add-project-photos` skill rather than doing it by hand.
   Budgets are 1400px/180 KB full and 800px/80 KB for `-sm` thumbnails, and
   every photo needs both. Encode first, then write `srcset` width descriptors
