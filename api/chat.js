@@ -11,9 +11,13 @@
  * every message, so it was removed from the chat on both ends. The quote and
  * photo-upload endpoints still verify their own tokens.
  *
- * Env: OPENROUTER_API_KEY (preferred) with OPENROUTER_MODEL (optional, default a
- *      free OpenRouter model), or OPENAI_API_KEY fallback with OPENAI_MODEL
- *      (optional, default gpt-4o-mini)
+ * Env: OPENROUTER_API_KEY (preferred) with OPENROUTER_MODEL, or OPENAI_API_KEY
+ *      with OPENAI_MODEL (optional, default gpt-4o-mini).
+ *
+ *      OPENROUTER_MODEL takes one model name or a comma-separated list, tried
+ *      in order. Free-tier models rate-limit, so a single busy model used to
+ *      take the whole chat down; the list exists so a busy one falls through
+ *      to the next. If an OpenAI key is also set it becomes the last resort.
  */
 
 var companyKnowledge = require('../data/company-knowledge');
@@ -23,8 +27,35 @@ var serviceAreas = require('../data/service-areas');
 var SYSTEM_PROMPT = buildSystemPrompt();
 
 var LLM_PROVIDER = process.env.OPENROUTER_API_KEY ? 'openrouter' : (process.env.OPENAI_API_KEY ? 'openai' : null);
-var OPENROUTER_MODEL = process.env.OPENROUTER_MODEL || 'google/gemma-4-26b-a4b-it:free';
 var OPENAI_MODEL = process.env.OPENAI_MODEL || 'gpt-4o-mini';
+
+/* The default model is a free-tier one, and free tiers rate-limit: OpenRouter
+   answers 429 when the shared pool is exhausted, and 502/503 when a free model
+   is briefly unavailable. Until now any of those went straight to "the
+   assistant is unavailable", so the chat died for everyone whenever the free
+   pool was busy -- not an outage worth having on a page whose job is catching
+   customers.
+
+   So: a list of models rather than one. OPENROUTER_MODEL stays backwards
+   compatible (a single name still works) and accepts a comma-separated list,
+   tried in order. A free model that is busy falls through to the next; the
+   last one gets one short retry. */
+var OPENROUTER_MODELS = (process.env.OPENROUTER_MODEL ||
+  'google/gemma-4-26b-a4b-it:free,meta-llama/llama-3.3-70b-instruct:free')
+  .split(',')
+  .map(function (m) { return m.trim(); })
+  .filter(Boolean);
+
+// Bounded on purpose. This runs inside a request a customer is waiting on, so
+// the whole fallback chain has to stay well under the function timeout.
+var RETRY_DELAY_MS = 600;
+var BUSY_STATUSES = [429, 500, 502, 503, 504];
+
+function isBusy(status) { return BUSY_STATUSES.indexOf(status) !== -1; }
+
+function wait(ms) {
+  return new Promise(function (resolve) { setTimeout(resolve, ms); });
+}
 
 function buildSystemPrompt() {
   var k = companyKnowledge;
@@ -157,9 +188,11 @@ function readBody(req) {
   });
 }
 
-function callOpenAI(messages) {
+/* One attempt against one model. */
+function callModel(provider, model, messages) {
   var messagesList = [{ role: 'system', content: SYSTEM_PROMPT }].concat(messages);
   var payload = {
+    model: model,
     messages: messagesList,
     max_tokens: 420,
     temperature: 0.3
@@ -167,15 +200,13 @@ function callOpenAI(messages) {
   var url;
   var headers = { 'Content-Type': 'application/json' };
 
-  if (LLM_PROVIDER === 'openrouter') {
+  if (provider === 'openrouter') {
     url = 'https://openrouter.ai/api/v1/chat/completions';
-    payload.model = OPENROUTER_MODEL;
     headers.Authorization = 'Bearer ' + process.env.OPENROUTER_API_KEY;
     headers['HTTP-Referer'] = 'https://www.mgsusa.llc';
     headers['X-Title'] = 'Master Glass Solutions';
   } else {
     url = 'https://api.openai.com/v1/chat/completions';
-    payload.model = OPENAI_MODEL;
     headers.Authorization = 'Bearer ' + process.env.OPENAI_API_KEY;
   }
 
@@ -185,9 +216,44 @@ function callOpenAI(messages) {
     body: JSON.stringify(payload)
   }).then(function (r) {
     return r.json().then(function (data) {
-      return { status: r.status, data: data };
+      return { status: r.status, data: data, model: model, provider: provider };
+    }, function () {
+      // A busy free model sometimes answers with an HTML error page rather
+      // than JSON. That is still a busy model, not a bad request.
+      return { status: r.status, data: null, model: model, provider: provider };
     });
+  }).catch(function (e) {
+    return { status: 0, data: null, model: model, provider: provider, error: e && e.message };
   });
+}
+
+/* Walk the candidates until one answers, then give the last one a single
+   retry. Anything that is not a busy signal (a malformed request, a bad key)
+   is returned immediately -- retrying those just burns the customer's time. */
+async function callOpenAI(messages) {
+  var attempts = [];
+  if (LLM_PROVIDER === 'openrouter') {
+    OPENROUTER_MODELS.forEach(function (m) { attempts.push(['openrouter', m]); });
+    // A configured OpenAI key is the last resort when every free model is busy.
+    if (process.env.OPENAI_API_KEY) attempts.push(['openai', OPENAI_MODEL]);
+  } else {
+    attempts.push(['openai', OPENAI_MODEL]);
+  }
+
+  var last = null;
+  for (var i = 0; i < attempts.length; i++) {
+    last = await callModel(attempts[i][0], attempts[i][1], messages);
+    if (last.status === 200) return last;
+    if (!isBusy(last.status)) return last;
+    console.warn('chat: ' + attempts[i][1] + ' busy (' + last.status + '), trying next');
+  }
+
+  // Everything was busy. One short retry on the last candidate, since free-tier
+  // pools free up in seconds.
+  await wait(RETRY_DELAY_MS);
+  var retry = await callModel(attempts[attempts.length - 1][0],
+                              attempts[attempts.length - 1][1], messages);
+  return retry.status === 200 ? retry : last;
 }
 
 module.exports = async function handler(req, res) {
@@ -236,7 +302,14 @@ module.exports = async function handler(req, res) {
   var result = await callOpenAI(messages);
   if (result.status !== 200) {
     var err = result.data && result.data.error;
-    console.error('OpenAI call failed (chat):', result.status, JSON.stringify(err || {}));
+    console.error('chat: all models failed; last was ' + result.provider + '/' + result.model +
+      ' -> ' + result.status, JSON.stringify(err || result.error || {}));
+    // Say which kind of failure it is. "Busy, try again" is true and
+    // actionable; "unavailable" sounds permanent and sends people away.
+    if (isBusy(result.status)) {
+      res.setHeader('Retry-After', '15');
+      return jsonError(res, 503, 'The assistant is busy right now. Try again in a few seconds, or call 210-370-3700.');
+    }
     return jsonError(res, 502, 'The assistant is unavailable right now. Please try again shortly, or call 210-370-3700.');
   }
 
