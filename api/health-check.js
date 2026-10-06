@@ -27,11 +27,11 @@
  *            no mail, so it works with nothing else configured.
  *
  *   drought  Reads the timestamp submit-quote leaves after each real lead and
- *            flags a stretch of silence. Cruder, but it would also have caught
- *            this, and it catches failures further out than the form itself --
- *            DNS, a dead Resend key, a page that stopped rendering. Unlike the
- *            other two it is a hint, not a verdict, so it mails on the day it
- *            crosses the threshold and weekly after -- not every day.
+ *            flags a stretch of silence. Cruder, but it catches failures
+ *            further out than the form itself -- DNS, a dead Resend key, a page
+ *            that stopped rendering. Unlike the other two it is a hint, not a
+ *            verdict: leads here arrive weeks apart even when everything works,
+ *            so it waits 30 days and then mails monthly, not daily.
  *
  * Silent while healthy. It emails the owner only when something is wrong, so
  * an arriving message always means something needs attention. That promise is
@@ -42,8 +42,8 @@
  * Env: CRON_SECRET (required in production; the cron sends it as a bearer
  *      token), RESEND_API_KEY, LEAD_NOTIFICATION_EMAIL, LEAD_FROM_EMAIL,
  *      SITE_URL (default https://www.mgsusa.llc),
- *      LEAD_DROUGHT_DAYS (default 7),
- *      LEAD_DROUGHT_REPEAT_DAYS (default 7; how often the drought notice
+ *      LEAD_DROUGHT_DAYS (default 30),
+ *      LEAD_DROUGHT_REPEAT_DAYS (default 30; how often the drought notice
  *      repeats while it lasts),
  *      HEALTH_PROBE_EMAIL (optional; enables the probe's real send),
  *      FOLLOWUP_BLOB_READ_WRITE_TOKEN for the drought check.
@@ -52,8 +52,26 @@
 var metricsCache = require('../data/metrics-cache');
 
 var DEFAULT_SITE = 'https://www.mgsusa.llc';
-var DEFAULT_DROUGHT_DAYS = 7;
-var DEFAULT_DROUGHT_REPEAT_DAYS = 7;
+
+/* 30 days, not 7.
+   Seven was set before anyone had measured how often a lead actually arrives
+   here. At roughly a hundred visitors a week, they arrive far less often than
+   weekly -- the drought that prompted this ran 19 days with the funnel testing
+   clean on every single run. A threshold a business sits below most of the time
+   does not detect anything; it just reports the weather, and it was mailing that
+   report daily.
+
+   The trade is real and worth naming: the August outage lost about 25 days of
+   leads, and a 30-day threshold would have caught it later than a 7-day one.
+   What makes that acceptable is that the drought is no longer the detector. The
+   funnel probe POSTs a tokenless quote to the live endpoint every day and mails
+   the moment it is refused, and with HEALTH_PROBE_EMAIL set it proves the mail
+   actually leaves. Those catch the August failure on day one. The drought is the
+   backstop behind them now -- for the failures nothing else sees, like the page
+   quietly ceasing to render -- and a backstop should be slow and quiet, because
+   a loud one drowns out the detectors in front of it. */
+var DEFAULT_DROUGHT_DAYS = 30;
+var DEFAULT_DROUGHT_REPEAT_DAYS = 30;
 var PROBE_TIMEOUT_MS = 15000;
 var FALLBACK_SENDER = 'onboarding@resend.dev';
 

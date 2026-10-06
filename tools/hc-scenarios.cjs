@@ -74,17 +74,20 @@ var scenarios = [
      to ignore the thread that also carries "customers cannot submit a quote
      right now" -- so these four pin the cadence, including the day-18 case
      that was arriving daily in production. */
-  { name: 'drought: first crossing (day 7) -> reports AND mails',
-    expectOk: false, droughtDays: 7, expectAlerted: true,
+  { name: 'drought: day 19 (under the 30-day threshold) -> not a failure at all',
+    expectOk: true, droughtDays: 19, expectAlerted: false,
     fetch: healthyExceptDrought },
-  { name: 'drought: day 18 (off-cadence) -> reports but stays quiet',
-    expectOk: false, droughtDays: 18, expectAlerted: false, expectSuppressed: ['lead drought'],
+  { name: 'drought: first crossing (day 30) -> reports AND mails',
+    expectOk: false, droughtDays: 30, expectAlerted: true,
     fetch: healthyExceptDrought },
-  { name: 'drought: day 21 (threshold + 14) -> mails again',
-    expectOk: false, droughtDays: 21, expectAlerted: true,
+  { name: 'drought: day 41 (off-cadence) -> reports but stays quiet',
+    expectOk: false, droughtDays: 41, expectAlerted: false, expectSuppressed: ['lead drought'],
+    fetch: healthyExceptDrought },
+  { name: 'drought: day 90 (threshold + 60) -> mails again',
+    expectOk: false, droughtDays: 90, expectAlerted: true,
     fetch: healthyExceptDrought },
   { name: 'REGRESSION: a quiet drought must not mute a broken funnel',
-    expectOk: false, droughtDays: 18, expectAlerted: true, expectSuppressed: ['lead drought'],
+    expectOk: false, droughtDays: 41, expectAlerted: true, expectSuppressed: ['lead drought'],
     fetch: function (u) {
       if (/submit-quote/.test(u)) return j(503, { error: 'nope' });
       if (/domains/.test(u)) return j(200, { data: [{ name: 'mgsusa.llc', status: 'verified' }] });

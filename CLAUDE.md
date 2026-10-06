@@ -53,8 +53,8 @@ generic `/api/(.*)` rule caches for 6h with a 24h stale-while-revalidate window.
 Monitoring, all optional — the cron degrades rather than failing: `CRON_SECRET`
 (sent by the Vercel cron as a bearer token; unset means the endpoint is open,
 fine for preview but not production), `SITE_URL` (default
-`https://www.mgsusa.llc`), `LEAD_DROUGHT_DAYS` (default 7),
-`LEAD_DROUGHT_REPEAT_DAYS` (default 7), `HEALTH_PROBE_EMAIL`
+`https://www.mgsusa.llc`), `LEAD_DROUGHT_DAYS` (default 30),
+`LEAD_DROUGHT_REPEAT_DAYS` (default 30), `HEALTH_PROBE_EMAIL`
 (an address that is safe to receive a daily test message; setting it makes the
 funnel probe perform a real Resend send instead of only reporting that a key
 exists — the difference between "configured" and "actually delivers").
@@ -72,6 +72,18 @@ the promise the endpoint makes — an arriving message always means something
 needs attention. A daily alert nobody can act on spends that promise, and it
 spends it on the same subject line that carries "customers cannot submit a
 quote right now".
+
+The threshold itself went 7 → 30 days for the same reason. Seven was picked
+before anyone measured how often a lead actually arrives here, and they arrive
+weeks apart even when every check is green — so the business sat below the
+threshold most of the time and the check reported the weather rather than
+detecting anything. This does mean the drought would have caught the August
+outage later than a 7-day threshold would. That is acceptable only because the
+drought is no longer the detector: the funnel probe exercises the live endpoint
+daily and mails the moment a tokenless quote is refused, and with
+`HEALTH_PROBE_EMAIL` set it proves the mail leaves. The drought is the backstop
+behind those, and a backstop should be slow and quiet, or it drowns out the
+detectors in front of it.
 
 Dashboard-only, all optional — the matching card shows a setup hint instead of data:
 `GA4_PROPERTY_ID`, `GA4_CLIENT_EMAIL`, `GA4_PRIVATE_KEY` (service account with
