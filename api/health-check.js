@@ -29,15 +29,22 @@
  *   drought  Reads the timestamp submit-quote leaves after each real lead and
  *            flags a stretch of silence. Cruder, but it would also have caught
  *            this, and it catches failures further out than the form itself --
- *            DNS, a dead Resend key, a page that stopped rendering.
+ *            DNS, a dead Resend key, a page that stopped rendering. Unlike the
+ *            other two it is a hint, not a verdict, so it mails on the day it
+ *            crosses the threshold and weekly after -- not every day.
  *
  * Silent while healthy. It emails the owner only when something is wrong, so
- * an arriving message always means something needs attention.
+ * an arriving message always means something needs attention. That promise is
+ * the whole value of the endpoint, and it is why the two checks that mean
+ * "customers are being turned away right now" mail on every failing run while
+ * the one that means "it has been quiet" does not.
  *
  * Env: CRON_SECRET (required in production; the cron sends it as a bearer
  *      token), RESEND_API_KEY, LEAD_NOTIFICATION_EMAIL, LEAD_FROM_EMAIL,
  *      SITE_URL (default https://www.mgsusa.llc),
  *      LEAD_DROUGHT_DAYS (default 7),
+ *      LEAD_DROUGHT_REPEAT_DAYS (default 7; how often the drought notice
+ *      repeats while it lasts),
  *      HEALTH_PROBE_EMAIL (optional; enables the probe's real send),
  *      FOLLOWUP_BLOB_READ_WRITE_TOKEN for the drought check.
  */
@@ -46,6 +53,7 @@ var metricsCache = require('../data/metrics-cache');
 
 var DEFAULT_SITE = 'https://www.mgsusa.llc';
 var DEFAULT_DROUGHT_DAYS = 7;
+var DEFAULT_DROUGHT_REPEAT_DAYS = 7;
 var PROBE_TIMEOUT_MS = 15000;
 var FALLBACK_SENDER = 'onboarding@resend.dev';
 
@@ -56,6 +64,11 @@ function siteUrl() {
 function droughtDays() {
   var n = parseInt(process.env.LEAD_DROUGHT_DAYS || '', 10);
   return Number.isFinite(n) && n > 0 ? n : DEFAULT_DROUGHT_DAYS;
+}
+
+function droughtRepeatDays() {
+  var n = parseInt(process.env.LEAD_DROUGHT_REPEAT_DAYS || '', 10);
+  return Number.isFinite(n) && n > 0 ? n : DEFAULT_DROUGHT_REPEAT_DAYS;
 }
 
 /* The cron carries CRON_SECRET as a bearer token. Without the check anyone
@@ -249,6 +262,28 @@ async function checkSending() {
   }
 }
 
+/* Unlike the other two, a drought is not an outage. It is one explanation for
+   a number, and the likeliest explanation is usually that the week was quiet:
+   at a hundred-odd visitors a week, a fortnight with no quote request is well
+   within normal. So it reports every day but only *mails* on the day it first
+   crosses the threshold and weekly after that.
+
+   The reason is the same one written all over this file. A daily email about a
+   condition the owner cannot act on is how she learns that mail from the site
+   is noise -- and the one message that matters, "customers cannot submit a
+   quote right now", arrives in the same thread wearing the same subject. An
+   alert that is always firing is indistinguishable from one that never fires.
+
+   The schedule needs no stored state: the cron runs once a day and the age in
+   days goes up by one each run, so testing the age against the repeat interval
+   gives first-crossing-then-weekly on its own. If a run is missed the next
+   mail is a week later rather than the next day, which for an informational
+   notice is the right way to be wrong. */
+function droughtShouldNotify(ageDays, threshold) {
+  if (ageDays == null || ageDays < threshold) return false;
+  return (ageDays - threshold) % droughtRepeatDays() === 0;
+}
+
 async function checkDrought() {
   var days = droughtDays();
   var entry = await metricsCache.read('lead-pulse', days * 24 * 60 * 60 * 1000);
@@ -260,10 +295,13 @@ async function checkDrought() {
   }
   var ageDays = entry.ageMs == null ? null : Math.floor(entry.ageMs / 86400000);
   if (entry.stale) {
+    var repeat = droughtRepeatDays();
     return {
       ok: false,
+      notify: droughtShouldNotify(ageDays, days),
       detail: 'No quote request in ' + ageDays + ' days (last one ' + entry.cachedAt + '). ' +
-        'That may just be a quiet stretch, but it is also what a broken form looks like from the inside.'
+        'That may just be a quiet stretch, but it is also what a broken form looks like from the inside. ' +
+        'This notice repeats every ' + repeat + ' days while the drought lasts, not daily.'
     };
   }
   return { ok: true, detail: 'Last quote request ' + ageDays + ' day(s) ago.' };
@@ -335,16 +373,27 @@ module.exports = async function handler(req, res) {
   var sending = await checkSending();
   var drought = await checkDrought();
   var checks = [
-    { name: 'funnel', ok: funnel.ok, detail: funnel.detail },
-    { name: 'sending domain', ok: sending.ok, detail: sending.detail },
-    { name: 'lead drought', ok: drought.ok, detail: drought.detail }
+    { name: 'funnel', ok: funnel.ok, detail: funnel.detail, notify: funnel.notify },
+    { name: 'sending domain', ok: sending.ok, detail: sending.detail, notify: sending.notify },
+    { name: 'lead drought', ok: drought.ok, detail: drought.detail, notify: drought.notify }
   ];
   var failures = checks.filter(function (c) { return !c.ok; });
+
+  /* "Failed" and "worth an email" are not the same question, and conflating
+     them is what filled the inbox. A failing check defaults to mailing -- an
+     outage should shout on every run until it is fixed -- but a check may opt
+     out by setting notify:false, as the drought does between its weekly
+     notices. The response reports every failure either way, so the endpoint
+     stays the honest full picture even on a day it sends nothing. */
+  var notifiable = failures.filter(function (c) { return c.notify !== false; });
+  var suppressed = failures.filter(function (c) { return c.notify === false; });
 
   var alerted = false;
   if (failures.length) {
     console.error('health-check failures', JSON.stringify(failures));
-    var result = await sendAlert(alertEmail(failures, checks));
+  }
+  if (notifiable.length) {
+    var result = await sendAlert(alertEmail(notifiable, checks));
     alerted = result.status >= 200 && result.status < 300;
     if (!alerted) {
       console.error('health-check could not send its alert', JSON.stringify(result));
@@ -359,6 +408,7 @@ module.exports = async function handler(req, res) {
     site: siteUrl(),
     turnstile: funnel.turnstile || null,
     checks: checks,
-    alerted: alerted
+    alerted: alerted,
+    suppressed: suppressed.map(function (c) { return c.name; })
   });
 };

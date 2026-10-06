@@ -85,6 +85,38 @@ about why the send was refused.
 
 ---
 
+## If it still says "Delivery was not exercised"
+
+That string is only reachable when `process.env.HEALTH_PROBE_EMAIL` is empty in
+the function serving the live site. In order of likelihood:
+
+1. **The redeploy did not land on production.** A preview redeploy, or one that
+   was never promoted, leaves the production alias pointing at the old
+   deployment. The production one carries a **Current** badge in Deployments.
+2. **The variable is not targeting Production.** The env list shows which
+   environments each variable applies to.
+3. **Typo in the key.** `process.env.HEALTH_PROBE_EMAIL` is an exact match — a
+   trailing space or `HEALTH_PROBE_MAIL` reads as unset.
+
+To see what production actually has, hit the probe directly and skip
+`health-check` entirely:
+
+```bash
+curl -s https://www.mgsusa.llc/api/submit-quote \
+  -H 'Content-Type: application/json' \
+  -d '{"kind":"quote","probe":true,"first-name":"Health","last-name":"Check",
+       "email":"health-check@mgsusa.llc","phone":"210-370-3700",
+       "service":"commercial-glass","location":"San Antonio, TX",
+       "timeline":"planning","details":"Automated funnel probe. Not a real request.",
+       "consent":true,"page":"/api/health-check"}'
+```
+
+`emailChecked:false` means the variable is not reaching the function.
+`emailChecked:true` with a status means it works, and `health-check` was
+reading a stale deployment.
+
+---
+
 ## Still outstanding, separately
 
 - `CRON_SECRET` — unset, so `/api/health-check` is open to the public. Fine for
