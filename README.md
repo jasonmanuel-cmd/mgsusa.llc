@@ -11,27 +11,31 @@ python3 -m http.server 8080
 
 Open `http://localhost:8080/`.
 
-## Rebuild after copy/data changes
+## Editing pages
 
-The service pages are generated from `build_site.py`:
+There is no generator. Every page is hand-edited HTML at the repo root, served
+as-is. A change to the nav, footer or a tracking snippet has to be applied to
+all of them -- see the site-wide rule in `CLAUDE.md`. Photos go through the
+`add-project-photos` skill rather than being added by hand.
 
-```bash
-python3 build_site.py
-```
+After any CSS or JS change, raise `CACHE_NAME` and `ASSETS_CACHE` in
+`service-worker.js` together, and the `?v=N` on the stylesheet link. Skipping
+that hands returning visitors new markup with an old stylesheet.
 
-Then regenerate `sitemap.xml` or add the sitemap generator to a deployment script.
+## Quote form fallback
 
-## Production handoff essentials
+The form posts to `/api/submit-quote`. If that fails, `quote-form.js` submits
+natively **only when the form carries an `action` that leaves the page**. The
+five `#quote-form` forms currently carry no `action`, so there is no Formspree
+net: instead the customer stays on the page with their answers intact and is
+given the phone number and a prefilled email. To turn the net on, add
+`action="https://formspree.io/f/<id>"` to those five forms.
 
-- Replace all concept images in `assets/` with consented, original Master Glass Solutions project photography.
-- Forms now post to `/api/submit-quote` (see below); when the API is not
-  deployed the form auto-falls back to Formspree with no change to the static
-  markup.
-- Configure extensionless rewrite rules or amend canonical URLs for the final host.
-- Connect real, visible reviews before adding Review/AggregateRating markup.
-- Add a privacy policy, consent management, spam protection, analytics/GTM, and legacy URL redirects.
-
-Full strategy: `strategy/MASTER-GLASS-STRATEGY.md`.
+(An earlier version of this file claimed the form "auto-falls back to
+Formspree". It never did -- no endpoint was ever wired up, and a native submit
+with no action posts to the static page it sits on, which silently destroyed
+the lead. That is fixed; the note stays as a caution against trusting a
+fallback nobody has exercised.)
 
 ## Google Reviews (serverless)
 
@@ -127,8 +131,10 @@ no build step.
 
 ### Serverless endpoints
 
-- `api/chat.js` — `POST /api/chat`, streams OpenAI replies, grounded with
-  `data/company-knowledge.js`, plus turnstile verify.
+- `api/chat.js` — `POST /api/chat`, streams **OpenRouter** replies, grounded
+  with `data/company-knowledge.js`. No Turnstile: it was removed after the
+  widget failed to load and 403'd every message, and a per-IP rate limit
+  guards it instead.
 - `api/submit-quote.js` — `POST /api/submit-quote`, validates, uploads photos
   to Blob, sends lead email via Resend, verifies Turnstile.
 - `api/blob-upload.js` — `POST /api/blob-upload`, uploads a single photo to
