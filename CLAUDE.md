@@ -136,6 +136,20 @@ Cloudflare Turnstile dashboard (allowed hostnames must include the live domain).
   with `tools/motion-inview.cjs` (measures in-viewport, as a visitor sees it);
   `tools/motion-check.cjs` covers the JS-off and reduced-motion cases, where
   nothing may ever be hidden.
+- **Review markup must match what the page shows.** `data/reviews-baseline.js`
+  holds the rating and count the JSON-LD declares, and both review endpoints
+  read from it, so the visible block and the structured data agree even when
+  the Places API is down. Before, the fallback returned 0/0 and the section
+  collapsed to "temporarily unavailable" while the markup still claimed 76
+  reviews — the mismatch Google's self-serving review policy targets. Review
+  *text* is never faked; quotes render only when they come live from Google.
+  `REVIEWS_BASELINE_RATING` / `REVIEWS_BASELINE_COUNT` override without a deploy.
+- **A city page's `Place` is the city; its `LocalBusiness` is the company.**
+  `LocalBusiness` geo is the San Antonio office (29.5604, -98.5322) and must
+  match `postalAddress`. `Place` geo is that city's own coordinates and must
+  match its `hasMap`. Setting both to the office address looks like a NAP fix
+  and is not: it leaves `Place` contradicting its own map link on 21 pages.
+  `tools/fix_place_geo.py` restores `Place` geo from `hasMap`.
 - Commit messages follow `type(scope): summary`.
 
 ## Local preview
@@ -148,9 +162,10 @@ Static pages render; anything under `api/` needs a Vercel deploy (or preview) to
 
 ## Reference docs
 
-- `README.md` — detailed reviews/chat/quote docs. **Partly stale:** it still
-  references a deleted `build_site.py`, a missing `strategy/` directory, and names
-  OpenAI as the chat provider.
+- `README.md` — detailed reviews/chat/quote docs. Corrected 2026-10-06: the
+  dead `build_site.py` and `strategy/` references are gone, the chat provider
+  reads OpenRouter, and the Formspree claim is replaced with what the fallback
+  actually does.
 - `FOLLOW-UP-DESK-DESIGN.md` — the implemented design for the Follow-Up Desk.
 - `REVIEW-SYSTEM-SETUP.md` — the older Twilio/Make/Google-Forms plan, **superseded**
   by the Follow-Up Desk. Kept for its compliance notes.
@@ -159,9 +174,13 @@ Static pages render; anything under `api/` needs a Vercel deploy (or preview) to
 
 - `main` is the live branch. `master` is an unrelated legacy history (a submodule
   wrapper repo, last touched 2026-08-02) — do not merge it into `main`.
-- `test-blob-e2e.cjs` and `test-real-module.cjs` at the root are tracked debugging
-  scratch scripts, not a test suite. There is no automated test or CI setup;
-  the only Actions workflow is the Copilot PR reviewer.
+- There is no automated test or CI setup; the only Actions workflow is the
+  Copilot PR reviewer. Checks are the scripts in `tools/` and the
+  `add-project-photos` skill's `verify_site.py`, run by hand.
+- Two Vercel projects build from this repo: `mgsusa-llc` (the live site, root)
+  and `web`. `web` pointed at an Astro concept folder that has been deleted, so
+  it only fails now — it should be removed in the Vercel dashboard. A red
+  "Vercel – web" check on a commit is that project, not the live site.
 - Verification is manual and worth doing: `python3 -m http.server 8080`, then
   Chromium at `/opt/pw-browsers/chromium` via Playwright, plus
   `.claude/skills/add-project-photos/scripts/verify_site.py --since origin/main`.
