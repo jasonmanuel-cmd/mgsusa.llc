@@ -172,15 +172,23 @@ Static pages render; anything under `api/` needs a Vercel deploy (or preview) to
 
 ## Repo state notes
 
-- `main` is the live branch. `master` is an unrelated legacy history (a submodule
-  wrapper repo, last touched 2026-08-02) — do not merge it into `main`.
+- `main` is the only branch, and the live one. A `master` branch holding an
+  unrelated legacy history (a submodule wrapper repo) was deleted 2026-10-06;
+  if it ever reappears, it is not an ancestor of this project and must not be
+  merged into `main`.
 - There is no automated test or CI setup; the only Actions workflow is the
   Copilot PR reviewer. Checks are the scripts in `tools/` and the
   `add-project-photos` skill's `verify_site.py`, run by hand.
-- Two Vercel projects build from this repo: `mgsusa-llc` (the live site, root)
-  and `web`. `web` pointed at an Astro concept folder that has been deleted, so
-  it only fails now — it should be removed in the Vercel dashboard. A red
-  "Vercel – web" check on a commit is that project, not the live site.
+- **One** Vercel project builds this repo: `mgsusa-llc`, from the root. Keep it
+  that way — a second project (`web`, pointing at an Astro concept folder)
+  existed briefly and failed every build, so do not add a sub-folder with its
+  own `package.json` that invites another. Commits from 2026-10-06 and earlier
+  still carry a red `Vercel – web` status; commit statuses are immutable, so
+  that is frozen history, not a current failure.
+- Six domains serve this one project, `mgsusa.llc` plus
+  `masterglasssolutionsusa.com`, `sanantonioglasssolutions.com` and their `www`
+  forms. They all serve identical content and every canonical points at
+  `mgsusa.llc`, which is what consolidates them. There is no per-domain build.
 - Verification is manual and worth doing: `python3 -m http.server 8080`, then
   Chromium at `/opt/pw-browsers/chromium` via Playwright, plus
   `.claude/skills/add-project-photos/scripts/verify_site.py --since origin/main`.
