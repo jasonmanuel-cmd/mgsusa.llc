@@ -53,10 +53,25 @@ generic `/api/(.*)` rule caches for 6h with a 24h stale-while-revalidate window.
 Monitoring, all optional — the cron degrades rather than failing: `CRON_SECRET`
 (sent by the Vercel cron as a bearer token; unset means the endpoint is open,
 fine for preview but not production), `SITE_URL` (default
-`https://www.mgsusa.llc`), `LEAD_DROUGHT_DAYS` (default 7), `HEALTH_PROBE_EMAIL`
+`https://www.mgsusa.llc`), `LEAD_DROUGHT_DAYS` (default 7),
+`LEAD_DROUGHT_REPEAT_DAYS` (default 7), `HEALTH_PROBE_EMAIL`
 (an address that is safe to receive a daily test message; setting it makes the
 funnel probe perform a real Resend send instead of only reporting that a key
 exists — the difference between "configured" and "actually delivers").
+
+**Not every failing check should email.** `health-check` keeps "this check
+failed" and "this is worth an email" apart, and a check opts out by returning
+`notify: false`. The funnel and sending-domain checks mean customers are being
+turned away *right now*, so they mail on every failing run until fixed. A lead
+drought does not: at ~100 visitors a week a fortnight of silence is usually
+just a quiet fortnight, and it was mailing the owner daily for 18 days running.
+It now mails on the day it crosses the threshold and every
+`LEAD_DROUGHT_REPEAT_DAYS` after, while the endpoint's JSON still reports it
+every time (the suppressed ones are listed under `suppressed`). The reason is
+the promise the endpoint makes — an arriving message always means something
+needs attention. A daily alert nobody can act on spends that promise, and it
+spends it on the same subject line that carries "customers cannot submit a
+quote right now".
 
 Dashboard-only, all optional — the matching card shows a setup hint instead of data:
 `GA4_PROPERTY_ID`, `GA4_CLIENT_EMAIL`, `GA4_PRIVATE_KEY` (service account with
