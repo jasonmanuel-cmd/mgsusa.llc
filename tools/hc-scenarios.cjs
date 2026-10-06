@@ -92,7 +92,23 @@ var scenarios = [
       if (/submit-quote/.test(u)) return j(503, { error: 'nope' });
       if (/domains/.test(u)) return j(200, { data: [{ name: 'mgsusa.llc', status: 'verified' }] });
       return j(200, { id: 'x' });
-    } }
+    } },
+
+  /* The deployment block exists to tell "variable never set" apart from
+     "production is serving an older deployment". These two assert it reports
+     what it sees, and -- the part that matters -- that it never prints a value. */
+  { name: 'deployment: reports commit and that probeEmail is unset',
+    expectOk: true,
+    env: { VERCEL_ENV: 'production', VERCEL_GIT_COMMIT_SHA: 'abc1234def5678' },
+    expectDeployment: { env: 'production', commit: 'abc1234', probeEmail: false },
+    fetch: healthyExceptDrought },
+  { name: 'deployment: probeEmail true, and the address is never echoed',
+    expectOk: true,
+    env: { VERCEL_ENV: 'production', VERCEL_GIT_COMMIT_SHA: 'abc1234def5678',
+           HEALTH_PROBE_EMAIL: 'secret-probe@example.com' },
+    expectDeployment: { env: 'production', commit: 'abc1234', probeEmail: true },
+    mustNotAppear: 'secret-probe@example.com',
+    fetch: healthyExceptDrought }
 ];
 
 function healthyExceptDrought(u) {
@@ -128,6 +144,11 @@ function stubDrought(ageDays) {
     delete require.cache[require.resolve(path)];
     if (s.unsetKey) delete process.env.RESEND_API_KEY; else process.env.RESEND_API_KEY = 'test-key';
     stubDrought(s.droughtDays);
+    // Scenario-scoped env, cleared afterwards so one case cannot leak into the
+    // next -- a stale HEALTH_PROBE_EMAIL would make a later case pass for the
+    // wrong reason.
+    var envKeys = Object.keys(s.env || {});
+    envKeys.forEach(function (k) { process.env[k] = s.env[k]; });
     global.fetch = s.fetch;
     var handler = require(path);
     var r = res();
@@ -142,14 +163,33 @@ function stubDrought(ageDays) {
         (r._json.suppressed || []).join(',') !== s.expectSuppressed.join(',')) {
       why.push('suppressed=[' + (r._json.suppressed || []).join(',') + '] wanted [' + s.expectSuppressed.join(',') + ']');
     }
+    if (s.expectDeployment) {
+      var d = r._json.deployment || {};
+      var want = s.expectDeployment;
+      if (d.env !== want.env) why.push('deployment.env=' + d.env + ' wanted ' + want.env);
+      if (d.commit !== want.commit) why.push('deployment.commit=' + d.commit + ' wanted ' + want.commit);
+      if ((d.configured || {}).probeEmail !== want.probeEmail) {
+        why.push('probeEmail=' + (d.configured || {}).probeEmail + ' wanted ' + want.probeEmail);
+      }
+    }
+    // The response is public when CRON_SECRET is unset, so a configured value
+    // leaking into it is a real defect, not a cosmetic one.
+    if (s.mustNotAppear && JSON.stringify(r._json).indexOf(s.mustNotAppear) !== -1) {
+      why.push('LEAKED the value of a configured variable into the response');
+    }
+
     if (why.length) failures++;
     console.log('\n' + (why.length ? '*** FAIL ***' : 'PASS') + '  ' + s.name);
     console.log('        ok=' + r._json.ok + ', alerted=' + r._json.alerted +
                 ', suppressed=[' + (r._json.suppressed || []).join(',') + ']' +
                 (why.length ? '  <-- ' + why.join('; ') : ''));
+    if (r._json.deployment) {
+      console.log('        deployment: ' + JSON.stringify(r._json.deployment));
+    }
     r._json.checks.forEach(function (c) {
       console.log('        [' + (c.ok ? ' ok ' : 'FAIL') + '] ' + c.name + ': ' + c.detail.slice(0, 150));
     });
+    envKeys.forEach(function (k) { delete process.env[k]; });
   }
   metricsCache.read = realRead;
   console.log('\n' + (failures ? failures + ' SCENARIO(S) FAILED' : 'all ' + scenarios.length + ' scenarios behaved as expected'));

@@ -379,6 +379,38 @@ async function sendAlert(mail) {
   return second;
 }
 
+/* Which deployment answered, and which of the monitor's optional variables it
+   can see. Added after three rounds of not being able to tell two causes apart.
+
+   "Delivery was not exercised" is reported when HEALTH_PROBE_EMAIL is empty in
+   the function that answered -- and that happens either because the variable was
+   never set for Production, or because the production alias is still serving an
+   older deployment that predates it. Those need opposite fixes, and the old
+   response could not distinguish them: identical output, different problem.
+
+   `commit` settles it. If it does not match the commit that was supposed to
+   carry the change, the deployment is stale and no amount of re-checking the
+   variable will help. If it matches and probeEmail is still false, the variable
+   genuinely is not reaching the function.
+
+   Names and booleans only, never values. The endpoint is public whenever
+   CRON_SECRET is unset, so this must not become a way to read configuration:
+   knowing that HEALTH_PROBE_EMAIL exists tells an outsider nothing, while
+   knowing the address would hand them somewhere to aim at. */
+function deploymentInfo() {
+  var sha = process.env.VERCEL_GIT_COMMIT_SHA || '';
+  return {
+    env: process.env.VERCEL_ENV || 'unknown',
+    commit: sha ? sha.slice(0, 7) : 'unknown',
+    configured: {
+      probeEmail: !!process.env.HEALTH_PROBE_EMAIL,
+      cronSecret: !!process.env.CRON_SECRET,
+      droughtDays: droughtDays(),
+      droughtRepeatDays: droughtRepeatDays()
+    }
+  };
+}
+
 module.exports = async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
@@ -424,6 +456,7 @@ module.exports = async function handler(req, res) {
     ok: failures.length === 0,
     checkedAt: new Date().toISOString(),
     site: siteUrl(),
+    deployment: deploymentInfo(),
     turnstile: funnel.turnstile || null,
     checks: checks,
     alerted: alerted,

@@ -87,6 +87,30 @@ about why the send was refused.
 
 ## If it still says "Delivery was not exercised"
 
+**Read the `deployment` block first — it tells you which of the two causes it is.**
+`/api/health-check` now reports:
+
+```json
+"deployment": {
+  "env": "production",
+  "commit": "fc9ae30",
+  "configured": { "probeEmail": false, "cronSecret": false,
+                  "droughtDays": 30, "droughtRepeatDays": 30 }
+}
+```
+
+- `commit` is not the commit you expected → **production is serving an older
+  deployment.** The variable is irrelevant until that is fixed; re-checking it
+  will waste your time. Promote or redeploy to production.
+- `commit` matches and `probeEmail` is `false` → **the variable genuinely is not
+  reaching the function.** Now the three causes below apply.
+- `probeEmail` is `true` but the funnel row still says delivery was not
+  exercised → the two functions somehow see different environments, which should
+  not happen in one deployment. Worth reporting rather than working around.
+
+It reports names and booleans only, never values: the endpoint is public while
+`CRON_SECRET` is unset, and a test asserts the address is never echoed.
+
 That string is only reachable when `process.env.HEALTH_PROBE_EMAIL` is empty in
 the function serving the live site. In order of likelihood:
 
