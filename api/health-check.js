@@ -411,6 +411,118 @@ function deploymentInfo() {
   };
 }
 
+/* ?format=html renders the same findings as a page instead of JSON.
+   JSON stays the default, because the cron and the scenario harness read it.
+
+   This exists because the JSON was not reaching the person who needed it. The
+   answer to "why is the probe not sending" sat in one nested object, and three
+   separate attempts to copy it out of a raw JSON response on a phone arrived
+   empty. A monitor whose output cannot be read is not reporting anything. */
+function esc(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+function wantsHtml(req) {
+  var q = (req && req.query && req.query.format) || '';
+  if (!q && req && typeof req.url === 'string') {
+    var m = /[?&]format=([^&]+)/.exec(req.url);
+    if (m) { try { q = decodeURIComponent(m[1]); } catch (e) { q = m[1]; } }
+  }
+  return String(q).toLowerCase() === 'html';
+}
+
+/* Every interpolation goes through esc(). Check details are not all ours:
+   `emailError` carries Resend's own response text straight into the string, so
+   an upstream error body containing markup would otherwise be rendered as
+   markup on a page we told someone to open. */
+function renderHtml(p) {
+  var cfg = p.deployment.configured;
+  var failed = p.checks.filter(function (c) { return !c.ok; });
+
+  var verdict = failed.length
+    ? (failed.length === 1 ? '1 thing needs attention'
+                           : failed.length + ' things need attention')
+    : 'Everything the monitor can see is working';
+
+  var probeLine = cfg.probeEmail
+    ? 'Set. The daily probe sends a real message through Resend, so delivery is proven end to end.'
+    : 'Not set. The probe confirms the form accepts a submission, but never sends a message '
+      + '— so it cannot prove email actually arrives. Add HEALTH_PROBE_EMAIL in Vercel, '
+      + 'targeting Production, then redeploy.';
+
+  var cronLine = cfg.cronSecret
+    ? 'Set, so only the Vercel cron can run this check.'
+    : 'Not set, so this page is public to anyone who knows the URL.';
+
+  var rows = p.checks.map(function (c) {
+    return '<tr class="' + (c.ok ? 'ok' : 'bad') + '">'
+      + '<td class="s">' + (c.ok ? '&#10003;' : '&#10007;') + '</td>'
+      + '<td><strong>' + esc(c.name) + '</strong><br><span class="d">' + esc(c.detail) + '</span></td>'
+      + '</tr>';
+  }).join('');
+
+  var mailed = failed.length
+    ? (p.alerted ? 'An alert was emailed to the owner.'
+                 : (p.suppressed.length
+                    ? 'No email sent — ' + esc(p.suppressed.join(', ')) + ' is on a slower schedule than daily.'
+                    : 'No email sent, and one was expected. Check the function logs.'))
+    : 'No email sent, which is correct — this check is silent while healthy.';
+
+  return '<!doctype html><html lang="en"><head><meta charset="utf-8">'
+    + '<meta name="viewport" content="width=device-width,initial-scale=1">'
+    + '<meta name="robots" content="noindex,nofollow">'
+    + '<title>Quote funnel monitor</title><style>'
+    + ':root{color-scheme:light dark}'
+    + 'body{font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;'
+    + 'margin:0;padding:20px 16px 48px;max-width:46rem;background:#fff;color:#1a1a1a}'
+    + '@media(prefers-color-scheme:dark){body{background:#131313;color:#ececec}'
+    + '.card{background:#1d1d1d;border-color:#333}.d{color:#aaa}}'
+    + 'h1{font-size:1.3rem;margin:0 0 .15em}'
+    + '.when{color:#777;font-size:.85rem;margin:0 0 1.4em}'
+    + '.verdict{font-size:1.05rem;font-weight:600;padding:.7em .9em;border-radius:8px;'
+    + 'margin:0 0 1.4em;border-left:4px solid}'
+    + '.good{background:#e9f7ee;border-color:#1d8b4a;color:#10572f}'
+    + '.warn{background:#fdecec;border-color:#c62828;color:#7d1a1a}'
+    + '@media(prefers-color-scheme:dark){.good{background:#14301f;color:#9fe0b8}'
+    + '.warn{background:#331717;color:#f3b4b4}}'
+    + 'h2{font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:#777;'
+    + 'margin:1.8em 0 .5em;font-weight:600}'
+    + 'table{border-collapse:collapse;width:100%}'
+    + 'td{padding:.6em .4em;vertical-align:top;border-top:1px solid #e4e4e4}'
+    + '@media(prefers-color-scheme:dark){td{border-color:#303030}}'
+    + 'td.s{width:1.6em;font-size:1.05rem;text-align:center}'
+    + 'tr.ok td.s{color:#1d8b4a}tr.bad td.s{color:#c62828}'
+    + '.d{color:#555;font-size:.9rem}'
+    + '.card{border:1px solid #e4e4e4;border-radius:8px;padding:.3em .9em;background:#fafafa}'
+    + '.card p{margin:.75em 0}.k{color:#777;font-size:.82rem;display:block}'
+    + 'code{font:.9em ui-monospace,SFMono-Regular,Menlo,monospace;'
+    + 'background:rgba(127,127,127,.16);padding:.1em .35em;border-radius:3px}'
+    + '.foot{color:#888;font-size:.8rem;margin-top:2.2em;border-top:1px solid #e4e4e4;padding-top:1em}'
+    + '</style></head><body>'
+    + '<h1>Quote funnel monitor</h1>'
+    + '<p class="when">' + esc(p.site) + ' &middot; checked ' + esc(p.checkedAt) + '</p>'
+    + '<p class="verdict ' + (failed.length ? 'warn' : 'good') + '">' + esc(verdict) + '</p>'
+    + '<h2>What this run found</h2><table>' + rows + '</table>'
+    + '<p class="d" style="margin-top:.9em">' + mailed + '</p>'
+    + '<h2>Which deployment answered</h2><div class="card">'
+    + '<p><span class="k">Environment</span><code>' + esc(p.deployment.env) + '</code></p>'
+    + '<p><span class="k">Commit</span><code>' + esc(p.deployment.commit) + '</code>'
+    + ' &mdash; if this is not the commit you expected, production is serving an older '
+    + 'deployment and nothing else here can be trusted yet.</p></div>'
+    + '<h2>Monitor configuration</h2><div class="card">'
+    + '<p><span class="k">Probe email (HEALTH_PROBE_EMAIL)</span>' + probeLine + '</p>'
+    + '<p><span class="k">Cron secret (CRON_SECRET)</span>' + cronLine + '</p>'
+    + '<p><span class="k">Lead drought</span>Flagged after <code>' + esc(cfg.droughtDays)
+    + '</code> days with no quote request, then repeated every <code>'
+    + esc(cfg.droughtRepeatDays) + '</code> days while it lasts.</p></div>'
+    + '<p class="foot">Configured values are never shown on this page — only whether '
+    + 'each one is set. Add <code>?format=html</code> to this URL for this view; '
+    + 'omit it for the raw JSON.</p>'
+    + '</body></html>';
+}
+
 module.exports = async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
@@ -450,9 +562,7 @@ module.exports = async function handler(req, res) {
     }
   }
 
-  // 200 even when a check fails: this is a report, and a non-2xx would just
-  // make Vercel's cron log look like the monitor itself is broken.
-  return res.status(200).json({
+  var payload = {
     ok: failures.length === 0,
     checkedAt: new Date().toISOString(),
     site: siteUrl(),
@@ -461,5 +571,13 @@ module.exports = async function handler(req, res) {
     checks: checks,
     alerted: alerted,
     suppressed: suppressed.map(function (c) { return c.name; })
-  });
+  };
+
+  // 200 even when a check fails: this is a report, and a non-2xx would just
+  // make Vercel's cron log look like the monitor itself is broken.
+  if (wantsHtml(req)) {
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    return res.status(200).send(renderHtml(payload));
+  }
+  return res.status(200).json(payload);
 };

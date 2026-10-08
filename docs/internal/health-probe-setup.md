@@ -87,8 +87,24 @@ about why the send was refused.
 
 ## If it still says "Delivery was not exercised"
 
-**Read the `deployment` block first — it tells you which of the two causes it is.**
-`/api/health-check` now reports:
+**Easiest route — open the page version:**
+
+```
+https://www.mgsusa.llc/api/health-check?format=html
+```
+
+Same findings, in plain English, readable on a phone. It states which commit
+answered, whether `HEALTH_PROBE_EMAIL` is set, and what each check found. It
+never prints a configured value, only whether one is set.
+
+One limitation worth knowing before you set `CRON_SECRET`: the auth check runs
+before rendering, so once that variable exists the page returns 401 to a plain
+browser visit, same as the JSON. That is correct — the view is a convenience,
+not a reason to weaken the guard — but it means this URL stops being
+click-to-read at that point.
+
+**Or read the `deployment` block in the JSON**, which tells you which of the two
+causes it is. `/api/health-check` reports:
 
 ```json
 "deployment": {
