@@ -71,6 +71,8 @@ function clean(value, max) {
   return String(value == null ? '' : value).trim().slice(0, max || 2000);
 }
 
+var leadRecipients = require('../data/lead-recipients').leadRecipients;
+
 function sendEmail(to, mail) {
   var from = process.env.LEAD_FROM_EMAIL || 'no-reply@mgssite.com';
   return fetch('https://api.resend.com/emails', {
@@ -192,7 +194,9 @@ module.exports = async function handler(req, res) {
       }
       patch.status = 'review-link-sent';
     } else {
-      var owner = process.env.LEAD_NOTIFICATION_EMAIL || 'masterglassllc@aol.com';
+      // A 1-3 star alert is exactly the message that must not sit unseen in
+      // one inbox, so it follows the same list as the leads.
+      var owner = leadRecipients();
       var alert = buildLowRatingAlert(customer, rating, comments);
       var sentAlert = await sendEmail(owner, alert);
       if (sentAlert.status >= 400) {

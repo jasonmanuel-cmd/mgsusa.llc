@@ -25,6 +25,8 @@
  */
 
 var serviceOptions = require('../data/service-options');
+var leadRecipients = require('../data/lead-recipients').leadRecipients;
+var primaryRecipient = require('../data/lead-recipients').primaryRecipient;
 
 var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 var PHONE_RE = /^[+()\-.\s\d]{7,20}$/;
@@ -256,7 +258,10 @@ function buildChecklistEmail(d, page) {
 
 function sendEmail(mail, overrideTo) {
   var from = process.env.LEAD_FROM_EMAIL || 'quotes@mgsusa.llc';
-  var to = overrideTo || process.env.LEAD_NOTIFICATION_EMAIL || 'masterglassllc@aol.com';
+  // A list, so a lead can reach more than one inbox. The probe's overrideTo
+  // stays a single address: a probe proving delivery to one mailbox is the
+  // point, and fanning test mail out to the owner would defeat it.
+  var to = overrideTo ? [overrideTo] : leadRecipients();
   return fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: {
@@ -279,8 +284,10 @@ module.exports = async function handler(req, res) {
     // `+` binds tighter than `||`, so the old form here read
     // ('...email ' + undefined) || '...' and told the customer to write to
     // "undefined" whenever LEAD_NOTIFICATION_EMAIL was unset.
+    // One address in prose, not the whole list -- a customer being told to
+    // write in does not need the company's internal distribution.
     return jsonError(res, 503, 'Form submission is not configured yet. Please call 210-370-3700 or email ' +
-      (process.env.LEAD_NOTIFICATION_EMAIL || 'masterglassllc@aol.com'));
+      primaryRecipient());
   }
 
   // Now that a failed bot check cannot refuse a lead, this is what bounds

@@ -45,7 +45,8 @@ generic `/api/(.*)` rule caches for 6h with a 24h stale-while-revalidate window.
 ## Environment variables (Vercel)
 
 `OPENROUTER_API_KEY`, `OPENROUTER_MODEL`, `OPENAI_API_KEY`, `OPENAI_MODEL`,
-`RESEND_API_KEY`, `LEAD_FROM_EMAIL`, `LEAD_NOTIFICATION_EMAIL`,
+`RESEND_API_KEY`, `LEAD_FROM_EMAIL`, `LEAD_NOTIFICATION_EMAIL` (accepts a
+comma- or semicolon-separated list; see `data/lead-recipients.js`),
 `BLOB_READ_WRITE_TOKEN`, `FOLLOWUP_BLOB_READ_WRITE_TOKEN` (dedicated store),
 `FOLLOWUP_DESK_PASSCODE`, `FOLLOWUP_SESSION_SECRET`, `TURNSTILE_SECRET_KEY`,
 `GOOGLE_PLACES_API_KEY`, `GOOGLE_PLACE_ID`, `GOOGLE_REVIEW_URL`, `GOOGLE_MAPS_URL`.

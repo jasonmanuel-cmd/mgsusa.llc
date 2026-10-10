@@ -50,6 +50,7 @@
  */
 
 var metricsCache = require('../data/metrics-cache');
+var leadRecipients = require('../data/lead-recipients').leadRecipients;
 
 var DEFAULT_SITE = 'https://www.mgsusa.llc';
 
@@ -347,7 +348,7 @@ function alertEmail(failures, checks) {
 }
 
 function postAlert(mail, from) {
-  var to = process.env.LEAD_NOTIFICATION_EMAIL || 'masterglassllc@aol.com';
+  var to = leadRecipients();
   return fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: {
