@@ -47,7 +47,10 @@
       { name: 'Custom glass', url: '/custom-glass', blurb: 'Custom-cut, tempered, and laminated glass fabricated to specification.' },
       { name: 'Shower enclosures', url: '/shower-enclosures', blurb: 'Frameless and framed shower doors and panels.' },
       { name: 'Mirrors', url: '/mirrors', blurb: 'Custom-cut mirrors for bathrooms, gyms, closets, and commercial spaces.' },
-      { name: 'Window glass replacement', url: '/window-glass-replacement', blurb: 'Residential and commercial window glass replacement.' }
+      { name: 'Window glass replacement', url: '/window-glass-replacement', blurb: 'Residential and commercial window glass replacement.' },
+      { name: 'Security window film', url: '/commercial-security-film', blurb: 'Safety and security window film for commercial buildings — glass fragment retention and forced-entry delay.' },
+      { name: 'Commercial window tint', url: '/commercial-window-tint', blurb: 'Commercial window tinting (solar control film) for building glass — heat, glare and UV reduction. Buildings only; never vehicle glass.' },
+      { name: 'Perforated window graphics', url: '/perforated-window-graphics', blurb: 'Perforated one-way vision window graphics for storefront glass — printed graphic outside, view retained from inside.' }
     ],
 
     serviceAreas: [

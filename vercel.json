@@ -311,6 +311,21 @@
       "source": "/sms-terms",
       "destination": "/terms-and-conditions",
       "permanent": true
+    },
+    {
+      "source": "/commercial-security-film.html",
+      "destination": "/commercial-security-film",
+      "permanent": true
+    },
+    {
+      "source": "/commercial-window-tint.html",
+      "destination": "/commercial-window-tint",
+      "permanent": true
+    },
+    {
+      "source": "/perforated-window-graphics.html",
+      "destination": "/perforated-window-graphics",
+      "permanent": true
     }
   ],
   "headers": [
