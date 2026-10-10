@@ -158,14 +158,27 @@ function validateQuote(body) {
     photos: Array.isArray(body.photos) ? body.photos.filter(function (u) { return typeof u === 'string' && /^https:\/\//.test(u); }).slice(0, 6) : []
   };
 
+  /* Four requirements, matching what the forms now ask for: a name to use, a
+     way to reply, what the work is, and permission to follow up.
+
+     Last name and property location used to be required here. They are useful
+     and the fields are still on the form, but neither is needed to answer a
+     lead, and a visitor who abandons the form over a field we could have asked
+     for on the callback is worth nothing at all. A half-filled lead beats that.
+
+     Phone and details were never required here, even while the forms demanded
+     both -- the form was turning people away over fields this function did not
+     want. That has been corrected on the form side rather than here.
+
+     The duplicate consent check that used to follow this block was dead:
+     validateQuote only ever runs for kind === 'quote', so its
+     `body.kind !== 'checklist'` guard was always true and it re-reported an
+     error the line above had already pushed. */
   if (!d.firstName) errors.push('First name is required.');
-  if (!d.lastName) errors.push('Last name is required.');
   if (!d.email || !EMAIL_RE.test(d.email)) errors.push('A valid email is required.');
   if (d.phone && !PHONE_RE.test(d.phone)) errors.push('Please enter a valid phone number.');
   if (!d.service) errors.push('Please choose a service.');
-  if (!d.location) errors.push('Property location is required.');
   if (!d.consent) errors.push('Consent is required so we can follow up about your project.');
-  if (!d.consent && body.kind !== 'checklist') errors.push('Consent is required.');
 
   return { data: d, errors: errors };
 }
@@ -190,13 +203,18 @@ function buildQuoteEmail(d, page) {
   var serviceLabel = d.service || d.projectType || '';
   var serviceInfo = serviceOptions.getByLabel(serviceLabel) || serviceOptions.getService(d.projectType) || null;
 
+  /* Last name and location are optional now, so neither may render as a blank
+     cell or a trailing space -- a lead email that looks half-broken gets read
+     as a broken form rather than as a customer who typed less. */
+  var fullName = (d.firstName + ' ' + d.lastName).trim();
+
   var rows = [
-    ['Name', d.firstName + ' ' + d.lastName],
+    ['Name', escapeHtml(fullName)],
     ['Email', '<a href="mailto:' + escapeHtml(d.email) + '">' + escapeHtml(d.email) + '</a>'],
     ['Phone', escapeHtml(d.phone) || 'Not provided'],
     ['Service', escapeHtml(serviceLabel)],
     ['Project type', escapeHtml(d.projectType) || '-'],
-    ['Location', escapeHtml(d.location)],
+    ['Location', escapeHtml(d.location) || 'Not provided'],
     ['Timeline', escapeHtml(d.timeline) || 'Not selected'],
     ['Company / property', escapeHtml(d.business) || '-'],
     ['Source page', escapeHtml(page) || '-']
@@ -220,7 +238,7 @@ function buildQuoteEmail(d, page) {
     (d.photos.length ? '\n\nPhotos:\n' + d.photos.join('\n') : '');
 
   return {
-    subject: 'New quote request: ' + serviceLabel + ' - ' + d.firstName + ' ' + d.lastName,
+    subject: 'New quote request: ' + serviceLabel + ' - ' + fullName,
     text: text,
     html:
       '<div style="font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#111827;max-width:640px;">' +
