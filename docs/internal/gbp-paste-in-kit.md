@@ -78,28 +78,31 @@ distinct declarations exist, and the answer should always be one.
 
 ## 2. Description (750 character limit)
 
-Paste as-is — this is 718 characters.
+Paste as-is — this is **747 characters** against the 750 limit, counted, not
+estimated. There is almost no slack, so if you edit it, re-count before
+pasting; GBP truncates silently rather than refusing.
 
 ```
-Master Glass Solutions is an architectural glass contractor in San Antonio,
-serving the city, Boerne and the surrounding Hill Country since 2004. We work
-on buildings only: storefronts and commercial glazing, window glass
-replacement, frameless and semi-frameless shower enclosures, mirrors, glass
-railings, partitions and custom fabrication for homes and businesses.
+Master Glass Solutions is an architectural glass contractor in San Antonio, serving the city, Boerne and the surrounding Hill Country since 2004. We work on buildings only: storefronts and commercial glazing, window glass replacement, shower enclosures, mirrors, glass railings, partitions and custom glass fabrication. We also install commercial window film - solar control tint, security film and perforated window graphics.
 
-Emergency glass support runs 24/7, including weekends and holidays. If a
-storefront, door or window is broken, call 210-370-3700 and the crew can board
-up the opening the same day and return with replacement glass.
+Emergency glass support runs 24/7, including weekends and holidays. If a storefront, door or window is broken, call 210-370-3700 and the crew can board up the opening the same day and return with replacement glass.
 
 We do not service auto glass, windshields or any vehicle glass.
 
 Call 210-370-3700 for a free estimate.
 ```
 
-Two deliberate choices. The last line before the phone number rules out auto
+Three deliberate choices. The last line before the phone number rules out auto
 glass, because that is the most common wrong call a glass company gets and
-every one costs somebody's time. And "since 2004" is in the first sentence —
-longevity is the cheapest trust signal available and this business has it.
+every one costs somebody's time — and it matters more now that the profile
+lists window tint. "Since 2004" is in the first sentence; longevity is the
+cheapest trust signal available and this business has it. And the film services
+get one clause rather than a paragraph: they are new and worth naming, but the
+glazing work is what the business is known for and what most searches are for.
+
+Note the hyphen in "window film - solar control tint" is a plain hyphen, not an
+em dash. Pasting typographic punctuation into GBP fields is a reliable way to
+get mojibake in the rendered profile.
 
 ---
 
