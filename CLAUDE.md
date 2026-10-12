@@ -188,6 +188,13 @@ lead" rule below, and it invites someone to re-fix what is already fixed.)
   match its `hasMap`. Setting both to the office address looks like a NAP fix
   and is not: it leaves `Place` contradicting its own map link on 21 pages.
   `tools/fix_place_geo.py` restores `Place` geo from `hasMap`.
+- **One hours declaration, site-wide.** Every page's `openingHoursSpecification`
+  says 00:00–23:59, seven days, because the emergency line really is answered
+  around the clock. `index.html` and `about.html` used to declare office hours
+  instead, so the site told Google two different things about the same business
+  `@id` on 54 pages versus 2. `tools/fix_hours_conflict.py` converges them and
+  its verification pass reports how many distinct declarations exist — the
+  answer should always be one. The Google Business Profile must match.
 - Commit messages follow `type(scope): summary`.
 
 ## Local preview

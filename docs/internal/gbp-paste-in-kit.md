@@ -52,33 +52,27 @@ Type the name exactly as above. No "— Best Glass in San Antonio", no city
 appended. Keyword-stuffed names are a suspension risk and are reported by
 competitors routinely.
 
-### Hours — settle this before you touch the field
+### Hours — set **Open 24 hours**
 
-**The website currently contradicts itself, so there is no single answer to
-copy.** Checked 2026-10-12:
+Confirmed by the owner on 2026-10-12 that 210-370-3700 is genuinely answered
+around the clock, so "Open 24 hours" is honest and is what the profile should
+say. That is a real competitive advantage in this trade and it should not be
+hidden behind an office-hours schedule: a storefront that goes in at 9pm is
+searching then, not at 9am.
 
-| Pages | Structured data says |
-|---|---|
-| `index.html` and one other | Mon–Fri 08:00–17:00, Sat 09:00–13:00, Sun closed |
-| **The other 52 pages**, including every city page and the emergency page | **00:00–23:59, i.e. open 24 hours** |
+This matters because Google shows an "Open now" badge against whatever is set.
+Set 24 hours when nobody answers and a 3am caller gets voicemail and leaves a
+one-star review. Set office hours when somebody does answer and an emergency
+caller at 9pm is told the business is shut. The first mistake is louder; the
+second is the one that quietly loses the job.
 
-Google reads all of them, under the same business `@id`. Whichever is true, the
-other 52 or the 2 are wrong and should be corrected in the markup at the same
-time as the profile, or the profile will disagree with most of the site.
-
-The question is simply: **does somebody actually answer 210-370-3700 at 3am?**
-
-- **Yes** → "Open 24 hours" is honest. Set it, and fix `index.html` to match
-  the other 52 pages.
-- **No, it is an office with a 24/7 emergency line** → set the real office
-  hours above, put the 24/7 emergency line in the description and the service
-  text, and fix the 52 pages to match `index.html`.
-
-Do not guess. Google shows an "Open now" badge against whatever is set, and a
-customer who calls at 3am on the strength of it and gets voicemail leaves a
-one-star review that outlives any ranking benefit. The reverse mistake is
-quieter but also real: office hours on the profile tell an emergency caller at
-9pm that the business is shut, when it is not.
+The site used to disagree with itself here — `index.html` and `about.html`
+declared Mon–Fri 08:00–17:00 plus a Saturday morning while the other 52 pages
+declared 00:00–23:59 under the same business `@id`. Fixed 2026-10-12 by
+`tools/fix_hours_conflict.py`; all 75 structured-data blocks now carry the same
+declaration, so the profile and the site agree. If the hours ever genuinely
+change, run that script's verification pass afterwards — it reports how many
+distinct declarations exist, and the answer should always be one.
 
 ---
 
