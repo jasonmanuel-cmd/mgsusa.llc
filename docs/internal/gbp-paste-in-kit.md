@@ -4,7 +4,11 @@ Everything here is ready to paste into the GBP dashboard. Copy from the site's
 own content and structured data, not invented, so the profile and the website
 agree — which is the point of the exercise.
 
-**Drafted 2026-10-06.** Work top to bottom; sections are in order of impact.
+**Drafted 2026-10-06. Revised 2026-10-12** — the three window-film services
+were added to the site and to section 4, and the hours guidance in section 1
+now records that the site's own structured data contradicts itself about them.
+
+Work top to bottom; sections are in order of impact.
 
 ---
 
@@ -48,16 +52,33 @@ Type the name exactly as above. No "— Best Glass in San Antonio", no city
 appended. Keyword-stuffed names are a suspension risk and are reported by
 competitors routinely.
 
-### Hours
+### Hours — settle this before you touch the field
 
-Set **real office hours**, then put the 24/7 emergency line in the description.
+**The website currently contradicts itself, so there is no single answer to
+copy.** Checked 2026-10-12:
 
-Do not set "Open 24 hours" unless somebody genuinely answers 210-370-3700 at
-3am. Google shows an "Open now" badge against those hours, and a customer who
-calls at 3am on the strength of it and gets voicemail leaves a one-star review
-that outlives any ranking benefit. The site's own FAQ says emergency support
-runs 24/7 including weekends — if that is literally true of the phone, then
-"Open 24 hours" is honest and worth setting.
+| Pages | Structured data says |
+|---|---|
+| `index.html` and one other | Mon–Fri 08:00–17:00, Sat 09:00–13:00, Sun closed |
+| **The other 52 pages**, including every city page and the emergency page | **00:00–23:59, i.e. open 24 hours** |
+
+Google reads all of them, under the same business `@id`. Whichever is true, the
+other 52 or the 2 are wrong and should be corrected in the markup at the same
+time as the profile, or the profile will disagree with most of the site.
+
+The question is simply: **does somebody actually answer 210-370-3700 at 3am?**
+
+- **Yes** → "Open 24 hours" is honest. Set it, and fix `index.html` to match
+  the other 52 pages.
+- **No, it is an office with a 24/7 emergency line** → set the real office
+  hours above, put the 24/7 emergency line in the description and the service
+  text, and fix the 52 pages to match `index.html`.
+
+Do not guess. Google shows an "Open now" badge against whatever is set, and a
+customer who calls at 3am on the strength of it and gets voicemail leaves a
+one-star review that outlives any ranking benefit. The reverse mistake is
+quieter but also real: office hours on the profile tell an emergency caller at
+9pm that the business is shut, when it is not.
 
 ---
 
@@ -119,6 +140,20 @@ for the top five.
 | Custom glass fabrication | Table tops, shelving and one-off cuts templated on site. |
 | Insulated glass units | Failed or fogged double-glazing replaced. |
 | Storm damage glass | Hail and storm damage, with insurance documentation. |
+| **Commercial window tinting** | Solar control film that cuts heat and glare on building glass. Buildings only. |
+| **Security window film** | Safety and security film for fragment retention and forced-entry delay. |
+| **Perforated window graphics** | One-way vision printed film for storefront glass. |
+
+> **The three film services were added to the site on 2026-10-10** and are live
+> at `/commercial-window-tint`, `/commercial-security-film` and
+> `/perforated-window-graphics`. They are listed here so the profile and the
+> site agree, which is the whole point of this document.
+>
+> **Window tint still takes no auto category.** It is the single most likely of
+> the thirteen to pull auto-glass searches, and adding `Auto glass shop` to
+> catch them would fill the phone with work that can never be served. The
+> website's tint page answers "Do you tint car windows?" with a flat no in its
+> first FAQ; keep the profile saying the same thing.
 
 ---
 
@@ -236,6 +271,13 @@ These are written for October–November; adjust the season when reusing.
 > Broken glass does not keep business hours. Our emergency line runs 24/7,
 > including weekends and holidays — we have replaced a storefront door on a
 > Sunday. 📞 210-370-3700
+
+**Post 5 — Update · button: Learn more → https://www.mgsusa.llc/commercial-window-tint**
+> New: commercial window film. Solar control film cuts the heat and glare
+> coming through the glass a building already has — no reglazing, no shutdown.
+> We also install security film for fragment retention and forced-entry delay,
+> and perforated one-way vision graphics for storefronts. Commercial buildings
+> only; we do not film vehicle glass.
 
 ---
 
