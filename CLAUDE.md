@@ -8,7 +8,7 @@ client into `assets/vendor/blob-client.js` with esbuild.
 
 ## Layout
 
-- `*.html` (56 pages) at the repo root — services, ~25 `<city>-tx.html` local
+- `*.html` (59 pages) at the repo root — services, ~25 `<city>-tx.html` local
   landing pages, legal pages, `followup-desk.html`, `review.html`.
 - `api/` — serverless functions (see table below).
 - `data/` — UMD modules shared by browser and functions: exposed as `window.MGS.*`
@@ -124,7 +124,7 @@ lead" rule below, and it invites someone to re-fix what is already fixed.)
   column of photos. A hard refresh looks fine, so testing will not catch it.
   `styles.min.css` is also requested as `?v=N`; raise that when the file changes.
 - **Site-wide changes** (nav, footer, tracking snippets, social links) must be
-  applied across all 56 HTML pages — e.g. the HubSpot snippet is on all of them.
+  applied across all 59 HTML pages — e.g. the HubSpot snippet is on all of them.
 - **Photos:** run the `add-project-photos` skill rather than doing it by hand.
   Budgets are 1400px/180 KB full and 800px/80 KB for `-sm` thumbnails, and
   every photo needs both. Encode first, then write `srcset` width descriptors
@@ -195,6 +195,16 @@ lead" rule below, and it invites someone to re-fix what is already fixed.)
   `@id` on 54 pages versus 2. `tools/fix_hours_conflict.py` converges them and
   its verification pass reports how many distinct declarations exist — the
   answer should always be one. The Google Business Profile must match.
+- **The forms and `validateQuote` state one contract.** Required is first name,
+  email, service and consent — four fields, cut from eight on 2026-10-12. The
+  forms used to demand `details` and `phone` that the server never wanted, and
+  the server demanded last name and location that the forms could not usefully
+  insist on; at ~0.3% conversion the friction was the cheaper half to fix.
+  `tools/form-required-check.py` asserts the asterisks match the `required`
+  attributes and both match the server, treating the planning checklist as its
+  own shape via the same rule `quote-form.js` uses (`details || timeline`).
+  Relaxing one side alone turns silent abandonment into a 422 after the customer
+  has finished typing, which is worse than the problem.
 - Commit messages follow `type(scope): summary`.
 
 ## Local preview
@@ -223,7 +233,17 @@ Static pages render; anything under `api/` needs a Vercel deploy (or preview) to
   merged into `main`.
 - There is no automated test or CI setup; the only Actions workflow is the
   Copilot PR reviewer. Checks are the scripts in `tools/` and the
-  `add-project-photos` skill's `verify_site.py`, run by hand.
+  `add-project-photos` skill's `verify_site.py`, run by hand. Current
+  checks: `hc-scenarios.cjs` (health-check, 16 scenarios),
+  `quote-validation-check.cjs` (what submit-quote accepts, 13),
+  `recipients-check.cjs` (recipient parsing, 19),
+  `form-required-check.py` (forms agree with the server contract).
+- **`tools/*.py` was untracked until 2026-10-12.** A blanket `*.py` in
+  `.gitignore` excluded every Python tool while the `.cjs` ones beside them
+  were tracked, so this file documented `fix_place_geo.py` and
+  `fix_hours_conflict.py` as things to run while a fresh clone contained
+  neither. A `!tools/*.py` exception now mirrors the one already there for
+  skills. `.vercelignore` still excludes `tools/`, so none of it ships.
 - **One** Vercel project builds this repo: `mgsusa-llc`, from the root. Keep it
   that way — a second project (`web`, pointing at an Astro concept folder)
   existed and failed every build, so do not add a sub-folder with its own
