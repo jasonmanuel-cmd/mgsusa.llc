@@ -128,6 +128,19 @@
       if (f) fields[NAMES[i]] = f;
     }
 
+    // Prefill from URL query params (e.g. from 21st.dev Glass Configurator)
+    try {
+      var urlParams = new URLSearchParams(window.location.search);
+      var preService = urlParams.get('service');
+      var preDetails = urlParams.get('details');
+      if (preDetails && fields.details) {
+        fields.details.value = preDetails;
+      }
+      if (preService && fields.service) {
+        fields.service.value = preService;
+      }
+    } catch (e) {}
+
     // Only enhance forms that actually have the guided-flow shape.
     if (!fields.service || !fields.location || !(fields['first-name'] || fields.email)) return;
 
@@ -256,6 +269,9 @@
               card.addEventListener('click', function () {
                 selectService(svc, card);
               });
+              if (fields.service && fields.service.value && (fields.service.value.toLowerCase() === svc.label.toLowerCase() || fields.service.value.toLowerCase() === svc.value.toLowerCase())) {
+                selectService(svc, card);
+              }
             })(opts.services[i]);
           }
           if (kind === 'quote') {

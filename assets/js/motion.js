@@ -101,4 +101,214 @@
     bar.setAttribute('aria-hidden', 'true');
     document.body.appendChild(bar);
   }
+
+  // 21st.dev Spotlight: tracks cursor coordinates for optical glass reflection
+  if (window.matchMedia && window.matchMedia('(hover: hover)').matches) {
+    document.addEventListener('pointermove', function (e) {
+      var card = e.target && e.target.closest && e.target.closest(
+        '.service-card, .path-card, .hero-panel a, .trust-grid > div, .gallery-grid > figure, .article-card'
+      );
+      if (!card) return;
+      var rect = card.getBoundingClientRect();
+      card.style.setProperty('--mouse-x', (e.clientX - rect.left) + 'px');
+      card.style.setProperty('--mouse-y', (e.clientY - rect.top) + 'px');
+    }, { passive: true });
+  }
+
+  // 21st.dev Rolling Digit Ticker: smooth ease-out count-up upon scroll into view
+  var countTargets = document.querySelectorAll('.trust-grid span b, .hero-proof span, [data-counter]');
+  if (countTargets.length && 'IntersectionObserver' in window) {
+    var counterIo = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        counterIo.unobserve(e.target);
+        runCountUp(e.target);
+      });
+    }, { threshold: 0.15 });
+
+    for (var c = 0; c < countTargets.length; c++) {
+      var targetEl = countTargets[c];
+      var raw = targetEl.textContent.trim();
+      if (/^\d+/.test(raw)) {
+        targetEl.setAttribute('data-target-text', raw);
+        counterIo.observe(targetEl);
+      }
+    }
+  }
+
+  function runCountUp(el) {
+    var fullText = el.getAttribute('data-target-text') || el.textContent.trim();
+    var match = fullText.match(/^(\d+)(.*)$/);
+    if (!match) return;
+    var targetNum = parseInt(match[1], 10);
+    var suffix = match[2];
+    var duration = 1250;
+    var start = null;
+
+    function frame(now) {
+      if (!start) start = now;
+      var progress = Math.min((now - start) / duration, 1);
+      var ease = 1 - Math.pow(1 - progress, 3);
+      var current = Math.floor(ease * targetNum);
+      el.textContent = current + suffix;
+      if (progress < 1) {
+        requestAnimationFrame(frame);
+      } else {
+        el.textContent = fullText;
+      }
+    }
+    requestAnimationFrame(frame);
+  }
+
+  // 21st.dev Before/After Comparison Sliders
+  var compareSliders = document.querySelectorAll('[data-compare]');
+  for (var i = 0; i < compareSliders.length; i++) {
+    (function (slider) {
+      var range = slider.querySelector('.mgs-compare-range');
+      if (!range) return;
+
+      function updatePos(val) {
+        val = Math.max(0, Math.min(100, val));
+        slider.style.setProperty('--compare-pos', val + '%');
+        range.value = val;
+      }
+
+      range.addEventListener('input', function () {
+        updatePos(parseFloat(range.value));
+      });
+
+      if (window.matchMedia && window.matchMedia('(hover: hover)').matches) {
+        var isDragging = false;
+        range.addEventListener('pointerdown', function () { isDragging = true; });
+        window.addEventListener('pointerup', function () { isDragging = false; });
+
+        slider.addEventListener('pointermove', function (e) {
+          if (isDragging) return;
+          var rect = slider.getBoundingClientRect();
+          var x = e.clientX - rect.left;
+          var percent = (x / rect.width) * 100;
+          updatePos(percent);
+        }, { passive: true });
+
+        slider.addEventListener('pointerleave', function () {
+          if (!isDragging) {
+            updatePos(50);
+          }
+        });
+      }
+    })(compareSliders[i]);
+  }
+
+  // 21st.dev Interactive Glass Configurator (Option C: Specification-Only)
+  var configurators = document.querySelectorAll('[data-configurator]');
+  for (var k = 0; k < configurators.length; k++) {
+    (function (cfg) {
+      var state = {
+        service: 'shower',
+        glass: 'starphire',
+        finish: 'black'
+      };
+
+      var DATA = {
+        shower: {
+          title: 'Custom Shower Enclosure',
+          paramService: 'Shower enclosure',
+          specs: {
+            clear: { name: 'Standard Clear Tempered' },
+            starphire: { name: '⅜″ Ultra-Clear Starphire (Low-Iron)' },
+            heavy: { name: '½″ Heavy Architectural Tempered' },
+            frosted: { name: '⅜″ Acid-Etched / Frosted Privacy' }
+          },
+          leadTime: '5–7 business days',
+          included: 'PPG-Certified Glazing, 10-Yr Hardware Warranty'
+        },
+        storefront: {
+          title: 'Commercial Storefront System',
+          paramService: 'Storefront glass',
+          specs: {
+            clear: { name: 'Standard Clear Storefront IGU' },
+            starphire: { name: 'Starphire Low-Iron Storefront' },
+            heavy: { name: '½″ Heavy All-Glass Entry Doors' },
+            frosted: { name: 'Privacy Tint / Obscure Healthcare' }
+          },
+          leadTime: '7–10 business days',
+          included: 'Commercial Exit Hardware, ADA Compliance Review'
+        },
+        mirror: {
+          title: 'Custom Architectural Mirrors',
+          paramService: 'Mirror',
+          specs: {
+            clear: { name: '¼″ Polished Edge Flat Mirror' },
+            starphire: { name: 'Low-Iron Starphire True-Color Mirror' },
+            heavy: { name: '⅜″ Heavy Beveled Vanity Mirror' },
+            frosted: { name: 'Custom Backlit / Sandblasted Accent' }
+          },
+          leadTime: '3–5 business days',
+          included: 'Mastic & Safety Backing, J-Mold or French Cleat'
+        },
+        window: {
+          title: 'Window Glass Replacement',
+          paramService: 'Window glass replacement',
+          specs: {
+            clear: { name: 'Double-Pane Clear Insulated Unit' },
+            starphire: { name: 'High-Performance Low-E Argon' },
+            heavy: { name: 'Laminated Acoustic / Impact Glass' },
+            frosted: { name: 'Obscure / Rain Glass Bathroom Window' }
+          },
+          leadTime: '3–5 business days',
+          included: 'Precision Laser Measurement, Old Glass Haul-Away'
+        }
+      };
+
+      var FINISH_NAMES = {
+        black: 'Matte Black',
+        brass: 'Brushed Brass / Satin Gold',
+        chrome: 'Polished Chrome',
+        nickel: 'Brushed Nickel'
+      };
+
+      var specTitleEl = cfg.querySelector('[data-config-spec-title]');
+      var specGlassEl = cfg.querySelector('[data-config-spec-glass]');
+      var specFinishEl = cfg.querySelector('[data-config-spec-finish]');
+      var specLeadEl = cfg.querySelector('[data-config-spec-lead]');
+      var specIncludeEl = cfg.querySelector('[data-config-spec-include]');
+      var ctaEl = cfg.querySelector('[data-config-cta]');
+
+      function render() {
+        var sData = DATA[state.service] || DATA.shower;
+        var gData = sData.specs[state.glass] || sData.specs.clear;
+        var fName = FINISH_NAMES[state.finish] || 'Matte Black';
+
+        if (specTitleEl) specTitleEl.textContent = sData.title;
+        if (specGlassEl) specGlassEl.textContent = gData.name;
+        if (specFinishEl) specFinishEl.textContent = fName;
+        if (specLeadEl) specLeadEl.textContent = sData.leadTime;
+        if (specIncludeEl) specIncludeEl.textContent = sData.included;
+
+        if (ctaEl) {
+          var queryDetails = 'Configured Spec: ' + sData.title + ' (' + gData.name + '), Finish: ' + fName + ', Typical Lead: ' + sData.leadTime;
+          var href = '/request-quote?service=' + encodeURIComponent(sData.paramService) + '&details=' + encodeURIComponent(queryDetails);
+          ctaEl.setAttribute('href', href);
+        }
+      }
+
+      cfg.addEventListener('click', function (e) {
+        var btn = e.target.closest && e.target.closest('[data-config-key]');
+        if (!btn) return;
+        var group = btn.getAttribute('data-config-group');
+        var key = btn.getAttribute('data-config-key');
+        if (!group || !key) return;
+
+        state[group] = key;
+        var siblings = cfg.querySelectorAll('[data-config-group="' + group + '"]');
+        for (var i = 0; i < siblings.length; i++) {
+          siblings[i].classList.remove('is-active');
+        }
+        btn.classList.add('is-active');
+        render();
+      });
+
+      render();
+    })(configurators[k]);
+  }
 })();
