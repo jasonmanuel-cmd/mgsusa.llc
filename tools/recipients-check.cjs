@@ -6,7 +6,7 @@
  * owner forever. A unit test is cheap; discovering any of these from an empty
  * inbox took three weeks last time.
  */
-const { parseRecipients, DEFAULT_OWNER } = require('/home/user/mgsusa.llc/data/lead-recipients');
+const { parseRecipients, DEFAULT_OWNER } = require('../data/lead-recipients');
 
 const OWNER = DEFAULT_OWNER;
 const cases = [

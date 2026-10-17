@@ -150,3 +150,89 @@ All critical changes have been implemented, tested, and verified:
 ---
 
 **Verification Completed:** 2026-09-19 | **Verified By:** Claude Haiku 4.5
+
+---
+
+# Session Verification Report: Interactive Enhancements & Video Hero
+**Date:** 2026-10-16 | **Status:** ✅ ALL SYSTEMS GREEN & VERIFIED
+
+## 1. Git & Deployment Status
+
+| Item | Status | Details |
+|------|--------|---------|
+| **Branch** | ✅ main | Live tracking branch |
+| **Commit Target** | Origin sync | Clean tree ready for push |
+| **Vercel Project** | ✅ mgsusa-llc | Root deployment |
+
+---
+
+## 2. Changes Made & Files Affected
+
+- **Homepage Video Hero Integration:**
+  - `index.html`: Replaced static picture with `<video class="hero-video" autoplay muted loop playsinline preload="metadata">`. Removed obstructive `#splashOverlay` blocking gate.
+  - `assets/Videos/hero.mp4`: Web-optimized H.264 video with `-movflags +faststart` (2.53 MB).
+  - `assets/images/hero-video-poster.webp` & `hero-video-poster.jpg`: Static poster fallbacks (99 KB WebP, 183 KB JPG).
+  - `assets/css/motion.css`: Added responsive video sizing, dark tint overlay, and `prefers-reduced-motion` fallbacks.
+- **Interactive Before / After Transformation Slider:**
+  - `index.html`: Added before/after interactive slider section beneath hero.
+  - `assets/ShowerBefore.webp`, `ShowerBefore-sm.webp`, `ShowerAfter.webp`, `ShowerAfter-sm.webp`: Converted project photos to responsive WebP.
+  - `assets/js/motion.js`: Added touch & mouse split-slider draggable divider logic with keyboard accessibility.
+  - `assets/css/motion.css`: Added responsive split-view styles and handle positioning.
+- **Option C Specification-Only Configurator:**
+  - `index.html`: Interactive glass configurator section with step selection (Application, Glass Spec, Hardware Finish).
+  - `assets/js/motion.js` & `assets/css/motion.css`: Implemented Option C (Specification-Only, zero public dollar estimates). Displays live architectural spec sheet (glass thickness, hardware, typical fabrication lead time, warranty inclusions).
+  - CTA button labeled `"Get Custom Pricing for this Spec"`.
+  - `assets/js/quote-form.js`: Added URL parameter prefill handler (`service`, `details`) to populate quote form from configurator selections.
+- **Cache Invalidation:**
+  - `service-worker.js`: Bumped cache version to `v1.0.14`.
+  - All 54 HTML pages: Updated asset version query strings (`motion.css?v=5`, `motion.js?v=5`).
+- **Test Harness Portability & Diagnostics:**
+  - `tools/recipients-check.cjs`: Replaced hardcoded Linux paths with relative path to `data/lead-recipients`.
+  - `tools/chat-fallback.cjs`: Replaced hardcoded Linux path with `path.join(__dirname, '..', 'api', 'chat.js')`.
+  - `tools/quote-validation-check.cjs`: Replaced hardcoded Linux path with `path.join(__dirname, '..', 'api', 'submit-quote.js')`.
+  - `tools/hc-scenarios.cjs`: Replaced hardcoded Linux paths with relative paths for `api/health-check.js` and `data/metrics-cache`.
+  - `.agents/skills/add-project-photos/scripts/verify_site.py` & `.claude/skills/add-project-photos/scripts/verify_site.py`: Added fallback to `PIL.Image` for image width detection when ImageMagick `identify` is not present; added explicit UTF-8 encoding handling.
+- **Asset Descriptors Correction:**
+  - `perforated-window-graphics.html`: Corrected `Storefront1-sm.webp` and `Storefront1.webp` hero srcset descriptors from erroneous `800w`/`1400w` to the actual `795w` on disk.
+- **Agent Guidelines Alignment:**
+  - `AGENTS.md` & `CLAUDE.md`: Synced rules including `LEAD_NOTIFICATION_EMAIL` list parsing, site-wide 24/7 hours schema, hero background video requirements, and Option C specification-only configurator conventions.
+
+---
+
+## 3. Checks Performed & Actual Results
+
+| Check / Tool | Purpose | Result |
+|---|---|---|
+| `verify_site.py` | Full site asset audit (references, WebP headers, srcset widths, bare `<source>`) | ✅ **PASS** (1588 references across 59 pages OK, WebP valid, all srcset descriptors match disk, all sources compliant) |
+| `tools/recipients-check.cjs` | Lead notification email parser unit tests | ✅ **PASS** (19/19 test cases passed) |
+| `tools/chat-fallback.cjs` | OpenRouter model fallback chain behavior | ✅ **PASS** (5/5 scenarios passed) |
+| `tools/quote-validation-check.cjs` | Quote form payload validator and email formatting | ✅ **PASS** (13/13 test cases passed) |
+| `tools/hc-scenarios.cjs` | Health check probe and lead drought alerting engine | ✅ **PASS** (16/16 scenarios passed) |
+| `http://localhost:3000` | Local HTTP preview server probe | ✅ **PASS** (HTTP 200 OK, DOM and assets serve clean) |
+
+---
+
+## 4. Remaining Problems
+
+- **None blocking production.**
+- Note: Playwright-dependent scripts in `tools/` (`tools/site-sweep.cjs`, `tools/form-check.cjs`, `tools/motion-check.cjs`, `tools/page-check.cjs`, `tools/verify-gtm.cjs`) specify Linux test environment binary paths (`/opt/pw-browsers/chromium`) and are intended for containerized CI sweeps.
+
+---
+
+## 5. Next Concrete Action
+
+1. Verify Vercel build output after push on production deployment (`mgsusa-llc`).
+2. Validate the live daily health check endpoint (`https://www.mgsusa.llc/api/health-check?format=html`).
+
+---
+
+## 6. New Decisions & Corrections
+
+- **Option C Specification-Only Configurator:** Decided against publishing fixed pricing bands on the site; configurator instead acts as a project spec builder that seamlessly funnels users to `/request-quote` with pre-filled specs.
+- **Hero Video Background:** Removed intrusive splash screen gate on homepage. Hero video autoplays muted in background with poster fallback and reduced-motion support.
+- **Responsive Srcset Descriptors:** Repaired mismatched width descriptors on `perforated-window-graphics.html` to reflect actual 795px asset width.
+- **Portability:** Refactored test harness in `tools/` to use relative module paths, enabling cross-platform execution.
+
+---
+**Verification Completed:** 2026-10-16 | **Verified By:** Antigravity (Google DeepMind)
+

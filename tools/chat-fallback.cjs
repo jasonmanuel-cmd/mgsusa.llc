@@ -6,7 +6,7 @@ process.env.OPENROUTER_API_KEY = 'test-or-key';
 process.env.OPENROUTER_MODEL = 'free-a:free,free-b:free';
 delete process.env.OPENAI_API_KEY;
 
-const path = '/home/user/mgsusa.llc/api/chat.js';
+const path = require('path').join(__dirname, '..', 'api', 'chat.js');
 
 function res() {
   return {

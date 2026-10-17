@@ -45,7 +45,8 @@ generic `/api/(.*)` rule caches for 6h with a 24h stale-while-revalidate window.
 ## Environment variables (Vercel)
 
 `OPENROUTER_API_KEY`, `OPENROUTER_MODEL`, `OPENAI_API_KEY`, `OPENAI_MODEL`,
-`RESEND_API_KEY`, `LEAD_FROM_EMAIL`, `LEAD_NOTIFICATION_EMAIL`,
+`RESEND_API_KEY`, `LEAD_FROM_EMAIL`, `LEAD_NOTIFICATION_EMAIL` (accepts a
+comma- or semicolon-separated list; see `data/lead-recipients.js`),
 `BLOB_READ_WRITE_TOKEN`, `FOLLOWUP_BLOB_READ_WRITE_TOKEN` (dedicated store),
 `FOLLOWUP_DESK_PASSCODE`, `FOLLOWUP_SESSION_SECRET`, `TURNSTILE_SECRET_KEY`,
 `GOOGLE_PLACES_API_KEY`, `GOOGLE_PLACE_ID`, `GOOGLE_REVIEW_URL`, `GOOGLE_MAPS_URL`.
@@ -187,6 +188,23 @@ lead" rule below, and it invites someone to re-fix what is already fixed.)
   match its `hasMap`. Setting both to the office address looks like a NAP fix
   and is not: it leaves `Place` contradicting its own map link on 21 pages.
   `tools/fix_place_geo.py` restores `Place` geo from `hasMap`.
+- **One hours declaration, site-wide.** Every page's `openingHoursSpecification`
+  says 00:00–23:59, seven days, because the emergency line really is answered
+  around the clock. `index.html` and `about.html` used to declare office hours
+  instead, so the site told Google two different things about the same business
+  `@id` on 54 pages versus 2. `tools/fix_hours_conflict.py` converges them and
+  its verification pass reports how many distinct declarations exist — the
+  answer should always be one. The Google Business Profile must match.
+- **Hero background video:** `assets/Videos/hero.mp4` serves as the autoplaying,
+  muted, looped hero background on `index.html`. It must always be encoded with
+  faststart (`-movflags +faststart`) and accompanied by static poster fallbacks
+  (`hero-video-poster.webp` / `hero-video-poster.jpg`) so users on slow
+  connections or with `prefers-reduced-motion` enabled see a clean, accessible frame.
+- **Specification-Only Configurator (Option C):** The interactive glass configurator
+  on `index.html` generates real-time architectural specifications without
+  publishing estimated dollar amounts. Clicking "Get Custom Pricing for this Spec"
+  navigates to `/request-quote` with service and specification pre-filled via URL
+  parameters.
 - Commit messages follow `type(scope): summary`.
 
 ## Local preview
