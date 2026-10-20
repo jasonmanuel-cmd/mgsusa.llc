@@ -46,7 +46,7 @@ browsing mirrors is a job next month. Lead with the urgent one.
 | Business name | `Master Glass Solutions` |
 | Phone | `210-370-3700` |
 | Website | `https://www.mgsusa.llc/` |
-| Address | `4949 N Loop 1604 West, Suite 501, San Antonio, TX 78249` |
+| Address | `4949 N Loop 1604 W Bldg 5 Suite 501, San Antonio, TX 78249` |
 
 Type the name exactly as above. No "— Best Glass in San Antonio", no city
 appended. Keyword-stuffed names are a suspension risk and are reported by

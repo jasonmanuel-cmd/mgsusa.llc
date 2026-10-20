@@ -46,7 +46,7 @@ Based on website signals and current implementation, the GBP profile likely need
 | Field | Status | Priority | Notes |
 |-------|--------|----------|-------|
 | **Business Name** | ✓ Verified | — | "Master Glass Solutions" present on website |
-| **Address** | ✓ Verified | — | 4949 N Loop 1604 West, Suite 501, San Antonio, TX 78249 |
+| **Address** | ✓ Verified | — | 4949 N Loop 1604 W Bldg 5 Suite 501, San Antonio, TX 78249 |
 | **Phone** | ✓ Verified | — | (210) 370-3700 displayed site-wide |
 | **Website** | ✓ Verified | — | https://www.mgsusa.llc canonical |
 | **Business Hours** | ⚠️ Missing | **HIGH** | Not visible on current website; 24/7 emergency claim suggests hours need clarification |
@@ -274,7 +274,7 @@ From `about.html` (lines 21-48):
   "priceRange": "$$",
   "address": {
     "@type": "PostalAddress",
-    "streetAddress": "4949 N Loop 1604 West, Suite 501",
+    "streetAddress": "4949 N Loop 1604 W Bldg 5 Suite 501",
     "addressLocality": "San Antonio",
     "addressRegion": "TX",
     "postalCode": "78249",

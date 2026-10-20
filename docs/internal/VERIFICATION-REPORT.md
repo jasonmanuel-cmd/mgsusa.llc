@@ -109,7 +109,7 @@
 
 ✅ **Content Accuracy**
 - Business hours: M-F 8am–5pm, Sat 9am–1pm, Sun Closed
-- Address: 4949 N Loop 1604 West, Suite 501, San Antonio, TX 78249
+- Address: 4949 N Loop 1604 W Bldg 5 Suite 501, San Antonio, TX 78249
 - Phone: (210) 370-3700 (consistent across all pages)
 - Email: masterglassllc@aol.com
 

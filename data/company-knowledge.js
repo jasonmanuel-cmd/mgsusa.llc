@@ -30,7 +30,7 @@
       phone: '210-370-3700',
       phoneHref: 'tel:2103703700',
       email: 'masterglassllc@aol.com',
-      address: '4949 N Loop 1604 West, Suite 501, San Antonio, TX 78249',
+      address: '4949 N Loop 1604 W Bldg 5 Suite 501, San Antonio, TX 78249',
       mapsUrl: 'https://maps.google.com/?cid=6020472325090378650',
       hours: '24 hours a day, 7 days a week',
       emergency: {

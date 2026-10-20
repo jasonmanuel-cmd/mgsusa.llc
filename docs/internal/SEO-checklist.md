@@ -12,7 +12,7 @@ The GBP is the #1 local-pack and map-pack ranking signal. These items need the G
 
 - [ ] **Business name** matches the site exactly: `Master Glass Solutions` (no keyword stuffing like "Master Glass Solutions - Best Glass in San Antonio")
 - [ ] **Primary category** is set to `Glass Company` or `Window Contractor`. Add secondary categories if applicable: `Door Repair Service`, `Storefront Contractor`, `Home Improvement Contractor`
-- [ ] **Address**: `4949 N Loop 1604 West, Suite 501, San Antonio, TX 78249` — must match the site's structured data exactly
+- [ ] **Address**: `4949 N Loop 1604 W Bldg 5 Suite 501, San Antonio, TX 78249` — must match the site's structured data exactly
 - [ ] **Service areas** populated: Boerne, San Antonio, Alamo Heights, Leon Valley, Helotes, Converse, Schertz, Comfort, Timberwood Park, Canyon Lake, Wimberley, Blanco, New Braunfels, Seguin, La Vernia, Stockdale, Lakehills, Castroville, Lytle, Natalia, Somerset — add all 21 cities
 - [ ] **Phone**: `210-370-3700` — matches site. Enable phone number click-to-call.
 - [ ] **Website URL**: `https://www.mgsusa.llc/` — must match; verify it resolves
@@ -56,7 +56,7 @@ Citations (directory listings) are the #2 local ranking signal after GBP. The go
 
 **NAP to use everywhere:**
 - Name: `Master Glass Solutions`
-- Address: `4949 N Loop 1604 West, Suite 501, San Antonio, TX 78249`
+- Address: `4949 N Loop 1604 W Bldg 5 Suite 501, San Antonio, TX 78249`
 - Phone: `210-370-3700`
 - Website: `https://www.mgsusa.llc/`
 

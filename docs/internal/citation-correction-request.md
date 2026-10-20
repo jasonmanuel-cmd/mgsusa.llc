@@ -25,7 +25,7 @@ interest in fixing.
 |---|---|
 | Business name | Master Glass Solutions |
 | Phone | 210-370-3700 |
-| Address | 4949 N Loop 1604 West, Suite 501, San Antonio, TX 78249 |
+| Address | 4949 N Loop 1604 W Bldg 5 Suite 501, San Antonio, TX 78249 |
 | Website | https://www.mgsusa.llc/ |
 | Email | masterglassllc@aol.com |
 | Google listing | https://maps.google.com/?cid=6020472325090378650 |
@@ -74,7 +74,7 @@ reporting a stranger's listing and tends to go nowhere.
 >
 >   Business name: Master Glass Solutions
 >   Phone:         210-370-3700
->   Address:       4949 N Loop 1604 West, Suite 501, San Antonio, TX 78249
+>   Address:       4949 N Loop 1604 W Bldg 5 Suite 501, San Antonio, TX 78249
 >   Website:       https://www.mgsusa.llc
 >   Email:         masterglassllc@aol.com
 >
@@ -100,8 +100,8 @@ reporting a stranger's listing and tends to go nowhere.
 > This listing is for my business, Master Glass Solutions, but the details are
 > wrong and it is marked Verified. The website link goes to
 > www.infinityglasscompany.com, a different company, and the phone number is
-> not mine. Correct: Master Glass Solutions, 210-370-3700, 4949 N Loop 1604
-> West, Suite 501, San Antonio, TX 78249, https://www.mgsusa.llc. Please
+> not mine. Correct: Master Glass Solutions, 210-370-3700, 4949 N Loop 1604 W Bldg 5
+> Suite 501, San Antonio, TX 78249, https://www.mgsusa.llc. Please
 > correct or remove the listing. Google Business Profile for verification:
 > https://maps.google.com/?cid=6020472325090378650
 

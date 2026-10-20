@@ -219,6 +219,19 @@ lead" rule below, and it invites someone to re-fix what is already fixed.)
   another copy in the repo.** Once a review count moves, it moves in
   `data/reviews-baseline.js` *and* in every page's JSON-LD, or the env
   overrides carry it without a deploy.
+- **The address is whatever the Google Business Profile says, to the letter.**
+  `4949 N Loop 1604 W Bldg 5 Suite 501, San Antonio, TX 78249`. The site read
+  `4949 N Loop 1604 West, Suite 501` until 2026-10-20 — missing `Bldg 5`, and
+  `West` where the verified listing says `W`. That is a NAP inconsistency on
+  every page, in `llms.txt`, and in `data/company-knowledge.js`, which is what
+  the chat answers "where are you?" from. The profile is the verified record,
+  so it wins; the site changes to match it, never the reverse. It appears 398
+  times across 159 files including the non-deployed copies, so change it with
+  a scripted replace over the whole repo and grep for leftovers afterwards.
+  `docs/internal/citation-correction-request.md` matters as much as the pages
+  do: it is the template for telling other directories the correct address, so
+  a stale copy there propagates the error outward rather than just sitting
+  there.
 - **A city page's `Place` is the city; its `LocalBusiness` is the company.**
   `LocalBusiness` geo is the San Antonio office (29.5604, -98.5322) and must
   match `postalAddress`. `Place` geo is that city's own coordinates and must
@@ -232,6 +245,27 @@ lead" rule below, and it invites someone to re-fix what is already fixed.)
   `@id` on 54 pages versus 2. `tools/fix_hours_conflict.py` converges them and
   its verification pass reports how many distinct declarations exist — the
   answer should always be one. The Google Business Profile must match.
+
+  **On 2026-10-20 it did not.** The profile read "Open · Closes 5 PM" while all
+  75 `openingHoursSpecification` blocks said 00:00–23:59. The profile even
+  contradicted itself: its own description says emergency support runs 24/7
+  including weekends and holidays, directly below a field saying the business
+  shuts at five. The cost is every "open now" search after 5 PM — the smashed
+  storefront at 9 PM is the highest-intent call this business gets. The profile
+  is set by hand in Google and no script here can reach it, so **the check is
+  to open the profile and read the hours**, not to run the tool and see one
+  declaration. The tool proves the pages agree with each other, which is not
+  the same claim.
+
+  **Do not "fix" the `contactPoint` hours in `index.html`.** They are the one
+  place in the repo that says 08:00–17:00, so they look like the bug the rule
+  above is about. They are not: `contactPoint` carries Mon–Fri 08:00–17:00 and
+  Sat 09:00–13:00 for `customer service` and `"24/7"` for `emergency`, which is
+  accurate and more precise than the blanket figure — the office is staffed
+  business hours, the emergency line is answered around the clock. Both are
+  true at once. `fix_hours_conflict.py` only reads `openingHoursSpecification`
+  and is blind to `contactPoint`, which is why this needs saying rather than
+  checking.
 - **The forms and `validateQuote` state one contract.** Required is first name,
   email, service and consent — four fields, cut from eight on 2026-10-12. The
   forms used to demand `details` and `phone` that the server never wanted, and
