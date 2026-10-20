@@ -331,6 +331,11 @@
       "source": "/glass-railings.html",
       "destination": "/glass-railings",
       "permanent": true
+    },
+    {
+      "source": "/stone-oak-tx.html",
+      "destination": "/stone-oak-tx",
+      "permanent": true
     }
   ],
   "headers": [
