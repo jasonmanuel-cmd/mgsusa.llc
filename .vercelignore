@@ -3,14 +3,15 @@
 # Everything here still lives in the repo and in git history; it is simply not
 # uploaded to Vercel, so it cannot be fetched, crawled or indexed.
 
-# 92 near-duplicate pages built for sanantonioglasssolutions.com and
-# masterglasssolutionsusa.com. Nothing routes those hostnames to this folder --
-# vercel.json has no rewrites and no host matching -- so on the live site these
-# were simply duplicate content sitting at mgsusa.llc/secondary-domain/..., with
-# canonicals pointing at URLs that serve something else. If those domains are
-# ever genuinely served from this project, add the host rewrites to vercel.json
-# and drop this line in the same change.
-secondary-domain/
+# secondary-domain/ was deleted on 2026-10-20 and the rule for it is gone with
+# it. It held 98 near-duplicate pages for sanantonioglasssolutions.com and
+# masterglasssolutionsusa.com that nothing routed to -- no host rewrite, no
+# host matching -- while still needing a hand-sync every time a site-wide fact
+# changed. It fell out of sync twice in one day, on the address and on the
+# review count. Both domains already serve the main site, which is what
+# consolidates them. It is recoverable from git history if those domains ever
+# need to be served separately, but that would want host rewrites in
+# vercel.json rather than a second copy of every page.
 
 # Internal audits, checklists and the customer-facing update report. Useful to
 # keep, never meant to be served from the marketing site.

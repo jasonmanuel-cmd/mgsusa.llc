@@ -5,8 +5,8 @@
 // otherwise pinned in every returning visitor's browser forever. The activate
 // handler deletes every cache whose name no longer matches, so raising the
 // version is what actually flushes the old copies.
-const CACHE_NAME = 'mgs-usa-v1.0.15';
-const ASSETS_CACHE = 'mgs-usa-assets-v1.0.15';
+const CACHE_NAME = 'mgs-usa-v1.0.16';
+const ASSETS_CACHE = 'mgs-usa-assets-v1.0.16';
 
 // Core assets to cache immediately (shell + critical resources)
 const CRITICAL_ASSETS = [
@@ -23,10 +23,10 @@ const CRITICAL_ASSETS = [
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
-      console.log('[SW] Caching critical assets...');
       return cache.addAll(CRITICAL_ASSETS).catch(err => {
-        console.warn('[SW] Cache error:', err);
-        // Don't fail the entire cache on partial failures
+        // One missing asset must not fail the whole precache, and the
+        // visitor cannot act on the error, so it is swallowed rather than
+        // logged into their console on every first load.
         return Promise.resolve();
       });
     }).then(() => {
@@ -42,7 +42,6 @@ self.addEventListener('activate', event => {
       return Promise.all(
         cacheNames.map(cacheName => {
           if (cacheName !== CACHE_NAME && cacheName !== ASSETS_CACHE) {
-            console.log('[SW] Deleting old cache:', cacheName);
             return caches.delete(cacheName);
           }
         })

@@ -31,9 +31,9 @@ Deliberately excluded:
     exactly as Google issued them or verification can fail, which would cost
     the Search Console access the whole SEO effort depends on.
 
-  * secondary-domain/ -- 92 near-duplicate pages that .vercelignore keeps off
-    the deploy. Adding analytics to pages that are never served would only
-    invite someone to think they are live.
+  (This list used to also exclude secondary-domain/, 92 near-duplicate pages
+  that .vercelignore kept off the deploy. That folder was deleted on
+  2026-10-20, so there is nothing left to exclude.)
 
 Usage: add_simple_analytics.py [--apply]
 """

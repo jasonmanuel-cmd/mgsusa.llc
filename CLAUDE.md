@@ -40,6 +40,16 @@ client into `assets/vendor/blob-client.js` with esbuild.
   `slideshow.js` drives the project carousel that sits under the hero on every
   service page.
 - `service-worker.js` — cache-first for images, network-first for HTML, CSS and JS.
+  Registered by `assets/js/sw-register.js` on all 58 real pages, placed by
+  `tools/add_sw_register.py`. Until 2026-10-20 registration was an inline
+  snippet on 7 pages only — index, contact, the two glass hubs and the three
+  quote pages — so the other 53, every city landing page among them, never
+  installed the worker. The visitor arriving from a local search was the one
+  least likely to get the caching this file exists to provide, while the
+  cache-version rule below was the most-repeated instruction in this document.
+  The registration is deliberately silent and swallows its own failures: the
+  site is perfectly usable with no worker, so a caching optimisation must
+  never be able to surface an error on a page.
 - `.claude/skills/add-project-photos/` — the photo pipeline as a runnable skill,
   with `optimize_images.py` and `verify_site.py` in its `scripts/`.
 - `vercel.json` — `cleanUrls`, `.html` → extensionless redirects for every page,
@@ -398,6 +408,14 @@ Static pages render; anything under `api/` needs a Vercel deploy (or preview) to
   `masterglasssolutionsusa.com`, `sanantonioglasssolutions.com` and their `www`
   forms. They all serve identical content and every canonical points at
   `mgsusa.llc`, which is what consolidates them. There is no per-domain build.
+  **There is no longer a `secondary-domain/` folder either.** It held 98
+  near-duplicate pages for the two alternate domains, was excluded from the
+  deploy, was routed to by nothing, and still had to be hand-synced on every
+  site-wide fact change — it fell out of sync twice on 2026-10-20 alone, on
+  the address and on the review count, because a scripted fix that globs
+  `*.html` at the root silently misses it. Deleted that day; recoverable from
+  git history. If those domains ever need to be served separately, the answer
+  is host rewrites in `vercel.json`, not a second copy of every page.
 - Verification is manual and worth doing: `python3 -m http.server 8080`, then
   Chromium at `/opt/pw-browsers/chromium` via Playwright, plus
   `.claude/skills/add-project-photos/scripts/verify_site.py --since origin/main`.
