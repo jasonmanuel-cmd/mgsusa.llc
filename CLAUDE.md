@@ -246,16 +246,22 @@ lead" rule below, and it invites someone to re-fix what is already fixed.)
   its verification pass reports how many distinct declarations exist — the
   answer should always be one. The Google Business Profile must match.
 
-  **On 2026-10-20 it did not.** The profile read "Open · Closes 5 PM" while all
-  75 `openingHoursSpecification` blocks said 00:00–23:59. The profile even
-  contradicted itself: its own description says emergency support runs 24/7
-  including weekends and holidays, directly below a field saying the business
-  shuts at five. The cost is every "open now" search after 5 PM — the smashed
-  storefront at 9 PM is the highest-intent call this business gets. The profile
-  is set by hand in Google and no script here can reach it, so **the check is
-  to open the profile and read the hours**, not to run the tool and see one
-  declaration. The tool proves the pages agree with each other, which is not
-  the same claim.
+  **On 2026-10-20 it did not, and was fixed the same day.** The profile read
+  "Open · Closes 5 PM" while all 75 `openingHoursSpecification` blocks said
+  00:00–23:59. The profile even contradicted itself: its own description says
+  emergency support runs 24/7 including weekends and holidays, directly below a
+  field saying the business shuts at five. The cost was every "open now" search
+  after 5 PM — the smashed storefront at 9 PM is the highest-intent call this
+  business gets. The profile has since been set to Open 24 hours and the two
+  now agree. (Set by the account owner and reported here; this container cannot
+  reach Google to confirm it independently.)
+
+  The method is the part to keep. The profile is edited by hand in Google and
+  no script here can reach it, so **the check is to open the profile and read
+  the hours**, not to run the tool and see one declaration. The tool proves the
+  pages agree with each other, which is a different claim from agreeing with
+  Google — the same gap that let a fabricated review count sit unchallenged
+  until someone finally opened the profile and looked.
 
   **Do not "fix" the `contactPoint` hours in `index.html`.** They are the one
   place in the repo that says 08:00–17:00, so they look like the bug the rule
