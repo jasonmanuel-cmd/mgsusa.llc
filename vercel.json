@@ -326,6 +326,11 @@
       "source": "/perforated-window-graphics.html",
       "destination": "/perforated-window-graphics",
       "permanent": true
+    },
+    {
+      "source": "/glass-railings.html",
+      "destination": "/glass-railings",
+      "permanent": true
     }
   ],
   "headers": [

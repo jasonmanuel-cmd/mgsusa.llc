@@ -50,7 +50,8 @@
       { name: 'Window glass replacement', url: '/window-glass-replacement', blurb: 'Residential and commercial window glass replacement.' },
       { name: 'Security window film', url: '/commercial-security-film', blurb: 'Safety and security window film for commercial buildings — glass fragment retention and forced-entry delay.' },
       { name: 'Commercial window tint', url: '/commercial-window-tint', blurb: 'Commercial window tinting (solar control film) for building glass — heat, glare and UV reduction. Buildings only; never vehicle glass.' },
-      { name: 'Perforated window graphics', url: '/perforated-window-graphics', blurb: 'Perforated one-way vision window graphics for storefront glass — printed graphic outside, view retained from inside.' }
+      { name: 'Perforated window graphics', url: '/perforated-window-graphics', blurb: 'Perforated one-way vision window graphics for storefront glass — printed graphic outside, view retained from inside.' },
+      { name: 'Glass railings', url: '/glass-railings', blurb: 'Glass railings and balustrades for stairs, balconies, landings and mezzanines - laminated glass guards, frameless and post-and-panel systems. Buildings only.' }
     ],
 
     serviceAreas: [

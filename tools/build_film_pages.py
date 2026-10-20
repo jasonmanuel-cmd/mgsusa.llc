@@ -280,6 +280,18 @@ PHONE = ('<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="curren
 EB = '<span></span>'
 
 
+def quote_url(p):
+    """Where this page's CTAs send people.
+
+    The film pages are commercial-only, so they all go to /commercial-quote and
+    that stays the default. A page serving both markets -- glass railings, for
+    one -- must be able to point at the general form instead, or half its
+    visitors land on a form asking for property-management details they do not
+    have.
+    """
+    return p.get('quote_url', '/commercial-quote')
+
+
 def hero(p):
     img = p['hero_img']
     return (
@@ -298,7 +310,7 @@ def hero(p):
         f'<h1>{p["h1"]}</h1>'
         f'<p>{p["hero_p"]}</p>'
         '<div class="hero-actions">'
-        f'<a class="btn btn-light" href="/commercial-quote">Request a quote {ARROW}</a>'
+        f'<a class="btn btn-light" href="{quote_url(p)}">Request a quote {ARROW}</a>'
         f'<a class="btn btn-ghost" href="tel:2103703700">{PHONE} Call 210-370-3700</a>'
         '</div></div></section>'
     )
@@ -310,7 +322,7 @@ def answer(p):
         f'<p class="eyebrow">{EB}AT A GLANCE</p><h2>{p["at_a_glance_h2"]}</h2>'
         '</div><div>'
         f'<p class="lead">{p["lead"]}</p><p>{p["body_p"]}</p>'
-        f'<a class="text-link" href="/commercial-quote">Tell us about your project {ARROW}</a>'
+        f'<a class="text-link" href="{quote_url(p)}">Tell us about your project {ARROW}</a>'
         '</div></div></section>'
     )
 
@@ -352,7 +364,7 @@ def cost(p):
         f'<p class="numbered">COST</p><p class="eyebrow">{EB}ESTIMATE CONTEXT</p>'
         '<h2>What influences the investment?</h2></div><div>'
         f'<p class="lead">{p["cost_lead"]}</p><p>{p["cost_body"]}</p>'
-        f'<a class="btn btn-dark" href="/commercial-quote">Request a tailored quote {ARROW}</a>'
+        f'<a class="btn btn-dark" href="{quote_url(p)}">Request a tailored quote {ARROW}</a>'
         '</div></div></section>'
     )
 
@@ -378,7 +390,7 @@ def final_cta(p):
         '<div class="shell final-cta-grid"><div>'
         f'<p class="eyebrow">{EB}MASTER GLASS SOLUTIONS</p><h2>{p["cta_h2"]}</h2></div><div>'
         f'<p>{p["cta_p"]}</p><div class="hero-actions">'
-        f'<a class="btn btn-light" href="/commercial-quote">Start your quote {ARROW}</a>'
+        f'<a class="btn btn-light" href="{quote_url(p)}">Start your quote {ARROW}</a>'
         f'<a class="btn btn-ghost" href="tel:2103703700">{PHONE} Call 210-370-3700</a>'
         '</div></div></div></section>'
     )

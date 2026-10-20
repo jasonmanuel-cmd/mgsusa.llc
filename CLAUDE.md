@@ -8,7 +8,7 @@ client into `assets/vendor/blob-client.js` with esbuild.
 
 ## Layout
 
-- `*.html` (59 pages) at the repo root — services, ~25 `<city>-tx.html` local
+- `*.html` (60 pages) at the repo root — services, ~25 `<city>-tx.html` local
   landing pages, legal pages, `followup-desk.html`, `review.html`. The three
   commercial-film pages (`commercial-security-film.html`,
   `commercial-window-tint.html`, `perforated-window-graphics.html`) are
@@ -17,6 +17,21 @@ client into `assets/vendor/blob-client.js` with esbuild.
   sitemap by `tools/wire_film_pages.py`, given the home-page CTA by
   `tools/add_film_cta.py` and their explainer diagrams by
   `tools/add_film_diagrams.py`. Edit them through those scripts.
+  **`build_film_pages.py --apply` is not safe to re-run.** It rebuilds `<main>`
+  from the donor, so it discards whatever a later script appended — re-running
+  it on 2026-10-20 silently deleted all three explainer diagrams, and the page
+  looked completely normal afterwards. If you must regenerate, re-run
+  `add_film_diagrams.py --apply` straight after, and diff before committing.
+- `glass-railings.html` — built by `tools/build_railings_page.py`, wired by
+  `tools/wire_railings_page.py`. The generator imports
+  `build_film_pages.py`'s section builders rather than copying them; the one
+  thing it overrides is the CTA target, via `quote_url()`, because railings are
+  residential as often as commercial and a homeowner sent to
+  `/commercial-quote` is being asked for property-management details they do
+  not have. Its hero photo is generic on purpose: there are no photographs of
+  this company's glass railings, and the slideshow image captioned "Balcony
+  rail and window glazing detail" is a *metal* picket rail. Swap in a real one
+  when it exists. The same no-re-run warning applies.
 - `api/` — serverless functions (see table below).
 - `data/` — UMD modules shared by browser and functions: exposed as `window.MGS.*`
   in the browser, `module.exports` on Vercel. Includes the followup store/auth helpers
@@ -131,7 +146,7 @@ lead" rule below, and it invites someone to re-fix what is already fixed.)
   column of photos. A hard refresh looks fine, so testing will not catch it.
   `styles.min.css` is also requested as `?v=N`; raise that when the file changes.
 - **Site-wide changes** (nav, footer, tracking snippets, social links) must be
-  applied across all 59 HTML pages — e.g. the HubSpot snippet is on all of them.
+  applied across all 60 HTML pages — e.g. the HubSpot snippet is on all of them.
 - **Photos:** run the `add-project-photos` skill rather than doing it by hand.
   Budgets are 1400px/180 KB full and 800px/80 KB for `-sm` thumbnails, and
   every photo needs both. Encode first, then write `srcset` width descriptors
@@ -181,7 +196,7 @@ lead" rule below, and it invites someone to re-fix what is already fixed.)
   nobody can carry out, and on a profile with five reviews a single one-star
   for wasting an afternoon is 17% of the rating.
 - **The conversion here is a phone call, so count it.**
-  `assets/js/call-tracking.js` is on all 57 pages that carry a `tel:` link,
+  `assets/js/call-tracking.js` is on all 58 pages that carry a `tel:` link,
   placed by `tools/add_call_tracking.py` (scope derived from the pages
   themselves — any page with a `tel:` link gets it — so a page that gains a
   phone link later is picked up by a re-run rather than missed). Five
@@ -196,7 +211,7 @@ lead" rule below, and it invites someone to re-fix what is already fixed.)
   with every analytics global missing the tap still dials. A tracking failure
   costs a data point; blocking a tap costs a job.
 - **Motion layer.** `assets/css/motion.css` + `assets/js/motion.js`, loaded on
-  all 57 real pages (not `emergency.html`, a redirect stub, nor the Google
+  all 58 real pages (not `emergency.html`, a redirect stub, nor the Google
   verification file). It is purely additive: it changes no colour, type,
   spacing or layout, and attaches to markup that already exists. The rule that
   makes it safe is the ordering — `motion.js` adds `.motion-ready` to `<html>`
