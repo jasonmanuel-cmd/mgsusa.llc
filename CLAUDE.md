@@ -204,6 +204,21 @@ lead" rule below, and it invites someone to re-fix what is already fixed.)
   reviews — the mismatch Google's self-serving review policy targets. Review
   *text* is never faked; quotes render only when they come live from Google.
   `REVIEWS_BASELINE_RATING` / `REVIEWS_BASELINE_COUNT` override without a deploy.
+
+  **The baseline itself must match the Google Business Profile, and on
+  2026-10-20 it did not.** It read 4.4 / 76 while the profile had 5 reviews
+  averaging 5.0 — 15x more reviews than exist, declared in `aggregateRating`
+  on 54 pages, at a *lower* average than the real one. So the site was taking
+  the policy risk and getting a worse number for it. Corrected to 5.0 / 5.
+
+  The rule above was written about the fallback returning 0/0 while the markup
+  claimed 76, and it fixed that. Nobody checked whether the 76 was real. The
+  lesson worth keeping: making two numbers in the repo agree with each other
+  proves nothing if neither was ever checked against the profile. **The profile
+  is the source of truth for both numbers — verify against it, not against
+  another copy in the repo.** Once a review count moves, it moves in
+  `data/reviews-baseline.js` *and* in every page's JSON-LD, or the env
+  overrides carry it without a deploy.
 - **A city page's `Place` is the city; its `LocalBusiness` is the company.**
   `LocalBusiness` geo is the San Antonio office (29.5604, -98.5322) and must
   match `postalAddress`. `Place` geo is that city's own coordinates and must

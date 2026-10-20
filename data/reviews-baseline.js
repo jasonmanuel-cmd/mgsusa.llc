@@ -25,8 +25,17 @@
  * If you change these, update the aggregateRating in the page JSON-LD to match.
  */
 
-var DEFAULT_RATING = 4.4;
-var DEFAULT_COUNT = 76;
+/* Corrected 2026-10-20 from 4.4 / 76 to match the Google Business Profile,
+   which has 5 reviews averaging 5.0. Nobody could say where 4.4 / 76 came
+   from, and the site was declaring it in aggregateRating on 54 pages -- 15x
+   more reviews than exist, at a lower average than the real one. That is the
+   pattern Google's self-serving review policy targets, and it was taking the
+   risk without even buying a better number.
+
+   Keep these equal to what the profile actually shows. If the count climbs,
+   move it here AND in the page JSON-LD, or set the env overrides below. */
+var DEFAULT_RATING = 5.0;
+var DEFAULT_COUNT = 5;
 
 function num(value, fallback) {
   var n = parseFloat(value);
