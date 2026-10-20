@@ -165,6 +165,21 @@ lead" rule below, and it invites someone to re-fix what is already fixed.)
   `action="https://formspree.io/f/<id>"` on the five `#quote-form` forms.
   Related: `form.dispatchEvent(new Event('submit'))` runs listeners but never
   navigates — use `form.submit()` when you mean to post.
+- **The work is buildings and glass. Not vehicles, screen doors or skylights.**
+  No auto glass, windshields or vehicle glass — that boundary is already stated
+  in the page copy and the JSON-LD descriptions. Add to it: **they do not do
+  screen doors or skylights either.** The Google Business Profile listed screen
+  door installation, screen door repair, skylight installation and skylight
+  repair as services on 2026-10-20; those came from Google's suggested services
+  for the "Glass shop" category, not from anything anyone claimed, and they
+  were removed. The site has never mentioned either, and a grep for
+  `screen.?door|skylight` across the repo should keep returning nothing.
+  The trap is the direction of the fix. Someone comparing the profile against
+  the site will find four services on Google with no page behind them and
+  "complete" the site to match. That is backwards: the site is right and the
+  listing was wrong. A service advertised but not performed books a visit
+  nobody can carry out, and on a profile with five reviews a single one-star
+  for wasting an afternoon is 17% of the rating.
 - **The conversion here is a phone call, so count it.**
   `assets/js/call-tracking.js` is on all 57 pages that carry a `tel:` link,
   placed by `tools/add_call_tracking.py` (scope derived from the pages
