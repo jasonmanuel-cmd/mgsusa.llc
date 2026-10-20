@@ -283,9 +283,9 @@ From `about.html` (lines 21-48):
   "areaServed": [21 cities listed],
   "foundingDate": "2004",
   "aggregateRating": {
-    "ratingValue": "4.4",
+    "ratingValue": "5.0",
     "bestRating": "5",
-    "reviewCount": 76,
+    "reviewCount": 5,
     "url": "https://share.google/NrvpgMFtDEKZPxHLJ"
   }
 }

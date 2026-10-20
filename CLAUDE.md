@@ -44,6 +44,18 @@ client into `assets/vendor/blob-client.js` with esbuild.
   with `optimize_images.py` and `verify_site.py` in its `scripts/`.
 - `vercel.json` — `cleanUrls`, `.html` → extensionless redirects for every page,
   and per-endpoint `Cache-Control` headers.
+- `llms.txt` is hand-maintained; **`llms-full.txt` is generated** by
+  `tools/build_llms_full.py` and must not be hand-edited below its Scope of
+  Work section. The generator preserves the hand-authored preamble (title
+  block, Quick Answers, Scope of Work) verbatim and rebuilds everything after
+  it from `<main>` on each page, so a new page reaches it by re-running rather
+  than by someone remembering. It had covered 5 of 60 pages and still quoted
+  the corrected review count when this was written. Two deliberate choices:
+  the 21 city pages are summarised as a link index rather than dumped, because
+  111 KB of near-identical prose crowds out distinct content in a retrieval
+  index, and only `<main>` is read, because the previous file began almost
+  every section with the nav and so embedded the same boilerplate 5 times.
+  It is idempotent — running it twice gives the same bytes.
 
 ## Serverless endpoints
 
@@ -249,6 +261,17 @@ lead" rule below, and it invites someone to re-fix what is already fixed.)
   another copy in the repo.** Once a review count moves, it moves in
   `data/reviews-baseline.js` *and* in every page's JSON-LD, or the env
   overrides carry it without a deploy.
+
+  That correction had to be made twice, which is the other lesson. The first
+  pass walked `glob.glob('*.html')` and so fixed only the repo root, leaving
+  4.4 / 76 in 136 blocks under `secondary-domain/` and in the prose of
+  `llms.txt`, `llms-full.txt` and
+  `docs/internal/citation-correction-request.md` — a number stated in English
+  rather than in JSON, which a JSON-shaped search will never find. **Fix a
+  published fact with a walk of the whole repo and two greps: one for the
+  markup form, one for the prose form.** The only copies that keep the old
+  numbers are the narrative ones in this file and in
+  `data/reviews-baseline.js`, which exist to explain the correction.
 - **The address is whatever the Google Business Profile says, to the letter.**
   `4949 N Loop 1604 W Bldg 5 Suite 501, San Antonio, TX 78249`. The site read
   `4949 N Loop 1604 West, Suite 501` until 2026-10-20 — missing `Bldg 5`, and

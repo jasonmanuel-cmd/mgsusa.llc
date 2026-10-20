@@ -29,7 +29,7 @@ interest in fixing.
 | Website | https://www.mgsusa.llc/ |
 | Email | masterglassllc@aol.com |
 | Google listing | https://maps.google.com/?cid=6020472325090378650 |
-| Rating | 4.4 from 76 Google reviews |
+| Rating | 4.4 from 5 Google reviews |
 
 ## What the listing shows instead
 
