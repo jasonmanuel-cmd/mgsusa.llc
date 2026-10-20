@@ -33,16 +33,26 @@ BARE_SOURCE_RE = re.compile(r'<source[^>]*srcset="[^"]*"[^>]*>')
 
 
 def width_of(path):
-    out = subprocess.run(["identify", "-format", "%w", path],
-                         capture_output=True, text=True).stdout.strip()
-    return int(out) if out.isdigit() else None
+    try:
+        out = subprocess.run(["identify", "-format", "%w", path],
+                             capture_output=True, text=True).stdout.strip()
+        if out.isdigit():
+            return int(out)
+    except Exception:
+        pass
+    try:
+        from PIL import Image
+        with Image.open(path) as img:
+            return img.width
+    except Exception:
+        return None
 
 
 def check_refs(pages):
     missing = {}
     total = 0
     for page in pages:
-        for m in ASSET_RE.finditer(open(page).read()):
+        for m in ASSET_RE.finditer(open(page, encoding="utf-8", errors="replace").read()):
             total += 1
             if not os.path.exists(m.group(0)):
                 missing.setdefault(m.group(0), set()).add(os.path.basename(page))
@@ -61,7 +71,7 @@ def check_webp(assets_dir):
 def check_srcset(pages):
     wrong = []
     for page in pages:
-        for m in SRCSET_RE.finditer(open(page).read()):
+        for m in SRCSET_RE.finditer(open(page, encoding="utf-8", errors="replace").read()):
             for path, declared in CANDIDATE_RE.findall(m.group(1)):
                 if not os.path.exists(path):
                     continue
@@ -81,7 +91,7 @@ def check_bare_sources(pages):
     """
     bare = []
     for page in pages:
-        for m in BARE_SOURCE_RE.finditer(open(page).read()):
+        for m in BARE_SOURCE_RE.finditer(open(page, encoding="utf-8", errors="replace").read()):
             tag = m.group(0)
             responsive = "w," in tag and "sizes=" in tag
             art_directed = "media=" in tag

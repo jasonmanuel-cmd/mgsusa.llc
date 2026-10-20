@@ -48,3 +48,7 @@ master-glass-site/
 #
 # Nothing here reaches the live site: .vercelignore excludes tools/ entirely.
 !tools/*.py
+
+# Python cache
+__pycache__/
+*.pyc

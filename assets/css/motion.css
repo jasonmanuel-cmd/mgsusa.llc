@@ -127,21 +127,36 @@
 @keyframes mgs-breathe { to { transform: scale(1.04); } }
 
 /* ---------------------------------------------------------------- *
- * Cards
+/* ---------------------------------------------------------------- *
+ * Cards & 21st.dev Spotlight Glass Optical Refraction
  *
- * The existing cards already lift on hover. This adds the light: a soft brand
- * glow and a sheen that crosses the card once, so the interaction reads as
- * glass catching light rather than as a generic box-shadow.
+ * The existing cards lift on hover. This adds the 21st.dev spotlight:
+ * an optical flashlight tracking the visitor's cursor via --mouse-x and
+ * --mouse-y, illuminating hairline borders and card depth like light
+ * striking beveled plate glass.
  * ---------------------------------------------------------------- */
 .service-card,
 .article-card,
-.path-card {
+.path-card,
+.hero-panel a,
+.trust-grid > div {
+  --mouse-x: 50%;
+  --mouse-y: 50%;
   position: relative;
   isolation: isolate;
   transition: transform .26s cubic-bezier(.22,.61,.36,1),
               box-shadow .26s ease,
               border-color .26s ease;
 }
+
+/* Tabular numbers for rolling counters */
+.trust-grid span b,
+.hero-proof span,
+[data-counter] {
+  font-variant-numeric: tabular-nums;
+  display: inline-block;
+}
+
 @media (hover: hover) and (prefers-reduced-motion: no-preference) {
   .service-card:hover,
   .article-card:hover,
@@ -149,13 +164,68 @@
     transform: translateY(-5px);
     box-shadow: 0 20px 44px -22px rgba(230,57,70,.5), 0 2px 10px -4px rgba(0,0,0,.18);
   }
+
+  /* 21st.dev Radial Spotlight: Light follows mouse cursor across the card */
+  .service-card::before,
+  .article-card::before,
+  .path-card::before,
+  .hero-panel a::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .35s ease;
+    z-index: 1;
+  }
+
+  /* Dark card spotlight (Path cards & Hero panel) */
+  .path-card::before,
+  .hero-panel a::before {
+    background: radial-gradient(
+      360px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+      rgba(230, 57, 70, 0.2),
+      rgba(255, 255, 255, 0.04) 40%,
+      transparent 75%
+    );
+  }
+
+  /* Light card spotlight (Service cards) */
+  .service-card::before,
+  .article-card::before {
+    background: radial-gradient(
+      380px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+      rgba(230, 57, 70, 0.07),
+      rgba(0, 0, 0, 0.02) 40%,
+      transparent 75%
+    );
+  }
+
+  .service-card:hover::before,
+  .article-card:hover::before,
+  .path-card:hover::before,
+  .hero-panel a:hover::before {
+    opacity: 1;
+  }
+
+  /* Keep content readable above the spotlight */
+  .path-card > *,
+  .service-card > *,
+  .article-card > *,
+  .hero-panel a > * {
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Specular glass reflection passing across card */
   .service-card::after,
   .article-card::after,
   .path-card::after {
     content: "";
     position: absolute;
     inset: 0;
-    z-index: 2;
+    z-index: 3;
     pointer-events: none;
     opacity: 0;
     background: linear-gradient(105deg, transparent 38%, rgba(255,255,255,.22) 50%, transparent 62%);
@@ -166,6 +236,14 @@
   .service-card:hover::after,
   .article-card:hover::after,
   .path-card:hover::after { opacity: 1; background-position: -30% 0; }
+
+  /* Trust strip tiles hover depth */
+  .trust-grid > div {
+    transition: transform .24s cubic-bezier(.22,.61,.36,1), border-color .24s ease;
+  }
+  .trust-grid > div:hover {
+    transform: translateY(-2px);
+  }
 }
 
 /* The arrow on a service row leads the eye on hover. */
@@ -174,9 +252,57 @@
 .service-arrow, .circle-arrow { transition: transform .26s cubic-bezier(.22,.61,.36,1); }
 
 /* ---------------------------------------------------------------- *
- * Buttons
+ * Buttons & 21st.dev Shimmer CTAs
+ *
+ * Subtle, continuous specular light gleams across primary buttons
+ * without layout shifts or third-party libraries.
  * ---------------------------------------------------------------- */
-.btn { position: relative; overflow: hidden; transition: transform .2s cubic-bezier(.22,.61,.36,1), box-shadow .2s ease; }
+.btn {
+  position: relative;
+  overflow: hidden;
+  transition: transform .2s cubic-bezier(.22,.61,.36,1), box-shadow .2s ease, border-color .2s ease;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Continuous specular shimmer pass across primary CTAs */
+  .hero-actions .btn-light::before,
+  .final-cta .btn-light::before,
+  .nav-actions .btn-dark::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-150%) skewX(-20deg);
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.05) 20%,
+      rgba(255, 255, 255, 0.45) 50%,
+      rgba(255, 255, 255, 0.05) 80%,
+      transparent 100%
+    );
+    animation: mgs-specular-gleam 4.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .hero-actions .btn-light > *,
+  .final-cta .btn-light > *,
+  .nav-actions .btn-dark > * {
+    position: relative;
+    z-index: 2;
+  }
+
+  .hero-actions .btn-light:hover {
+    box-shadow: 0 8px 24px -4px rgba(230, 57, 70, 0.35), 0 0 14px rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.6);
+  }
+}
+
+@keyframes mgs-specular-gleam {
+  0%, 25% { transform: translateX(-150%) skewX(-20deg); }
+  40%, 100% { transform: translateX(180%) skewX(-20deg); }
+}
+
 @media (hover: hover) and (prefers-reduced-motion: no-preference) {
   .btn:hover { transform: translateY(-2px); }
   .btn::after {
@@ -206,7 +332,482 @@
   transition: background-size .32s cubic-bezier(.22,.61,.36,1); }
 @media (hover: hover) { .text-link:hover { background-size: 100% 1px; } }
 
+/* ---------------------------------------------------------------- *
+ * 21st.dev Interactive Before / After Glass Comparison Slider
+ *
+ * Smooth, touch-friendly split-screen reveal comparing standard framed
+ * glass vs. custom frameless architectural glass.
+ * ---------------------------------------------------------------- */
+.mgs-compare {
+  --compare-pos: 50%;
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  margin: 2.5rem auto 0;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 24px 48px -18px rgba(10, 10, 10, 0.25), 0 4px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(10, 10, 10, 0.1);
+  background: var(--color-ink, #0a0a0a);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.mgs-compare-stage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+}
+
+.mgs-compare-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Before layer (clipped based on --compare-pos) */
+.mgs-compare-before {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  clip-path: inset(0 calc(100% - var(--compare-pos, 50%)) 0 0);
+  -webkit-clip-path: inset(0 calc(100% - var(--compare-pos, 50%)) 0 0);
+  will-change: clip-path;
+  z-index: 2;
+}
+
+/* After layer (base) */
+.mgs-compare-after {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+/* Floating Glass Badges */
+.mgs-compare-badge {
+  position: absolute;
+  bottom: 1.25rem;
+  z-index: 5;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.9rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #ffffff;
+  border-radius: 999px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background: rgba(10, 10, 10, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.mgs-compare-badge-before {
+  left: 1.25rem;
+}
+
+.mgs-compare-badge-after {
+  right: 1.25rem;
+  background: rgba(230, 57, 70, 0.88);
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
+@media (max-width: 520px) {
+  .mgs-compare-badge {
+    bottom: 0.75rem;
+    font-size: 0.65rem;
+    padding: 0.35rem 0.65rem;
+  }
+  .mgs-compare-badge-before { left: 0.75rem; }
+  .mgs-compare-badge-after { right: 0.75rem; }
+}
+
+/* Vertical Split Handle Line */
+.mgs-compare-handle {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--compare-pos, 50%);
+  width: 2px;
+  background: #ffffff;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.6), 0 0 2px rgba(230, 57, 70, 0.8);
+  transform: translateX(-50%);
+  z-index: 4;
+  pointer-events: none;
+  will-change: left;
+}
+
+/* Center Thumb Circle with Dual Chevrons */
+.mgs-compare-thumb {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #ffffff;
+  color: var(--color-ink, #0a0a0a);
+  border: 2px solid var(--color-brand, #E63946);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35), 0 0 0 4px rgba(255, 255, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s cubic-bezier(.22,.61,.36,1), box-shadow 0.2s ease;
+}
+
+.mgs-compare:hover .mgs-compare-thumb {
+  transform: translate(-50%, -50%) scale(1.08);
+  box-shadow: 0 6px 24px rgba(230, 57, 70, 0.4), 0 0 0 6px rgba(255, 255, 255, 0.35);
+}
+
+.mgs-compare-thumb svg {
+  width: 18px;
+  height: 18px;
+  stroke: var(--color-brand, #E63946);
+  stroke-width: 2.4;
+  fill: none;
+}
+
+/* Range input covering entire stage for accessible touch/click/drag & keyboard */
+.mgs-compare-range {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: ew-resize;
+  z-index: 6;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.mgs-compare-range:focus-visible + .mgs-compare-handle .mgs-compare-thumb {
+  outline: 3px solid var(--color-brand, #E63946);
+  outline-offset: 4px;
+}
+
+/* Footer note / caption */
+.mgs-compare-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1.2rem 1.5rem;
+  background: rgba(10, 10, 10, 0.95);
+  color: #e5e5e5;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.mgs-compare-footer p {
+  margin: 0;
+}
+
+.mgs-compare-footer b {
+  color: #ffffff;
+}
+
+@media (max-width: 600px) {
+  .mgs-compare-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 1rem;
+  }
+}
+
+/* ---------------------------------------------------------------- *
+ * 21st.dev Interactive Glass Configurator & Cost Estimator
+ *
+ * Real-time specification designer and estimate previewer.
+ * ---------------------------------------------------------------- */
+.mgs-configurator {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.95fr);
+  gap: 2.5rem;
+  background: var(--color-ink, #0a0a0a);
+  color: #ffffff;
+  border-radius: 20px;
+  padding: 3rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 32px 64px -24px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  margin-top: 2.5rem;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+@media (max-width: 960px) {
+  .mgs-configurator {
+    grid-template-columns: 1fr;
+    padding: 2rem 1.5rem;
+    gap: 2rem;
+  }
+}
+
+.mgs-configurator::after {
+  content: "";
+  position: absolute;
+  top: -20%;
+  right: -10%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(230, 57, 70, 0.18), transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+  border-radius: 50%;
+}
+
+.mgs-config-controls {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.mgs-config-group h3 {
+  font-family: var(--font-sans, Inter, sans-serif);
+  font-size: 0.88rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #a3a3a3;
+  margin: 0 0 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.mgs-config-group h3 span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(230, 57, 70, 0.2);
+  color: #ff8a93;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.mgs-config-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.75rem;
+}
+
+.mgs-config-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+  padding: 0.9rem 1rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s cubic-bezier(0.22, 0.61, 0.36, 1);
+  position: relative;
+}
+
+.mgs-config-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
+}
+
+.mgs-config-btn.is-active {
+  background: rgba(230, 57, 70, 0.15);
+  border-color: var(--color-brand, #E63946);
+  box-shadow: 0 0 16px -2px rgba(230, 57, 70, 0.4);
+}
+
+.mgs-config-btn b {
+  font-size: 0.88rem;
+  font-weight: 600;
+  display: block;
+}
+
+.mgs-config-btn span {
+  font-size: 0.75rem;
+  color: #a3a3a3;
+  line-height: 1.3;
+}
+
+.mgs-config-btn.is-active span {
+  color: #f1f1f1;
+}
+
+.mgs-finish-swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 6px;
+  vertical-align: middle;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.swatch-black { background: #1a1a1a; }
+.swatch-brass { background: linear-gradient(135deg, #d4af37, #aa8010); }
+.swatch-chrome { background: linear-gradient(135deg, #f0f0f0, #999999); }
+.swatch-nickel { background: linear-gradient(135deg, #c0b8ac, #787068); }
+
+.mgs-config-summary {
+  position: relative;
+  z-index: 1;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  padding: 2.2rem 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 16px 36px -12px rgba(0, 0, 0, 0.6);
+}
+
+.mgs-summary-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #ff8a93;
+  margin-bottom: 0.75rem;
+}
+
+.mgs-summary-kicker::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-brand, #E63946);
+  box-shadow: 0 0 8px #E63946;
+}
+
+.mgs-spec-header {
+  margin: 0.75rem 0 1.5rem;
+}
+
+.mgs-spec-header-title {
+  font-family: var(--font-sans, Inter, sans-serif);
+  font-size: clamp(1.4rem, 2.2vw, 1.85rem);
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.mgs-spec-header-sub {
+  font-size: 0.82rem;
+  color: #a3a3a3;
+  margin-top: 0.35rem;
+  line-height: 1.4;
+}
+
+.mgs-spec-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.mgs-spec-list li {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  font-size: 0.82rem;
+  color: #d1d5db;
+}
+
+.mgs-spec-list li span:first-child {
+  color: #9ca3af;
+}
+
+.mgs-spec-list li span:last-child {
+  font-weight: 600;
+  color: #ffffff;
+  text-align: right;
+  max-width: 60%;
+}
+
+.mgs-config-cta {
+  width: 100%;
+  min-height: 52px;
+  padding: 1rem 1.2rem;
+  font-size: 0.85rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  background: var(--color-brand, #E63946);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  text-decoration: none;
+  transition: all 0.25s cubic-bezier(0.22, 0.61, 0.36, 1);
+  box-shadow: 0 8px 24px -4px rgba(230, 57, 70, 0.45);
+}
+
+.mgs-config-cta:hover {
+  background: var(--color-brand-hover, #D62828);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px -4px rgba(230, 57, 70, 0.6);
+}
+
+.mgs-config-note {
+  font-size: 0.72rem;
+  color: #9ca3af;
+  text-align: center;
+  margin-top: 0.85rem;
+  line-height: 1.4;
+}
+
+/* Hero background video */
+.hero-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  z-index: 0;
+  pointer-events: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .hero-video { display: none; }
   .mgs-progress { display: none; }
   .motion-ready [data-rise] { opacity: 1; transform: none; }
 }

@@ -16,7 +16,7 @@ process.env.LEAD_NOTIFICATION_EMAIL = 'owner@example.com';
 delete process.env.TURNSTILE_SECRET_KEY;
 delete process.env.FOLLOWUP_BLOB_READ_WRITE_TOKEN;
 
-const path = '/home/user/mgsusa.llc/api/submit-quote.js';
+const path = require('path').join(__dirname, '..', 'api', 'submit-quote.js');
 
 let lastSend = null;
 global.fetch = (url, opts) => {

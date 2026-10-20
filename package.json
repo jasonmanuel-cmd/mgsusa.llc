@@ -12,6 +12,7 @@
     "esbuild": "^0.28.1"
   },
   "scripts": {
+    "preview": "node tools/preview-server.cjs",
     "build:vendor": "esbuild node_modules/@vercel/blob/dist/client.js --bundle --format=iife --global-name=VercelBlob --outfile=assets/vendor/blob-client.js --alias:crypto=./node_modules/@vercel/blob/dist/crypto-browser.js --alias:undici=./node_modules/@vercel/blob/dist/undici-browser.js --alias:stream=./node_modules/@vercel/blob/dist/stream-browser.js",
     "build:speed-insights": "esbuild assets/vendor/speed-insights-init.js --bundle --format=iife --outfile=assets/vendor/speed-insights.js --minify"
   }

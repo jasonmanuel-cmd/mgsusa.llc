@@ -8,7 +8,7 @@ process.env.SITE_URL = 'https://www.mgsusa.llc';
 delete process.env.CRON_SECRET;
 delete process.env.FOLLOWUP_BLOB_READ_WRITE_TOKEN;
 
-var path = '/home/user/mgsusa.llc/api/health-check.js';
+var path = require('path').join(__dirname, '..', 'api', 'health-check.js');
 
 function res() {
   return {
@@ -148,7 +148,7 @@ function healthyExceptDrought(u) {
    harness deliberately does not have. Stubbing the module's read is what lets
    the cadence be tested at all: without it every scenario lands on "no lead
    recorded yet" and the throttle is never exercised. */
-var metricsCache = require('/home/user/mgsusa.llc/data/metrics-cache');
+var metricsCache = require('../data/metrics-cache');
 var realRead = metricsCache.read;
 
 function stubDrought(ageDays) {

@@ -205,6 +205,16 @@ lead" rule below, and it invites someone to re-fix what is already fixed.)
   own shape via the same rule `quote-form.js` uses (`details || timeline`).
   Relaxing one side alone turns silent abandonment into a 422 after the customer
   has finished typing, which is worse than the problem.
+- **Hero background video:** `assets/Videos/hero.mp4` serves as the autoplaying,
+  muted, looped hero background on `index.html`. It must always be encoded with
+  faststart (`-movflags +faststart`) and accompanied by static poster fallbacks
+  (`hero-video-poster.webp` / `hero-video-poster.jpg`) so users on slow
+  connections or with `prefers-reduced-motion` enabled see a clean, accessible frame.
+- **Specification-Only Configurator (Option C):** The interactive glass configurator
+  on `index.html` generates real-time architectural specifications without
+  publishing estimated dollar amounts. Clicking "Get Custom Pricing for this Spec"
+  navigates to `/request-quote` with service and specification pre-filled via URL
+  parameters.
 - Commit messages follow `type(scope): summary`.
 
 ## Local preview
