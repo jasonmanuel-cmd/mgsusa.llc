@@ -2879,6 +2879,15 @@ SAN ANTONIO METRO
 ### Stone Oak, TX
 Stone Oak homes sit on the Edwards recharge zone, which is why shower glass clouds here; we handle frameless enclosures, mirrors and... SAN ANTONIO METRO
 
+### Alamo Ranch, TX
+Alamo Ranch is the newest housing stock we work in, so the calls are upgrades rather than repairs — frameless conversions, mirrors and... HILL COUNTRY / NORTH
+
+### Bulverde, TX
+Bulverde is acreage country, where the openings are larger and getting the glass to the house is part of the job; view glass, showers and... HILL COUNTRY / NORTH
+
+### Fair Oaks Ranch, TX
+Fair Oaks Ranch has 1970s-90s housing, so failed insulated units fogging between the panes are common; we replace the sealed unit and... SAN ANTONIO METRO
+
 ### San Antonio, TX
 San Antonio is a core service area for Master Glass Solutions. From downtown sto... SAN ANTONIO METRO
 
@@ -3359,10 +3368,14 @@ the summaries here are those pages’ own descriptions.
 
 - Alamo Heights, TX — https://www.mgsusa.llc/alamo-heights-tx
   Shower enclosures, custom mirrors, window replacement, storefront glass in Alamo Heights. Serving San Antonio & Boerne since 2004. Call (210) 370-3700.
+- Alamo Ranch, TX — https://www.mgsusa.llc/alamo-ranch-tx
+  Glass services on the far west side of San Antonio - frameless shower upgrades, custom mirrors, window glass replacement, solar film and 24/7 emergency repair. Call (210) 370-3700.
 - Blanco, TX — https://www.mgsusa.llc/blanco-tx
   Hill Country glass for Blanco homes & storefronts - windows, shower enclosures and 24/7 emergency board-up. Founded 2004. Call (210) 370-3700.
 - Boerne, TX — https://www.mgsusa.llc/boerne-tx
   Boerne glass for Hill Country homes & businesses - installation, storefront systems and 24/7 emergency board-up. Founded 2004. Call (210) 370-3700.
+- Bulverde, TX — https://www.mgsusa.llc/bulverde-tx
+  Glass services in Bulverde, TX - frameless shower enclosures, large view glass, custom mirrors, window replacement and 24/7 emergency repair. Call (210) 370-3700.
 - Canyon Lake, TX — https://www.mgsusa.llc/canyon-lake-tx
   Lakefront & Hill Country glass for Canyon Lake - custom shower glass, storefront systems and emergency repair. Founded 2004. Call (210) 370-3700.
 - Castroville, TX — https://www.mgsusa.llc/castroville-tx
@@ -3371,6 +3384,8 @@ the summaries here are those pages’ own descriptions.
   Comfort glass for Hill Country homes & businesses - showers, mirrors, emergency repair. Serving San Antonio & Boerne since 2004. Call (210) 370-3700.
 - Converse, TX — https://www.mgsusa.llc/converse-tx
   Converse glass for neighborhoods, rentals & businesses - windows, emergency repair. Serving San Antonio & Boerne since 2004. Call (210) 370-3700.
+- Fair Oaks Ranch, TX — https://www.mgsusa.llc/fair-oaks-ranch-tx
+  Glass services in Fair Oaks Ranch, TX - failed insulated glass units, frameless shower enclosures, custom mirrors and 24/7 emergency repair. Call (210) 370-3700.
 - Helotes, TX — https://www.mgsusa.llc/helotes-tx
   Helotes glass for Hill Country homes & businesses - showers, custom glass, emergency repair. Serving San Antonio & Boerne since 2004. Call (210) 370-3700.
 - La Vernia, TX — https://www.mgsusa.llc/la-vernia-tx
@@ -3404,5 +3419,5 @@ the summaries here are those pages’ own descriptions.
 
 ---
 
-Last updated: 2026-10-20
+Last updated: 2026-10-21
 Generated from the site by tools/build_llms_full.py — do not hand-edit below the Scope of Work section.

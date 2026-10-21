@@ -8,7 +8,7 @@ client into `assets/vendor/blob-client.js` with esbuild.
 
 ## Layout
 
-- `*.html` (60 pages) at the repo root — services, ~25 `<city>-tx.html` local
+- `*.html` (64 pages) at the repo root — services, ~25 `<city>-tx.html` local
   landing pages, legal pages, `followup-desk.html`, `review.html`. The three
   commercial-film pages (`commercial-security-film.html`,
   `commercial-window-tint.html`, `perforated-window-graphics.html`) are
@@ -32,6 +32,32 @@ client into `assets/vendor/blob-client.js` with esbuild.
   this company's glass railings, and the slideshow image captioned "Balcony
   rail and window glazing detail" is a *metal* picket rail. Swap in a real one
   when it exists. The same no-re-run warning applies.
+- **City pages** — 25 `<city>-tx.html`. The four newest (`stone-oak-tx`,
+  `alamo-ranch-tx`, `bulverde-tx`, `fair-oaks-ranch-tx`) are built by
+  `tools/build_city_pages.py` and wired by `tools/wire_city_pages.py`; the
+  older 21 came from `deepen_city_pages.py` and its sibling. They exist
+  because the page set was aimed at the wrong towns: lining the Google
+  Business Profile's service areas against the city pages showed seven profile
+  areas with no page and eight pages for towns the profile did not claim — and
+  **every town in the first group is closer to the office than every town in
+  the second.** Stone Oak is 5.5 miles out, affluent and dense, and had no
+  page; Stockdale is 41 miles out with under 1,500 people and had one.
+  The content on each is authored, not substituted. A city page made by
+  swapping one town name for another is a duplicate with extra steps, which is
+  why `tools/content_uniqueness.py` exists — the older 21 average ~41% unique
+  and the four new ones score 60–62%, the top of the table. Keep it that way:
+  each page is built around something that genuinely changes the glass work
+  there (hard water etching, failed 1970s–90s sealed units, acreage access,
+  west-facing afternoon sun), never around invented jobs, customers or
+  population figures.
+  Two traps the generator fell into, both now asserted against in `check()`:
+  the nearby-areas markup is `.nearby-grid > a.nearby-city`, **not** the
+  `.related-grid` pattern the service pages use, and a non-matching regex is
+  not an error — the first run silently kept the donor's neighbours, 20 to 36
+  miles away on the wrong side of town. And the hero eyebrow carries the town
+  name in **literal capitals**, so a title-case replace left "GLASS SERVICES IN
+  TIMBERWOOD PARK, TX" above the h1 of a page about Stone Oak. Every automated
+  check passed; it was caught by looking at a screenshot.
 - `api/` — serverless functions (see table below).
 - `data/` — UMD modules shared by browser and functions: exposed as `window.MGS.*`
   in the browser, `module.exports` on Vercel. Includes the followup store/auth helpers
@@ -40,7 +66,7 @@ client into `assets/vendor/blob-client.js` with esbuild.
   `slideshow.js` drives the project carousel that sits under the hero on every
   service page.
 - `service-worker.js` — cache-first for images, network-first for HTML, CSS and JS.
-  Registered by `assets/js/sw-register.js` on all 58 real pages, placed by
+  Registered by `assets/js/sw-register.js` on all 62 real pages, placed by
   `tools/add_sw_register.py`. Until 2026-10-20 registration was an inline
   snippet on 7 pages only — index, contact, the two glass hubs and the three
   quote pages — so the other 53, every city landing page among them, never
@@ -168,7 +194,7 @@ lead" rule below, and it invites someone to re-fix what is already fixed.)
   column of photos. A hard refresh looks fine, so testing will not catch it.
   `styles.min.css` is also requested as `?v=N`; raise that when the file changes.
 - **Site-wide changes** (nav, footer, tracking snippets, social links) must be
-  applied across all 60 HTML pages — e.g. the HubSpot snippet is on all of them.
+  applied across all 64 HTML pages — e.g. the HubSpot snippet is on all of them.
 - **Photos:** run the `add-project-photos` skill rather than doing it by hand.
   Budgets are 1400px/180 KB full and 800px/80 KB for `-sm` thumbnails, and
   every photo needs both. Encode first, then write `srcset` width descriptors
@@ -218,7 +244,7 @@ lead" rule below, and it invites someone to re-fix what is already fixed.)
   nobody can carry out, and on a profile with five reviews a single one-star
   for wasting an afternoon is 17% of the rating.
 - **The conversion here is a phone call, so count it.**
-  `assets/js/call-tracking.js` is on all 58 pages that carry a `tel:` link,
+  `assets/js/call-tracking.js` is on all 62 pages that carry a `tel:` link,
   placed by `tools/add_call_tracking.py` (scope derived from the pages
   themselves — any page with a `tel:` link gets it — so a page that gains a
   phone link later is picked up by a re-run rather than missed). Five
@@ -233,7 +259,7 @@ lead" rule below, and it invites someone to re-fix what is already fixed.)
   with every analytics global missing the tap still dials. A tracking failure
   costs a data point; blocking a tap costs a job.
 - **Motion layer.** `assets/css/motion.css` + `assets/js/motion.js`, loaded on
-  all 58 real pages (not `emergency.html`, a redirect stub, nor the Google
+  all 62 real pages (not `emergency.html`, a redirect stub, nor the Google
   verification file). It is purely additive: it changes no colour, type,
   spacing or layout, and attaches to markup that already exists. The rule that
   makes it safe is the ordering — `motion.js` adds `.motion-ready` to `<html>`

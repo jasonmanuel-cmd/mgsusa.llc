@@ -336,6 +336,21 @@
       "source": "/stone-oak-tx.html",
       "destination": "/stone-oak-tx",
       "permanent": true
+    },
+    {
+      "source": "/alamo-ranch-tx.html",
+      "destination": "/alamo-ranch-tx",
+      "permanent": true
+    },
+    {
+      "source": "/bulverde-tx.html",
+      "destination": "/bulverde-tx",
+      "permanent": true
+    },
+    {
+      "source": "/fair-oaks-ranch-tx.html",
+      "destination": "/fair-oaks-ranch-tx",
+      "permanent": true
     }
   ],
   "headers": [
