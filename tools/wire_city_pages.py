@@ -24,6 +24,13 @@ one is genuinely its nearest neighbour.
                         miles up the road and shares its market
     helotes-tx          drops Alamo Heights, which is clear across the city,
                         for Alamo Ranch directly to its south
+    converse-tx         drops New Braunfels (26 mi up the interstate) for Live
+                        Oak, which is the next suburb over
+    schertz-tx          drops New Braunfels for Selma, which it borders
+    new-braunfels-tx    drops Blanco (37 mi northwest, the wrong direction
+                        entirely) for Garden Ridge, immediately southwest. This
+                        grid holds four rather than three, so it keeps Schertz,
+                        Converse and Seguin as well.
 
 Every dropped page keeps its own page, its sitemap entry and its card in the
 service-areas index. Nothing is orphaned by a swap.
@@ -75,6 +82,30 @@ PAGES = [
               'between the office and Boerne — 1970s-90s housing with failed '
               'insulated glass units, golf-course frontage and mature oak cover'),
      'swap': ('boerne-tx.html', '/comfort-tx')},
+    {'slug': 'live-oak-tx', 'label': 'Live Oak, TX', 'group': 'I-35 CORRIDOR / EAST',
+     'blurb': ('Live Oak has been built out since the 1960s, so most of what we replace '
+               'is original — aluminium window glass, framed showers and...'),
+     'llms': ('Live Oak, TX',
+              'northeast at Loop 1604 and I-35 — 1960s-80s housing with original '
+              'aluminium glazing and framed shower enclosures, plus commercial frontage '
+              'on the highway'),
+     'swap': ('converse-tx.html', '/new-braunfels-tx')},
+    {'slug': 'selma-tx', 'label': 'Selma, TX', 'group': 'I-35 CORRIDOR / EAST',
+     'blurb': ('Selma carries more retail glass per square mile than anywhere else we '
+               'work — storefronts, tenant fit-outs and emergency board-up...'),
+     'llms': ('Selma, TX',
+              'the I-35 retail corridor at Olympia Parkway — storefront systems, '
+              'entrance doors, tenant changeover glazing, window graphics and '
+              'out-of-hours board-up'),
+     'swap': ('schertz-tx.html', '/new-braunfels-tx')},
+    {'slug': 'garden-ridge-tx', 'label': 'Garden Ridge, TX', 'group': 'I-35 CORRIDOR / EAST',
+     'blurb': ('Garden Ridge keeps its oak canopy, which is why the calls there cluster '
+               'around storms — limb damage, board-up and replacement...'),
+     'llms': ('Garden Ridge, TX',
+              'large wooded lots northeast of San Antonio — storm and falling-limb '
+              'glass damage, emergency board-up, and heavy shade that makes solar film '
+              'the wrong answer on most elevations'),
+     'swap': ('new-braunfels-tx.html', '/blanco-tx')},
 ]
 
 

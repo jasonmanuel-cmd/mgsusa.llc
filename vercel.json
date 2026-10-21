@@ -351,6 +351,21 @@
       "source": "/fair-oaks-ranch-tx.html",
       "destination": "/fair-oaks-ranch-tx",
       "permanent": true
+    },
+    {
+      "source": "/live-oak-tx.html",
+      "destination": "/live-oak-tx",
+      "permanent": true
+    },
+    {
+      "source": "/selma-tx.html",
+      "destination": "/selma-tx",
+      "permanent": true
+    },
+    {
+      "source": "/garden-ridge-tx.html",
+      "destination": "/garden-ridge-tx",
+      "permanent": true
     }
   ],
   "headers": [

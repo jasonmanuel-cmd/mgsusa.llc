@@ -322,6 +322,187 @@ PAGES = [
                    ('Bulverde', '/bulverde-tx'),
                    ('San Antonio', '/san-antonio-tx')],
     },
+    {
+        'slug': 'live-oak-tx', 'name': 'Live Oak', 'parent': None,
+        'lat': 29.5541, 'lon': -98.3364,
+        'title': 'Glass Services in Live Oak, TX | Master Glass Solutions',
+        'desc': ('Glass services in Live Oak, TX - framed-to-frameless shower upgrades, '
+                 'aluminium window glass replacement, storefront glass and 24/7 emergency '
+                 'repair. Call (210) 370-3700.'),
+        'hero': ('Live Oak has been built out since the 1960s, so most of what we replace '
+                 'here is original &mdash; the glass and the frames that came with the '
+                 'house, now somewhere past their fourth decade.'),
+        'depth': [
+            ('WHAT WE SEE HERE', 'Original glass, still in the original frame.',
+             'The houses here are a generation older than the subdivisions further north, '
+             'and it shows in the glazing. Single-pane aluminium frames, sliding patio '
+             'doors with the rollers long gone, and bathroom enclosures that were framed '
+             'and tracked because that was what got installed at the time.',
+             'None of that has to mean a new window. A pane in a sound aluminium frame is '
+             'usually replaceable on its own, and a framed shower can often be rebuilt as '
+             'frameless if the walls and the threshold will take the hardware. What '
+             'decides it is the condition of what is already there, which is a photo '
+             'question rather than a quote question.'),
+            ('THE HIGHWAY FRONTAGE', 'Two kinds of work on one street.',
+             'Live Oak sits where Loop 1604 meets I-35, so a few minutes from those '
+             '1970s houses there is a concentration of retail, offices and light '
+             'commercial. We work both, and they are not the same job: a storefront has '
+             'tempered or laminated glass, a door that has to keep working all day, and a '
+             'business that cannot be shut while it is fixed.',
+             'If a commercial opening goes at an awkward hour the first call is the '
+             'board-up, not the replacement. We secure it, then come back with the glass '
+             'at a time that does not cost the tenant a trading day.'),
+        ],
+        'faq': [
+            ('Do you serve Live Oak?',
+             'Yes. Live Oak is a short run northeast of our office and we cover both the '
+             'residential side and the commercial frontage along the highway. Window glass '
+             'replacement, shower enclosures, custom mirrors, storefront glass, glass '
+             'railings and 24/7 emergency board-up. Buildings only &mdash; no auto glass.'),
+            ('Can you replace the glass in an old aluminium window without replacing the window?',
+             'Usually, yes, and it is the cheaper answer by a long way. If the frame is '
+             'straight and sound, the glass can be cut to the opening and reglazed in '
+             'place. The frame being corroded, bent or out of square is what pushes it '
+             'towards a full replacement. A photo of the frame from inside and out, plus '
+             'the rough dimensions, is normally enough to tell you which one you are '
+             'looking at.'),
+            ('Can my framed shower be converted to frameless?',
+             'Often. Frameless glass is thicker and heavier, so the question is whether '
+             'the walls and the threshold can carry the hardware and whether the opening '
+             'is plumb enough to work without a frame to take up the difference. In a '
+             'house of this age that is worth checking rather than assuming. Send photos '
+             'of the whole enclosure including the threshold and we will tell you '
+             'straight.'),
+            ('Is emergency glass support available in Live Oak?',
+             'Yes, 24 hours a day, seven days a week, including weekends and holidays. '
+             'Call 210-370-3700 and say what broke, where it is and whether the opening is '
+             'secure. For a business we board up first so you can open in the morning, and '
+             'bring the replacement glass back at a time that suits trading.'),
+        ],
+        'nearby': [('Selma', '/selma-tx'),
+                   ('Converse', '/converse-tx'),
+                   ('Schertz', '/schertz-tx')],
+    },
+    {
+        'slug': 'selma-tx', 'name': 'Selma', 'parent': None,
+        'lat': 29.5847, 'lon': -98.3064,
+        'title': 'Glass Services in Selma, TX | Master Glass Solutions',
+        'desc': ('Glass services in Selma, TX - storefront glass, tenant fit-out glazing, '
+                 'shower enclosures and 24/7 emergency board-up. Call (210) 370-3700.'),
+        'hero': ('Selma carries more retail glass per square mile than anywhere else we '
+                 'work. That makes most of what we do here commercial, and most of it '
+                 'time-sensitive &mdash; a dark storefront is a closed one.'),
+        'depth': [
+            ('WHAT WE SEE HERE', 'Glass that has to stay open for business.',
+             'The retail corridor along I-35 at Olympia Parkway means storefront systems, '
+             'entrance doors, interior partitions and a steady rhythm of tenants moving '
+             'in and out. Customer-facing glass is specified differently from the glass in '
+             'a house: tempered or laminated for safety and security, and a door that has '
+             'to work several hundred times a day without complaint.',
+             'The constraint is rarely the glass. It is that the unit is trading. Work '
+             'gets sequenced around opening hours, deliveries and the centre’s own '
+             'rules about when contractors can be on site, and that gets agreed before '
+             'anyone turns up with a van.'),
+            ('TENANT CHANGEOVER', 'Between one sign and the next.',
+             'When a unit changes hands the glass usually changes with it &mdash; old '
+             'vinyl and perforated graphics off, new film or graphics on, sometimes a '
+             'different door configuration or a partition moved. That window between '
+             'leases is short and everything in it is on the critical path to opening.',
+             'Scoping it early is what keeps it off that path. Measuring the frontage '
+             'while the previous tenant is still in place, ordering to those measurements, '
+             'and installing in the gap is a far calmer job than discovering on handover '
+             'that the glass does not suit the new fit-out.'),
+        ],
+        'faq': [
+            ('Do you handle commercial storefront glass in Selma?',
+             'Yes, and it is most of what we do there. Storefront systems, entrance doors '
+             'and closers, interior partitions, tempered and laminated replacement glass, '
+             'security film, perforated window graphics and 24/7 emergency board-up. We '
+             'also cover residential work in the surrounding neighbourhoods. Buildings '
+             'only &mdash; no auto glass.'),
+            ('A storefront pane went overnight. What happens first?',
+             'The board-up. Call 210-370-3700 whatever the hour and we secure the opening '
+             'so the unit is weatherproof and not an invitation, then measure and order '
+             'the replacement. Getting you trading in the morning and getting the right '
+             'glass in are two different jobs, and trying to do them as one is what leaves '
+             'a shop shut for a day.'),
+            ('Can glass work be done outside trading hours?',
+             'Yes, and for an occupied retail unit it is usually the right answer. Tell us '
+             'the centre’s contractor access rules and your own opening hours when '
+             'you ask for a quote &mdash; those shape the sequence and the price more than '
+             'the glass itself does.'),
+            ('Do you fit window graphics and film for a new tenant?',
+             'Yes. Perforated one-way vision graphics advertise to the street while '
+             'keeping the view out from inside, and solar control film cuts heat and glare '
+             'through the glass already in the opening. Both go on commercial buildings '
+             'here &mdash; never vehicles. Removal of the previous tenant’s graphics '
+             'can be quoted at the same time.'),
+        ],
+        'nearby': [('Live Oak', '/live-oak-tx'),
+                   ('Schertz', '/schertz-tx'),
+                   ('Garden Ridge', '/garden-ridge-tx')],
+    },
+    {
+        'slug': 'garden-ridge-tx', 'name': 'Garden Ridge', 'parent': None,
+        'lat': 29.6372, 'lon': -98.3047,
+        'title': 'Glass Services in Garden Ridge, TX | Master Glass Solutions',
+        'desc': ('Glass services in Garden Ridge, TX - storm and limb damage glass, custom '
+                 'window replacement, shower enclosures and 24/7 emergency repair. '
+                 'Call (210) 370-3700.'),
+        'hero': ('Garden Ridge keeps its trees, which is most of why people live there and '
+                 'most of why we get called. Oak limbs and glass are not compatible, and a '
+                 'storm settles the argument quickly.'),
+        'depth': [
+            ('WHAT WE SEE HERE', 'What comes down in a storm.',
+             'Large wooded lots and a heavy mature oak canopy are the character of the '
+             'place. They are also the reason the emergency calls out here cluster around '
+             'weather: a limb comes down on a rear elevation, a skylit room or a patio '
+             'door, and does it at night in the middle of the rain that brought it down.',
+             'That is a board-up first and a measurement second. Securing the opening '
+             'against weather matters more in the hour after it happens than getting the '
+             'exact right glass ordered, and the two are better treated as separate visits '
+             'than rushed into one.'),
+            ('SHADE CHANGES THE SPEC', 'Not every window wants film.',
+             'A west-facing wall in full sun and a west-facing wall under forty feet of '
+             'oak are different problems. Under heavy canopy the solar gain that drives '
+             'tint and film decisions elsewhere is already handled, and the thing people '
+             'actually want back is light and clarity.',
+             'So the sensible answer here is often the opposite of the one for the open '
+             'subdivisions west of the city: clean clear glass, low-E only where the '
+             'exposure genuinely warrants it, and film kept for the handful of elevations '
+             'that really do cook. We would rather say that than sell film to a shaded '
+             'window.'),
+        ],
+        'faq': [
+            ('Do you serve Garden Ridge?',
+             'Yes. Garden Ridge sits northeast of our office off FM 3009 and is well '
+             'inside the area we cover. Window glass replacement, custom and oversized '
+             'glass, shower enclosures, mirrors, glass railings and 24/7 emergency '
+             'board-up after storm damage. Buildings only &mdash; no auto glass.'),
+            ('A branch went through a window during a storm. What should I do first?',
+             'Call 210-370-3700, and if anything is still loose above the opening stay out '
+             'of the room. We board up to make the property weatherproof and secure, which '
+             'is the urgent part, then measure for replacement once the weather has passed '
+             'and anything overhead has been dealt with. Photograph the damage before we '
+             'board it if you can &mdash; your insurer will want that, and it is much '
+             'harder to get afterwards.'),
+            ('Does glass damage from a tree get covered by insurance?',
+             'That is between you and your insurer, but documentation is what makes the '
+             'conversation short. We can provide a written scope and itemised quote for '
+             'the glass work, and we photograph the opening before boarding it. We do not '
+             'handle claims or advise on coverage; we give you the paperwork that a claim '
+             'needs.'),
+            ('Do I need window tint on a heavily shaded house?',
+             'Often not, and we will say so. Film earns its money on elevations taking '
+             'real sun, and a window under mature canopy is usually already getting the '
+             'benefit for free. If one or two elevations are genuinely exposed, filming '
+             'just those is cheaper and leaves the rest of the house as bright as the '
+             'trees allow.'),
+        ],
+        'nearby': [('Selma', '/selma-tx'),
+                   ('Schertz', '/schertz-tx'),
+                   ('New Braunfels', '/new-braunfels-tx')],
+    },
 ]
 
 ARROW = ('<svg aria-hidden="true" viewBox="0 0 24 24">'
