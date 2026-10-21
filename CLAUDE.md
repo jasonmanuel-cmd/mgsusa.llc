@@ -28,10 +28,19 @@ client into `assets/vendor/blob-client.js` with esbuild.
   thing it overrides is the CTA target, via `quote_url()`, because railings are
   residential as often as commercial and a homeowner sent to
   `/commercial-quote` is being asked for property-management details they do
-  not have. Its hero photo is generic on purpose: there are no photographs of
-  this company's glass railings, and the slideshow image captioned "Balcony
-  rail and window glazing detail" is a *metal* picket rail. Swap in a real one
-  when it exists. The same no-re-run warning applies.
+  not have. The same no-re-run warning applies.
+  **Correction, 2026-10-21: this file previously said there were no photographs
+  of this company's glass railings. There are four.** `Stairs1`–`Stairs4` are
+  frameless glass stair railings, already captioned "Glass railings" and
+  already live on `gallery.html` and `residential-glass.html`. They were missed
+  because they are named `Stairs*`, so a search for railing photos found
+  nothing, and the page about glass railings led with a commercial storefront
+  while four railing photos sat in `assets/`. The hero is `Stairs1` now.
+  The lesson is the naming: **search the gallery captions, not the filenames**
+  — the captions say what a photo shows, the filename says which folder it
+  arrived in. The slideshow image captioned "Balcony rail and window glazing
+  detail" really is a *metal* picket rail, which is what sent the first search
+  down the wrong path.
 - **City pages** — 28 `<city>-tx.html`. The seven newest (`stone-oak-tx`,
   `alamo-ranch-tx`, `bulverde-tx`, `fair-oaks-ranch-tx`, `live-oak-tx`,
   `selma-tx`, `garden-ridge-tx`) are built by
