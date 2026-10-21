@@ -4,7 +4,7 @@
  * POST /api/site-metrics  (header Authorization: Bearer <session>)
  * Body: { sections?: string[], strategy?: "mobile"|"desktop", page?: "/path",
  *         refresh?: "lighthouse" }
- * -> 200 { ok: true, generatedAt, followups, reviews, traffic, lighthouse, health }
+ * -> 200 { ok: true, generatedAt, followups, reviews, traffic, search, lighthouse, health }
  * -> 401 bad session | 405 wrong method.
  *
  * Auth'd read-only aggregator behind the owner dashboard. Every section is
@@ -18,7 +18,10 @@
  *               response rate, 28-day activity, "needs attention" queue.
  *   reviews     Google Places API (New) — rating + review count.
  *   traffic     GA4 Data API via a service-account JWT — views/users/sessions,
- *               28-day trend, top pages, channels, devices.
+ *               28-day trend, top pages, channels, devices, click_to_call
+ *               and mgs_quote_success event counts.
+ *   search      Search Console API via the same service account — clicks,
+ *               impressions, CTR, average position, top queries and pages.
  *   lighthouse  PageSpeed Insights — category scores, lab metrics, CrUX field
  *               data, top opportunities. Cached in Blob (runs take 10-30s);
  *               `refresh: "lighthouse"` re-runs the requested page only.
@@ -28,7 +31,7 @@
  *
  * Env: FOLLOWUP_SESSION_SECRET, FOLLOWUP_BLOB_READ_WRITE_TOKEN,
  *      GOOGLE_PLACES_API_KEY, GOOGLE_PLACE_ID,
- *      GA4_PROPERTY_ID, GA4_CLIENT_EMAIL, GA4_PRIVATE_KEY,
+ *      GA4_PROPERTY_ID, GA4_CLIENT_EMAIL, GA4_PRIVATE_KEY, GSC_SITE_URL,
  *      PAGESPEED_API_KEY (optional — PSI works unkeyed but is rate limited).
  */
 
@@ -41,7 +44,7 @@ var metricsCache = require('../data/metrics-cache');
 var SITE_ORIGIN = 'https://www.mgsusa.llc';
 var LIGHTHOUSE_TTL_MS = 12 * 3600 * 1000;
 var LIGHTHOUSE_TIMEOUT_MS = 55000;
-var ALL_SECTIONS = ['followups', 'reviews', 'traffic', 'lighthouse', 'health', 'storage'];
+var ALL_SECTIONS = ['followups', 'reviews', 'traffic', 'search', 'lighthouse', 'health', 'storage'];
 
 // The pages worth watching. The desk shows whichever of these have a cached
 // run and re-runs one at a time (a PSI pass is far too slow to batch).
@@ -121,9 +124,10 @@ function buildFollowups() {
     var now = Date.now();
     var DAY = 86400000;
 
-    var counts = { sent: 0, 'review-link-sent': 0, 'low-rating-alerted': 0 };
+    var counts = { sent: 0, 'review-link-sent': 0, 'low-rating-alerted': 0, 'low-rating-alert-failed': 0 };
     var ratingSum = 0;
     var ratedCount = 0;
+    var reviewLinksSent = 0;
     var promoters = 0;
     var detractors = 0;
     var emailed = 0;
@@ -157,6 +161,9 @@ function buildFollowups() {
       }
 
       var rating = typeof c.rating === 'number' ? c.rating : null;
+      var invitationSent = !!c.reviewLinkSentAt || status === 'review-link-sent' ||
+        (rating != null && rating >= 4);
+      if (invitationSent) { reviewLinksSent++; }
       if (rating != null) {
         ratedCount++;
         ratingSum += rating;
@@ -169,16 +176,18 @@ function buildFollowups() {
         }
       }
 
-      // Two things the owner should act on: an unhappy customer, or a request
-      // that has sat unanswered for a week.
+      // Owner actions: a low score, a failed private-feedback notification,
+      // or a satisfaction request that has sat unanswered for a week.
       var stale = rating == null && isFinite(createdMs) && (now - createdMs) > 7 * DAY;
-      if (status === 'low-rating-alerted' || stale) {
+      var lowRating = rating != null && rating < 4;
+      var alertFailed = c.feedbackAlertStatus === 'failed';
+      if (lowRating || alertFailed || stale) {
         needsAttention.push({
           id: c.id || null,
           name: c.name || '',
           email: c.email || '',
           rating: rating,
-          reason: status === 'low-rating-alerted' ? 'low-rating' : 'no-response',
+          reason: lowRating ? 'low-rating' : alertFailed ? 'feedback-alert-failed' : 'no-response',
           daysWaiting: isFinite(createdMs) ? Math.floor((now - createdMs) / DAY) : null
         });
       }
@@ -195,6 +204,7 @@ function buildFollowups() {
       emailed: emailed,
       counts: counts,
       rated: ratedCount,
+      reviewLinksSent: reviewLinksSent,
       awaiting: list.length - ratedCount,
       responseRate: emailed ? round((ratedCount / emailed) * 100, 1) : 0,
       avgRating: ratedCount ? round(ratingSum / ratedCount, 2) : null,
@@ -257,7 +267,9 @@ function buildReviews() {
 
 /* ---------- traffic (GA4 Data API, service-account JWT) ---------- */
 
-var gaToken = { value: null, expiresAt: 0 };
+var googleTokens = Object.create(null);
+var GA_SCOPE = 'https://www.googleapis.com/auth/analytics.readonly';
+var GSC_SCOPE = 'https://www.googleapis.com/auth/webmasters.readonly';
 
 function gaConfig() {
   return {
@@ -268,15 +280,26 @@ function gaConfig() {
   };
 }
 
-function gaAccessToken(cfg) {
-  if (gaToken.value && gaToken.expiresAt > Date.now() + 60000) {
-    return Promise.resolve(gaToken.value);
+function gscConfig() {
+  var ga = gaConfig();
+  return {
+    siteUrl: (process.env.GSC_SITE_URL || '').trim(),
+    clientEmail: ga.clientEmail,
+    privateKey: ga.privateKey
+  };
+}
+
+function googleAccessToken(cfg, scope) {
+  var cacheKey = cfg.clientEmail + '|' + scope;
+  var cached = googleTokens[cacheKey];
+  if (cached && cached.expiresAt > Date.now() + 60000) {
+    return Promise.resolve(cached.value);
   }
   var now = Math.floor(Date.now() / 1000);
   var header = Buffer.from(JSON.stringify({ alg: 'RS256', typ: 'JWT' })).toString('base64url');
   var claim = Buffer.from(JSON.stringify({
     iss: cfg.clientEmail,
-    scope: 'https://www.googleapis.com/auth/analytics.readonly',
+    scope: scope,
     aud: 'https://oauth2.googleapis.com/token',
     iat: now,
     exp: now + 3600
@@ -296,13 +319,17 @@ function gaAccessToken(cfg) {
       if (!r.ok || !d.access_token) {
         throw new Error('token exchange ' + r.status + ' ' + (d.error_description || d.error || ''));
       }
-      gaToken = {
+      googleTokens[cacheKey] = {
         value: d.access_token,
         expiresAt: Date.now() + (num(d.expires_in) || 3600) * 1000
       };
-      return gaToken.value;
+      return googleTokens[cacheKey].value;
     });
   });
+}
+
+function gaAccessToken(cfg) {
+  return googleAccessToken(cfg, GA_SCOPE);
 }
 
 function gaRows(report) {
@@ -315,6 +342,15 @@ function gaRows(report) {
   });
 }
 
+function googleJson(response, label) {
+  return response.json().then(function (data) {
+    if (!response.ok) {
+      throw new Error(label + ' ' + response.status + ' ' + ((data.error && data.error.message) || ''));
+    }
+    return data;
+  });
+}
+
 function buildTraffic() {
   var cfg = gaConfig();
   if (!cfg.propertyId || !cfg.clientEmail || !cfg.privateKey) {
@@ -323,6 +359,8 @@ function buildTraffic() {
     ));
   }
 
+  // batchRunReports accepts at most five report requests. Conversion events are
+  // queried separately so the existing traffic reports remain within that cap.
   var body = {
     requests: [
       {
@@ -362,31 +400,57 @@ function buildTraffic() {
       }
     ]
   };
+  var eventBody = {
+    dateRanges: [{ startDate: '28daysAgo', endDate: 'yesterday' }],
+    dimensions: [{ name: 'eventName' }],
+    metrics: [{ name: 'eventCount' }],
+    dimensionFilter: {
+      filter: {
+        fieldName: 'eventName',
+        inListFilter: {
+          values: ['click_to_call', 'mgs_quote_success'],
+          caseSensitive: true
+        }
+      }
+    }
+  };
 
   return gaAccessToken(cfg).then(function (accessToken) {
-    return fetchWithTimeout(
-      'https://analyticsdata.googleapis.com/v1beta/properties/' + encodeURIComponent(cfg.propertyId) + ':batchRunReports',
-      {
-        method: 'POST',
-        headers: {
-          'Authorization': 'Bearer ' + accessToken,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(body)
+    var baseUrl = 'https://analyticsdata.googleapis.com/v1beta/properties/' + encodeURIComponent(cfg.propertyId);
+    var batch = fetchWithTimeout(baseUrl + ':batchRunReports', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + accessToken,
+        'Content-Type': 'application/json'
       },
-      12000
-    );
-  }).then(function (r) {
-    return r.json().then(function (d) {
-      if (!r.ok) {
-        throw new Error('GA4 ' + r.status + ' ' + ((d.error && d.error.message) || ''));
-      }
-      return d;
+      body: JSON.stringify(body)
+    }, 12000).then(function (response) { return googleJson(response, 'GA4'); });
+
+    var events = fetchWithTimeout(baseUrl + ':runReport', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + accessToken,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(eventBody)
+    }, 12000).then(function (response) {
+      return googleJson(response, 'GA4 conversion events');
+    }).catch(function (e) {
+      // Keep traffic/page data available if this optional event report is
+      // disabled or not yet recognized by the GA4 property.
+      console.error('site-metrics traffic conversion events error', e && e.message);
+      return { rows: [], error: e && e.message ? e.message : 'Event report failed.' };
     });
-  }).then(function (data) {
+
+    return Promise.all([batch, events]);
+  }).then(function (results) {
+    var data = results[0];
+    var eventReport = results[1];
     var reports = data.reports || [];
     var totalsRow = ((reports[0] && reports[0].rows) || [])[0];
     var totals = (totalsRow && totalsRow.metricValues || []).map(function (m) { return num(m.value); });
+    var eventCounts = Object.create(null);
+    gaRows(eventReport).forEach(function (row) { eventCounts[row.key] = row.values[0] || 0; });
 
     var daily = gaRows(reports[1]).map(function (row) {
       // GA4 hands back YYYYMMDD.
@@ -420,11 +484,89 @@ function buildTraffic() {
       }),
       devices: gaRows(reports[4]).map(function (row) {
         return { label: row.key || 'unknown', sessions: row.values[0] || 0 };
-      })
+      }),
+      conversions: {
+        status: eventReport.error ? 'error' : 'ok',
+        callClicks: eventCounts.click_to_call || 0,
+        quoteSubmissions: eventCounts.mgs_quote_success || 0,
+        error: eventReport.error || null
+      }
     };
   }).catch(function (e) {
     console.error('site-metrics traffic error', e && e.message);
     return errored('Google Analytics did not answer: ' + (e && e.message ? e.message : 'unknown error'));
+  });
+}
+
+/* ---------- search visibility (Search Console API) ---------- */
+
+var DAY_MS = 86400000;
+
+function dateDaysAgo(days) {
+  return new Date(Date.now() - days * DAY_MS).toISOString().slice(0, 10);
+}
+
+function gscRequest(cfg, accessToken, body) {
+  var url = 'https://www.googleapis.com/webmasters/v3/sites/' +
+    encodeURIComponent(cfg.siteUrl) + '/searchAnalytics/query';
+  return fetchWithTimeout(url, {
+    method: 'POST',
+    headers: {
+      'Authorization': 'Bearer ' + accessToken,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(body)
+  }, 12000).then(function (response) { return googleJson(response, 'Search Console'); });
+}
+
+function searchRows(report, keyName) {
+  return ((report && report.rows) || []).map(function (row) {
+    var keys = row.keys || [];
+    return {
+      [keyName]: keys[0] || '',
+      clicks: num(row.clicks),
+      impressions: num(row.impressions),
+      ctr: round(num(row.ctr) * 100, 1),
+      position: round(num(row.position), 1)
+    };
+  });
+}
+
+function buildSearchConsole() {
+  var cfg = gscConfig();
+  if (!cfg.siteUrl || !cfg.clientEmail || !cfg.privateKey) {
+    return Promise.resolve(unconfigured(
+      'Set GSC_SITE_URL and add the GA4 service-account email to the matching Search Console property. Enable the Search Console API; GA4_CLIENT_EMAIL and GA4_PRIVATE_KEY are reused.'
+    ));
+  }
+
+  // Search Console data is usually delayed, so use 28 complete days ending
+  // three days ago rather than showing a misleading partial current period.
+  var endDate = dateDaysAgo(3);
+  var startDate = dateDaysAgo(30);
+  var base = { startDate: startDate, endDate: endDate, type: 'web' };
+
+  return googleAccessToken(cfg, GSC_SCOPE).then(function (accessToken) {
+    return Promise.all([
+      gscRequest(cfg, accessToken, base),
+      gscRequest(cfg, accessToken, Object.assign({}, base, { dimensions: ['query'], rowLimit: 10 })),
+      gscRequest(cfg, accessToken, Object.assign({}, base, { dimensions: ['page'], rowLimit: 8 }))
+    ]);
+  }).then(function (reports) {
+    var total = ((reports[0] && reports[0].rows) || [])[0] || {};
+    return {
+      status: 'ok',
+      range: '28 complete days through ' + endDate,
+      clicks: num(total.clicks),
+      impressions: num(total.impressions),
+      ctr: round(num(total.ctr) * 100, 1),
+      avgPosition: round(num(total.position), 1),
+      queries: searchRows(reports[1], 'query'),
+      pages: searchRows(reports[2], 'page')
+    };
+  }).catch(function (e) {
+    console.error('site-metrics search-console error', e && e.message);
+    return errored('Google Search Console did not answer: ' + (e && e.message ? e.message : 'unknown error'));
   });
 }
 
@@ -706,6 +848,7 @@ module.exports = async function handler(req, res) {
     followups: buildFollowups,
     reviews: buildReviews,
     traffic: buildTraffic,
+    search: buildSearchConsole,
     lighthouse: function () {
       return buildLighthouse({
         strategy: body.strategy,

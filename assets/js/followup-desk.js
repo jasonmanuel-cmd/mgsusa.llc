@@ -2,9 +2,9 @@
   Master Glass Solutions — Command Center (/followup-desk, owner dashboard).
   Passcode login → add customers → watch satisfaction ratings come back.
 
-  The session lives in sessionStorage. Everything on screen is derived from the
-  one /api/followup-list payload, so search, filters, stats and the CSV export
-  cost no extra requests.
+  The session lives in sessionStorage. Customer search, filters, status stats
+  and CSV export are derived from one /api/followup-list payload. Performance
+  sources load separately from the authenticated /api/site-metrics endpoint.
 */
 (function () {
   'use strict';
@@ -39,6 +39,8 @@
   var addBtn = document.getElementById('add-btn');
   var logoutBtn = document.getElementById('logout-btn');
   var refreshBtn = document.getElementById('refresh-btn');
+  var lighthouseBtn = document.getElementById('lighthouse-run-btn');
+  var lighthousePage = document.getElementById('lighthouse-page');
   var exportBtn = document.getElementById('export-btn');
   var listEl = document.getElementById('customer-list');
   var listEmpty = document.getElementById('list-empty');
@@ -54,6 +56,8 @@
   var customers = [];
   var activeFilter = 'all';
   var searchTerm = '';
+  var performanceLoading = false;
+  var lighthouseLoading = false;
 
   /* ---------- helpers ---------- */
 
@@ -174,21 +178,29 @@
 
   /* ---------- classification ---------- */
 
-  // A record's bucket drives its badge, its stat tile and the filter chips.
+  // Buckets drive row badges and attention filters; invite counts are separate because a low score can be both invited and need follow-up.
   function bucketOf(record) {
-    if (record.status === 'low-rating-alerted') { return 'attention'; }
-    if (record.status === 'review-link-sent') { return 'reviewed'; }
-    if (typeof record.rating === 'number') {
-      return record.rating >= 4 ? 'reviewed' : 'attention';
+    if (record.status === 'low-rating-alerted' || record.status === 'low-rating-alert-failed') {
+      return 'attention';
     }
+    if (record.feedbackAlertStatus === 'failed') { return 'attention'; }
+    if (typeof record.rating === 'number' && record.rating < 4) { return 'attention'; }
+    if (record.status === 'review-link-sent' || typeof record.rating === 'number') { return 'reviewed'; }
     return 'waiting';
   }
 
   var BADGES = {
     waiting: { label: 'Waiting on reply', className: 'badge-waiting' },
-    reviewed: { label: 'Sent to Google', className: 'badge-reviewed' },
+    reviewed: { label: 'Review link sent', className: 'badge-reviewed' },
     attention: { label: 'Needs attention', className: 'badge-attention' }
   };
+
+  function hasReviewInvite(record) {
+    // Older high ratings were invited under the prior workflow. Older low
+    // ratings were not; do not count those as invited retroactively.
+    return !!record.reviewLinkSentAt || record.status === 'review-link-sent' ||
+      (typeof record.rating === 'number' && record.rating >= 4);
+  }
 
   function stars(rating) {
     var n = Math.max(0, Math.min(5, Math.round(rating)));
@@ -228,6 +240,10 @@
 
     if (record.comments) {
       row.appendChild(el('p', 'customer-comments', '“' + record.comments + '”'));
+    }
+
+    if (record.feedbackAlertStatus === 'failed') {
+      row.appendChild(el('p', 'customer-alert-note', 'Private feedback email did not send. Review the comment and follow up if needed.'));
     }
 
     if (record.notes) {
@@ -278,8 +294,8 @@
       actions.appendChild(call);
     }
 
-    if (bucket === 'reviewed') {
-      var google = el('a', 'row-action', 'Your Google page');
+    if (hasReviewInvite(record)) {
+      var google = el('a', 'row-action', 'Google review page');
       google.href = GOOGLE_REVIEW_URL;
       google.target = '_blank';
       google.rel = 'noopener';
@@ -294,11 +310,17 @@
     var subject;
     var body;
 
-    if (bucket === 'attention') {
+    if (bucket === 'attention' && typeof record.rating === 'number' && record.rating < 4) {
       subject = 'Following up on your glass project';
       body = 'Hi ' + name + ',\n\n' +
-        'Thanks for the honest feedback — I would like to put it right. ' +
+        'Thanks for the honest feedback — I would like to understand what we can improve. ' +
         'When is a good time to talk?\n\n' +
+        'Master Glass Solutions\n210-370-3700';
+    } else if (bucket === 'attention') {
+      subject = 'Following up on your feedback';
+      body = 'Hi ' + name + ',\n\n' +
+        'Thank you for sharing your comments about the project. I would like to make sure ' +
+        'we received them and see whether there is anything you need.\n\n' +
         'Master Glass Solutions\n210-370-3700';
     } else {
       subject = 'How was your glass project?';
@@ -352,12 +374,17 @@
   }
 
   function renderStats() {
-    var counts = { all: customers.length, waiting: 0, reviewed: 0, attention: 0 };
+    // Sent invitations intentionally overlap "Needs attention": low scores also
+    // receive the same link but still deserve a private follow-up.
+    var counts = { all: customers.length, waiting: 0, invited: 0, attention: 0 };
     var ratingSum = 0;
     var ratingCount = 0;
 
     customers.forEach(function (record) {
-      counts[bucketOf(record)]++;
+      var bucket = bucketOf(record);
+      if (bucket === 'waiting') { counts.waiting++; }
+      if (bucket === 'attention') { counts.attention++; }
+      if (hasReviewInvite(record)) { counts.invited++; }
       if (typeof record.rating === 'number') {
         ratingSum += record.rating;
         ratingCount++;
@@ -366,7 +393,7 @@
 
     setText('stat-total', String(counts.all));
     setText('stat-waiting', String(counts.waiting));
-    setText('stat-reviews', String(counts.reviewed));
+    setText('stat-reviews', String(counts.invited));
     setText('stat-attention', String(counts.attention));
 
     if (ratingCount) {
@@ -394,7 +421,9 @@
 
   function visibleCustomers() {
     return customers.filter(function (record) {
-      if (activeFilter !== 'all' && bucketOf(record) !== activeFilter) { return false; }
+      if (activeFilter === 'invited' && !hasReviewInvite(record)) { return false; }
+      if (activeFilter === 'waiting' && bucketOf(record) !== 'waiting') { return false; }
+      if (activeFilter === 'attention' && bucketOf(record) !== 'attention') { return false; }
       return matchesSearch(record);
     });
   }
@@ -408,8 +437,8 @@
       return 'Nothing matches “' + searchInput.value.trim() + '”.';
     }
     if (activeFilter === 'waiting') { return 'Nobody is waiting on a reply right now.'; }
-    if (activeFilter === 'reviewed') { return 'No happy ratings back yet.'; }
-    if (activeFilter === 'attention') { return 'Nothing needs your attention. Every rating so far is 4 stars or better.'; }
+    if (activeFilter === 'invited') { return 'No review invitations have been sent from this desk yet.'; }
+    if (activeFilter === 'attention') { return 'No low ratings or private-alert delivery issues need attention.'; }
     return 'Nothing to show.';
   }
 
@@ -486,6 +515,256 @@
 
   /* ---------- data ---------- */
 
+  function formatMetric(value, decimals) {
+    if (value == null || value === '') { return '—'; }
+    var number = Number(value);
+    if (!isFinite(number)) { return '—'; }
+    return number.toLocaleString('en-US', {
+      minimumFractionDigits: decimals || 0,
+      maximumFractionDigits: decimals || 0
+    });
+  }
+
+  function setSourceStatus(statusId, contentId, message, isError) {
+    var status = document.getElementById(statusId);
+    var content = document.getElementById(contentId);
+    if (content) { content.hidden = true; }
+    if (status) {
+      status.hidden = false;
+      status.classList.toggle('is-error', !!isError);
+      status.textContent = message;
+    }
+  }
+
+  function showSourceContent(statusId, contentId) {
+    var status = document.getElementById(statusId);
+    var content = document.getElementById(contentId);
+    if (status) { status.hidden = true; }
+    if (content) { content.hidden = false; }
+  }
+
+  function renderPerformanceList(id, items, labelOf, valueOf, limit) {
+    var list = document.getElementById(id);
+    if (!list) { return; }
+    list.innerHTML = '';
+    if (!items || !items.length) {
+      list.appendChild(el('li', 'performance-list-empty', 'No data in this period.'));
+      return;
+    }
+    items.slice(0, limit || 5).forEach(function (item) {
+      var row = el('li');
+      row.appendChild(el('span', 'performance-list-label', labelOf(item)));
+      row.appendChild(el('strong', '', valueOf(item)));
+      list.appendChild(row);
+    });
+  }
+
+  function compactPath(value) {
+    var text = String(value || '');
+    try {
+      var url = new URL(text);
+      text = url.pathname || '/';
+    } catch (e) {}
+    return text.slice(0, 100);
+  }
+
+  function renderTraffic(traffic) {
+    if (!traffic || traffic.status !== 'ok') {
+      setSourceStatus('ga-status', 'ga-content',
+        (traffic && (traffic.hint || traffic.error)) || 'GA4 traffic data is not available.',
+        !!(traffic && traffic.status === 'error'));
+      return;
+    }
+
+    showSourceContent('ga-status', 'ga-content');
+    setText('ga-range', (traffic.range || 'Last 28 days') + ' · updated ' + fmtTime(new Date()));
+    setText('ga-sessions', formatMetric(traffic.sessions));
+    setText('ga-views', formatMetric(traffic.views));
+
+    var conversions = traffic.conversions || {};
+    if (conversions.status === 'ok') {
+      setText('ga-call-clicks', formatMetric(conversions.callClicks));
+      setText('ga-quote-submissions', formatMetric(conversions.quoteSubmissions));
+      setText('ga-note', 'Call clicks count phone-link taps, not connected calls. Quote submissions count successful form completions. Mark these events as key events in GA4 if you want them in key-event reports.');
+      document.getElementById('ga-note').classList.remove('is-error');
+    } else {
+      setText('ga-call-clicks', '—');
+      setText('ga-quote-submissions', '—');
+      setText('ga-note', 'GA4 traffic loaded, but lead-event counts are unavailable.' +
+        (conversions.error ? ' ' + conversions.error : ''));
+      document.getElementById('ga-note').classList.add('is-error');
+    }
+
+    renderPerformanceList('ga-top-pages', traffic.topPages || [], function (item) {
+      return compactPath(item.path);
+    }, function (item) {
+      return formatMetric(item.views) + ' views';
+    });
+    renderPerformanceList('ga-channels', traffic.channels || [], function (item) {
+      return item.label || 'Unassigned';
+    }, function (item) {
+      return formatMetric(item.sessions) + ' sessions';
+    });
+  }
+
+  function renderSearch(search) {
+    if (!search || search.status !== 'ok') {
+      setSourceStatus('search-status', 'search-content',
+        (search && (search.hint || search.error)) || 'Search Console data is not available.',
+        !!(search && search.status === 'error'));
+      return;
+    }
+
+    showSourceContent('search-status', 'search-content');
+    setText('search-range', search.range || 'Last 28 days');
+    setText('search-clicks', formatMetric(search.clicks));
+    setText('search-impressions', formatMetric(search.impressions));
+    setText('search-ctr', formatMetric(search.ctr, 1) + '%');
+    setText('search-position', formatMetric(search.avgPosition, 1));
+    renderPerformanceList('search-queries', search.queries || [], function (item) {
+      return item.query || '(not provided)';
+    }, function (item) {
+      return formatMetric(item.clicks) + ' clicks · ' + formatMetric(item.impressions) + ' impressions';
+    });
+    renderPerformanceList('search-pages', search.pages || [], function (item) {
+      return compactPath(item.page);
+    }, function (item) {
+      return formatMetric(item.clicks) + ' clicks';
+    });
+  }
+
+  function renderProfile(profile) {
+    if (!profile || profile.status !== 'ok') {
+      setSourceStatus('profile-status', 'profile-content',
+        (profile && (profile.hint || profile.error)) || 'Google profile data is not available.',
+        !!(profile && profile.status === 'error'));
+      return;
+    }
+
+    showSourceContent('profile-status', 'profile-content');
+    setText('profile-rating', profile.rating == null ? '—' : formatMetric(profile.rating, 1));
+    setText('profile-review-count', formatMetric(profile.totalReviews));
+  }
+
+  function renderLighthouse(lighthouse) {
+    if (!lighthouse || lighthouse.status !== 'ok') {
+      setSourceStatus('lighthouse-status', 'lighthouse-content',
+        (lighthouse && (lighthouse.hint || lighthouse.error)) || 'PageSpeed data is not available.',
+        !!(lighthouse && lighthouse.status === 'error'));
+      return;
+    }
+
+    showSourceContent('lighthouse-status', 'lighthouse-content');
+    var pages = lighthouse.pages || [];
+    renderPerformanceList('lighthouse-pages', pages, function (page) {
+      return page.label || compactPath(page.path);
+    }, function (page) {
+      if (page.status === 'empty') { return 'Not tested'; }
+      if (page.status !== 'ok') { return 'Test failed'; }
+      var scores = (page.result && page.result.scores) || {};
+      var perf = scores.performance == null ? '—' : formatMetric(scores.performance);
+      var seo = scores.seo == null ? '—' : formatMetric(scores.seo);
+      return 'Perf ' + perf + ' · SEO ' + seo + (page.stale ? ' · stale' : '');
+    }, 10);
+  }
+
+  function runLighthouse() {
+    if (!session || lighthouseLoading || performanceLoading) { return; }
+    lighthouseLoading = true;
+    lighthouseBtn.disabled = true;
+    lighthouseBtn.textContent = 'Running…';
+    var path = lighthousePage.value || '/';
+    var runStatus = document.getElementById('lighthouse-run-status');
+    runStatus.hidden = false;
+    runStatus.classList.remove('is-error');
+    runStatus.textContent = 'Running a mobile PageSpeed test… this usually takes 10–30 seconds.';
+
+    fetch('/api/site-metrics', {
+      method: 'POST',
+      headers: authHeaders(),
+      body: JSON.stringify({
+        sections: ['lighthouse'],
+        strategy: 'mobile',
+        page: path,
+        refresh: 'lighthouse'
+      })
+    }).then(function (res) {
+      return res.json().then(function (data) { return { ok: res.ok, status: res.status, data: data }; });
+    }).then(function (result) {
+      if (result.status === 401) {
+        showLogin('Session expired. Please log in again.');
+        return;
+      }
+      if (!result.ok || !result.data || !result.data.ok) {
+        runStatus.classList.add('is-error');
+        runStatus.textContent = (result.data && result.data.error) || 'Could not run the PageSpeed test.';
+        return;
+      }
+
+      var report = result.data.lighthouse;
+      renderLighthouse(report);
+      var pageResult = report && report.pages && report.pages.find(function (page) { return page.path === path; });
+      if (pageResult && pageResult.status === 'ok') {
+        runStatus.textContent = 'Mobile test saved for ' + (pageResult.label || path) + '.';
+      } else {
+        runStatus.classList.add('is-error');
+        runStatus.textContent = (pageResult && pageResult.error) || 'PageSpeed could not finish this test.';
+      }
+    }).catch(function () {
+      runStatus.classList.add('is-error');
+      runStatus.textContent = 'Could not reach the PageSpeed service.';
+    }).then(function () {
+      lighthouseLoading = false;
+      lighthouseBtn.disabled = false;
+      lighthouseBtn.textContent = 'Run test';
+    });
+  }
+
+  function loadPerformance() {
+    if (!session || performanceLoading) { return; }
+    performanceLoading = true;
+
+    setSourceStatus('ga-status', 'ga-content', 'Loading GA4 data…', false);
+    setSourceStatus('search-status', 'search-content', 'Loading Search Console data…', false);
+    setSourceStatus('profile-status', 'profile-content', 'Loading Google profile data…', false);
+    setSourceStatus('lighthouse-status', 'lighthouse-content', 'Loading cached mobile checks…', false);
+    lighthouseBtn.disabled = true;
+
+    fetch('/api/site-metrics', {
+      method: 'POST',
+      headers: authHeaders(),
+      body: JSON.stringify({ sections: ['traffic', 'search', 'reviews', 'lighthouse'], strategy: 'mobile' })
+    }).then(function (res) {
+      return res.json().then(function (data) { return { ok: res.ok, status: res.status, data: data }; });
+    }).then(function (result) {
+      performanceLoading = false;
+      lighthouseBtn.disabled = lighthouseLoading;
+      if (result.status === 401) {
+        showLogin('Session expired. Please log in again.');
+        return;
+      }
+      if (!result.ok || !result.data || !result.data.ok) {
+        var message = (result.data && result.data.error) || 'Could not load performance data.';
+        setSourceStatus('ga-status', 'ga-content', message, true);
+        setSourceStatus('search-status', 'search-content', message, true);
+        setSourceStatus('profile-status', 'profile-content', message, true);
+        setSourceStatus('lighthouse-status', 'lighthouse-content', message, true);
+        return;
+      }
+      renderTraffic(result.data.traffic);
+      renderSearch(result.data.search);
+      renderProfile(result.data.reviews);
+      renderLighthouse(result.data.lighthouse);
+    }).catch(function () {
+      performanceLoading = false;
+      lighthouseBtn.disabled = lighthouseLoading;
+      setSourceStatus('ga-status', 'ga-content', 'Could not reach the performance data service.', true);
+      setSourceStatus('search-status', 'search-content', 'Could not reach the performance data service.', true);
+      setSourceStatus('profile-status', 'profile-content', 'Could not reach the performance data service.', true);
+      setSourceStatus('lighthouse-status', 'lighthouse-content', 'Could not reach the performance data service.', true);
+    });
+  }
+
   function loadList(opts) {
     if (!session) { return; }
     var announce = opts && opts.announce;
@@ -511,6 +790,7 @@
         // succeeds, so a token the server rejects never flashes the dashboard.
         if (opts && opts.revealOnSuccess) {
           showDesk();
+          loadPerformance();
           startRefresh();
         }
         customers = result.data.customers || [];
@@ -581,6 +861,7 @@
         loginBtn.textContent = 'Unlock the desk';
         showDesk();
         loadList();
+        loadPerformance();
         startRefresh();
         return;
       }
@@ -668,7 +949,8 @@
 
   logoutBtn.addEventListener('click', function () { showLogin(); });
 
-  refreshBtn.addEventListener('click', function () { loadList({ announce: true }); });
+  refreshBtn.addEventListener('click', function () { loadList({ announce: true }); loadPerformance(); });
+  lighthouseBtn.addEventListener('click', runLighthouse);
 
   exportBtn.addEventListener('click', exportCsv);
 

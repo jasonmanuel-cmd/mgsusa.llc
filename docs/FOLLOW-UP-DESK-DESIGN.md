@@ -1,18 +1,19 @@
 # Follow-Up Desk & Auto Review System — Design
 
-**Status:** Approved for implementation (2026-08-07)
+**Status:** Implemented; policy-safe review flow and performance snapshot updated 2026-10-21
 **Goal:** After a job is done, the owner pastes the customer's name + email into
 a password-protected **Follow-Up Desk**, and the system automatically emails the
-customer a satisfaction form. Happy customers (4-5★) automatically get the
-Google review link; unhappy customers (1-3★) trigger a private alert instead of
-a public bad review. The desk tracks every customer's status.
+customer a private satisfaction form. Every rating receives the same optional,
+neutral Google review invitation. Ratings and comments stay private; a low rating
+or any written comment also alerts the owner privately. The desk tracks each
+customer and surfaces GA4, Search Console and Google review data when access is configured.
 
 **Cost:** $0/mo on top of current hosting. Reuses the existing Vercel serverless
 functions + Resend email (Resend free tier covers ~3,000 emails/mo). No Twilio,
 no Make/Zapier, no Google Form/Sheets.
 
-**Replaces:** The Twilio/SMS flow in `REVIEW-SYSTEM-SETUP.md`. This is the
-email-only variant with a built-in dashboard instead of a Google Sheet.
+**Replaces:** The retired Make/Twilio/Google Forms instructions in the archived
+`REVIEW-SYSTEM-SETUP.md`; this is the current email workflow and owner dashboard.
 
 ---
 
@@ -21,11 +22,10 @@ email-only variant with a built-in dashboard instead of a Google Sheet.
 ```
 Job done → you open the Follow-Up Desk → enter customer name + email → Send
    → customer gets a branded satisfaction email with a link to mgsusa.llc/review?c=<token>
-   → they rate 1–5 on a clean branded page
-         ├─ 4–5★ → they instantly get an email with YOUR Google review link
-         │          (https://g.page/r/CZoDFY2uA41TEAI/review)
-         └─ 1–3★ → you get a private low-rating alert (no public review requested)
-   → status auto-updates in the Follow-Up Desk
+   → they rate 1–5 and may leave a private comment on a clean branded page
+         ├─ every rating → same optional Google review link email to the customer
+         └─ rating ≤3 or any comment → private feedback alert to the owner
+   → rating, comments and alert status update in the Follow-Up Desk
 ```
 
 Everything after the customer taps the link is automatic.
@@ -46,8 +46,9 @@ POST /api/followup-add { name, email, notes? }
         │ (name/email pre-filled from token — no typing)
         ▼
 POST /api/review-submit { token, rating, comments? }
-        │ 4-5★ → Resend: Google review link email → customer; status "review-link-sent"
-        │ 1-3★ → Resend: private low-rating alert → owner;  status "low-rating-alerted"
+        │ every rating → Resend: same optional Google review link → customer
+        │ rating ≤3 or comments → private feedback alert → owner
+        │ records status "review-link-sent", "low-rating-alerted" or an alert failure
         ▼
 [Follow-Up Desk shows updated status]
 ```
@@ -70,7 +71,7 @@ POST /api/review-submit { token, rating, comments? }
 | `api/followup-desk-login.js` | POST | Verifies `passcode` against env var; returns a short-lived signed session token (HMAC) |
 | `api/followup-add.js` | POST | Auth'd. Saves customer record, sends satisfaction email, returns record |
 | `api/followup-list.js` | POST | Auth'd. Returns all customer records + statuses |
-| `api/review-submit.js` | POST | Public. Validates token, routes on rating, updates status, sends the right email |
+| `api/review-submit.js` | POST | Public. Validates token, sends the same optional Google link for every rating, stores private feedback and alerts the owner for low scores/comments |
 
 ### Shared code (`data/`)
 
@@ -105,9 +106,12 @@ read/write via `BLOB_READ_WRITE_TOKEN`, already used for photo uploads).
       "name": "Jane Doe",
       "email": "jane@example.com",
       "notes": "Storefront glass, San Antonio",
-      "status": "sent" | "review-link-sent" | "low-rating-alerted",
+      "status": "sent" | "review-link-sent" | "low-rating-alerted" | "low-rating-alert-failed",
       "rating": null | 1-5,
       "comments": null | string,
+      "reviewLinkSentAt": null | ISO timestamp,
+      "feedbackAlertStatus": "not-needed" | "sent" | "failed",
+      "feedbackAlertedAt": null | ISO timestamp,
       "createdAt": "2026-08-07T18:30:00.000Z",
       "emailedAt": "2026-08-07T18:30:01.000Z",
       "ratedAt": null | "2026-08-07T19:00:00.000Z"
@@ -116,7 +120,7 @@ read/write via `BLOB_READ_WRITE_TOKEN`, already used for photo uploads).
 }
 ```
 
-**Status lifecycle:** `sent` → (`review-link-sent` on 4–5★ | `low-rating-alerted` on 1–3★).
+**Status lifecycle:** `sent` → the same optional review invitation is emailed for all new ratings and its timestamp is saved in `reviewLinkSentAt`. The record is `review-link-sent` unless a low-rating owner alert is sent (`low-rating-alerted`) or fails (`low-rating-alert-failed`). Any comment also triggers a private owner alert, tracked independently in `feedbackAlertStatus`; alert failure never suppresses the customer's invitation or private stored feedback. Historical low-score records from the old gate are not counted as invited and are not automatically re-emailed.
 
 **Tokens:** each customer gets an unguessable token (`crypto.randomUUID()` +
 HMAC signature) embedded in their `/review` link. The token is the only way to
@@ -140,11 +144,15 @@ Body: `{ name, email, notes? }`
 ### `POST /api/review-submit`  (public, Turnstile optional when key set)
 Body: `{ token, rating, comments? }`
 → 200 `{ ok: true, redirect: "/thank-you" }`
-→ 400 bad token | 422 invalid rating | 502 Resend failure.
+→ 400 bad token | 422 invalid rating | 502 customer-invitation email failure.
+
+The customer invitation is always sent regardless of rating. Low ratings and any
+written comments also generate a private owner alert; that secondary email can
+fail without withholding the invitation, and the dashboard records the failure.
 
 ### `POST /api/site-metrics`  (header `Authorization: Bearer <session>`)  — added 2026-08-12
 Body: `{ sections?, strategy?, page?, refresh? }`
-→ 200 `{ ok: true, generatedAt, followups, reviews, traffic, lighthouse, health, pages }`
+→ 200 `{ ok: true, generatedAt, followups, reviews, traffic, search, lighthouse, health, storage, pages }`
 → 401 bad session | 405 wrong method.
 
 Read-only aggregator for the dashboard at the top of the desk. Each section is
@@ -152,11 +160,13 @@ independent and answers with its own `status`:
 
 | Section | Source | Unconfigured behaviour |
 |---|---|---|
-| `followups` | the Blob store | always available |
+| `followups` | the Blob store; includes ratings, response activity, review-invitation count and owner-action queue | always available |
 | `reviews` | Google Places API (New) | `status: "unconfigured"` + hint |
-| `traffic` | GA4 Data API (service-account JWT) | `status: "unconfigured"` + hint |
+| `traffic` | GA4 Data API (service-account JWT), including `click_to_call` and `mgs_quote_success` event counts | `status: "unconfigured"` + hint |
+| `search` | Google Search Console API via the read-only service-account scope | `status: "unconfigured"` + hint |
 | `lighthouse` | PageSpeed Insights, cached 12h in Blob | pages report `status: "empty"` until run |
 | `health` | live fetch of `/` and `/sitemap.xml` | always available |
+| `storage` | Blob read/write probe | `status: "error"` + diagnosis if unavailable |
 
 A section that throws returns `status: "error"` — the endpoint itself still
 answers 200, so one dead Google key can never blank the desk. Lighthouse runs
@@ -178,19 +188,21 @@ All from `LEAD_FROM_EMAIL` (currently `no-reply@mgssite.com`).
 >
 > [Rate your experience →] `https://www.mgsusa.llc/review?c={token}`
 
-**2. Google review link (from `api/review-submit.js`, rating 4–5):**
-> Thanks {name}! We're glad the job went well. If you have a minute, a Google
-> review means the world to a small local business:
+**2. Optional Google review invitation (from `api/review-submit.js`, all ratings):**
+> Thanks for sharing your feedback, {name}. If you would like to share an honest
+> review publicly, you can use this optional Google link:
 >
-> [Leave a review →] `https://g.page/r/CZoDFY2uA41TEAI/review`
+> [Leave a Google review →] `https://g.page/r/CZoDFY2uA41TEAI/review`
+>
+> Leaving a review is completely optional.
 
-**3. Low-rating alert (from `api/review-submit.js`, rating 1–3) → owner**
+**3. Private feedback alert (low rating or any written comment) → owner**
 (`LEAD_NOTIFICATION_EMAIL`):
-> A customer rated their job {rating}/5.
+> Private post-job feedback received. Rating: {rating}/5.
 > Name: {name} · Email: {email}
-> Comments: {comments}
+> Private comments: {comments}
 >
-> Follow up BEFORE this becomes a public review.
+> The same optional Google review invitation was sent regardless of rating.
 
 No incentives, no gifts — stays Google-compliant.
 
@@ -217,8 +229,10 @@ No incentives, no gifts — stays Google-compliant.
 | `FOLLOWUP_DESK_PASSCODE` | The desk login passcode (set by owner) |
 
 Reused (already set): `RESEND_API_KEY`, `LEAD_FROM_EMAIL`, `LEAD_NOTIFICATION_EMAIL`,
-`GOOGLE_REVIEW_URL`, `BLOB_READ_WRITE_TOKEN`. `GOOGLE_REVIEW_URL` overrides the
-hardcoded `g.page` link if the owner ever changes it.
+`GOOGLE_REVIEW_URL`, `GOOGLE_PLACES_API_KEY`, `GOOGLE_PLACE_ID`, and
+`BLOB_READ_WRITE_TOKEN`. `GOOGLE_REVIEW_URL` overrides the hardcoded `g.page`
+link if the owner ever changes it; Places credentials power the profile rating
+and count card.
 
 **Dashboard extras (all optional).** Leave any of these unset and that card shows
 a setup hint instead of numbers — nothing else on the desk is affected.
@@ -227,14 +241,22 @@ a setup hint instead of numbers — nothing else on the desk is affected.
 |---|---|
 | `GA4_PROPERTY_ID` | GA4 property behind the `G-C7XXMF1P52` tag, e.g. `123456789` |
 | `GA4_CLIENT_EMAIL` | Service-account address, added as a **Viewer** on that property |
-| `GA4_PRIVATE_KEY` | That account's PEM key, pasted with `\n` escapes |
+| `GA4_PRIVATE_KEY` | That account's PEM key, pasted with `\n` escapes; reused for Search Console with a separate read-only OAuth scope |
+| `GSC_SITE_URL` | Search Console property, e.g. `sc-domain:mgsusa.llc` or `https://www.mgsusa.llc/` |
 | `PAGESPEED_API_KEY` | Raises the PageSpeed quota; PSI works unkeyed but is rate limited |
 
-Setting up GA4 access: Google Cloud console → **APIs & Services → Credentials →
-Create service account** (no project roles needed) → **Keys → Add key → JSON**;
-then in GA4 → **Admin → Property access management**, add the service-account
-email as a Viewer. Enable the **Google Analytics Data API** on the project. Copy
-`client_email` and `private_key` out of the JSON into the two env vars.
+Setting up Google reporting access: Google Cloud console → **APIs & Services →
+Credentials → Create service account** (no project roles needed) → **Keys → Add
+key → JSON**. Add its email as a Viewer on the GA4 property and as a user with
+access to the matching Search Console property. Enable the **Google Analytics
+Data API** and **Google Search Console API** on that Cloud project. Copy
+`client_email` and `private_key` into `GA4_CLIENT_EMAIL` and `GA4_PRIVATE_KEY`,
+then set `GA4_PROPERTY_ID` and `GSC_SITE_URL` in Vercel. For an `sc-domain:`
+property use that exact prefix; for a URL-prefix property use its exact URL.
+The dashboard counts lead events even if they are not configured as GA4 key
+events; mark `click_to_call` and `mgs_quote_success` as key events in GA4 if you
+want them included in GA4 key-event reporting. `click_to_call` measures a tap,
+not a completed phone call.
 
 ---
 
@@ -245,56 +267,58 @@ email as a Viewer. Enable the **Google Analytics Data API** on the project. Copy
 3. Done — the system emails the customer, and updates status as they respond.
 
 **Tips:** send same-day while the job is fresh; attach the desk link to the
-invoice/final-payment workflow; check the desk weekly to catch any
-`low-rating-alerted` follow-ups.
+invoice/final-payment workflow; check the desk weekly for low ratings or failed
+private-feedback notifications.
 
-**The dashboard above the form** answers "how is the site doing?" at a glance:
-page views and where visitors came from, the pages they land on, Lighthouse
-scores per page (press **Run test** — it takes ~30s and the result is kept for
-12 hours), the Google rating, and a live up/down check. **Needs attention** is
-the one to read first: it lists unhappy customers and anyone who has not replied
-in over a week. The customer list can be searched, filtered by status, sorted,
-and exported to CSV; **Copy review link** puts a customer's personal rating link
-on the clipboard for texting.
-
----
-
-## Compliance (unchanged from REVIEW-SYSTEM-SETUP.md)
-
-- Never offer money/gifts/discounts for a Google review.
-- Ask everyone through the gate — only 4–5★ get the public review link.
-- Don't hand-pick only happy customers (the desk doesn't — it asks whoever the
-  owner enters after any job).
-- Negative feedback stays private and comes to the owner first.
+**Website performance** surfaces GA4 sessions, page views, phone-link taps,
+successful quote submissions, top pages and channels; Search Console impressions,
+clicks, CTR, position, queries and landing pages; Google review score; and cached
+mobile PageSpeed scores. Run a new PageSpeed test for a selected page from the
+desk (results are cached for 12 hours). Phone-link taps are not completed calls.
+Search Console data is delayed and uses 28 complete days. The customer list can
+be searched, filtered and exported to CSV.
 
 ---
 
-## Testing plan
+## Review-request policy
 
-1. **Local:** `python3 -m http.server 8080` — pages render; API needs deploy.
-2. **Staging/preview deploy:** set `FOLLOWUP_DESK_PASSCODE`, deploy, then:
-   - Desk login: wrong passcode → 401; right passcode → session.
-   - Add customer → satisfaction email arrives; record shows `sent`.
-   - Open `/review?c=<token>` → name/email prefilled.
-   - Submit 5★ → review-link email arrives; status `review-link-sent`.
-   - Add second customer → submit 2★ → owner alert arrives; no public link; status `low-rating-alerted`.
-   - Desk list shows both customers with correct statuses.
-3. **Prod:** repeat on the live domain; then live fire with a friendly customer.
-4. **Regression:** confirm existing `/api/submit-quote`, `/api/chat`,
-   `/api/blob-upload` still work after the `vercel.json` header additions.
+- Every customer receives the same neutral, optional Google review invitation,
+  regardless of their private rating or comments.
+- Private ratings and written comments remain available to the owner; low scores
+  and all written comments also trigger a private owner email.
+- Never offer money, gifts, discounts or other incentives for a review.
+- Do not block, delay or selectively route a public review invitation based on
+  satisfaction. `REVIEW-SYSTEM-SETUP.md` is an archived, superseded guide; do not
+  follow its former rating gate.
 
 ---
 
-## Rollout steps
+## Verification and rollout
 
-1. Create `data/followup-store.js`, `data/followup-auth.js`.
-2. Create the four API endpoints.
-3. Create `/review` + `/followup-desk` pages and assets.
-4. Wire `vercel.json`: clean URLs for `/review` and `/followup-desk`, `no-store`
-   headers for the four endpoints, add `reviews.html`-style redirect for
-   `/followup-desk.html`.
-5. Set `FOLLOWUP_DESK_PASSCODE` in Vercel (Production + Preview).
-6. Deploy, run the testing plan, go live.
+**Code checks run locally:** `tools/review-flow-check.cjs` exercises all five
+ratings, private comments and alert failures; `tools/site-metrics-check.cjs`
+checks GA4 event counts and Search Console reporting with stub responses;
+`tools/call-tracking-check.cjs` checks attribution, deduplication and the
+single GA4/GTM delivery path. `tools/form-required-check.py` verifies the quote
+forms. Live email delivery, external Google credentials, browser automation and
+deployment still require the configured production/preview environment.
+
+**Before rollout:**
+
+1. In Vercel, set `FOLLOWUP_DESK_PASSCODE`, `RESEND_API_KEY`,
+   `LEAD_NOTIFICATION_EMAIL`, and `FOLLOWUP_BLOB_READ_WRITE_TOKEN`; verify the
+   sender domain used by `LEAD_FROM_EMAIL`.
+2. Optionally connect GA4, Search Console and Places credentials using the
+   variables above. Mark `click_to_call` and `mgs_quote_success` as GA4 key
+events in GA4 Admin if they should appear in key-event reports.
+3. Deploy a preview and test login, add customer, neutral invitations for all
+   five ratings, private comments, low-score alerts and the dashboard cards.
+   Confirm the existing quote, chat and upload endpoints still work.
+4. Only after preview passes, deploy to production and verify the live profile,
+   analytics and email delivery with the owner.
+
+The code changes are implemented in this repository; no Vercel deployment or
+live account configuration was performed as part of this work.
 
 ---
 

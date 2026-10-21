@@ -14,6 +14,10 @@ Two things go wrong here and neither is visible by looking at a page:
     the other way is worse still -- a relaxed form with a strict server fails
     *after* the customer has typed everything.
 
+  * A missing external action makes a native fallback post to the same static
+    page, not to Formspree. Every quote form must keep its configured fallback
+    action wired so an API outage does not silently eat a lead.
+
 Two form shapes exist. The quote forms carry a `service` select and are handled
 by validateQuote; the planning checklist has no service field and goes through
 validateChecklist. They are checked against their own contracts, not a shared
@@ -30,6 +34,7 @@ import sys
 
 QUOTE_REQUIRED = {'first-name', 'email', 'service', 'consent'}
 CHECKLIST_REQUIRED = {'first-name', 'email', 'consent'}
+FORM_FALLBACK_ACTION = 'https://formspree.io/f/maqrkdvg'
 
 
 def fields(form_html):
@@ -66,6 +71,10 @@ def main():
 
         req, star = fields(form)
         issues = []
+        opening = re.search(r'<form\b[^>]*\bid="quote-form"[^>]*>', s)
+        action = re.search(r'\baction="([^"]+)"', opening.group(0)) if opening else None
+        if not action or action.group(1) != FORM_FALLBACK_ACTION:
+            issues.append('fallback action is missing or does not match the configured Formspree form')
         if req != expect:
             issues.append(f'required={sorted(req)} wanted {sorted(expect)}')
         if req != star:

@@ -21,7 +21,7 @@ import io
 import re
 import sys
 
-SCRIPT = '<script src="assets/js/call-tracking.js?v=1" defer></script>'
+SCRIPT = '<script src="assets/js/call-tracking.js?v=2" defer></script>'
 MARKER = 'assets/js/call-tracking.js'
 ANCHOR = re.compile(r'(<script[^>]*assets/js/motion\.js[^>]*>\s*</script>)')
 

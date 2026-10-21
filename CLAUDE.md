@@ -119,9 +119,9 @@ client into `assets/vendor/blob-client.js` with esbuild.
 | `api/followup-desk-login.js` | Passcode → HMAC session token |
 | `api/followup-add.js` | Auth'd: save customer, send satisfaction email |
 | `api/followup-list.js` | Auth'd: list customer records (pure read, cache disabled). The desk's "Export customer list" tile turns this into a CSV client-side — quoted, formula-injection guarded, BOM for Excel, and deliberately without the review token |
-| `api/review-submit.js` | Public: 4–5★ → Google review link email; 1–3★ → private owner alert |
+| `api/review-submit.js` | Public: every rating gets the same optional Google review email; low ratings and any comments also alert the owner privately |
 | `api/health-check.js` | Daily Vercel cron (14:00 UTC). Three checks: POSTs a tokenless synthetic quote to the live `/api/submit-quote` in probe mode, asks Resend whether the `LEAD_FROM_EMAIL` domain is verified, and flags a lead drought. Silent when healthy; emails the owner only on failure, falling back to `onboarding@resend.dev` when the normal sender is the thing that broke. Guarded by `CRON_SECRET` |
-| `api/site-metrics.js` | Auth'd: dashboard aggregator — follow-up funnel, Google rating, GA4 traffic, Lighthouse/PSI, live site probe. `maxDuration: 60` (a PSI run takes 10-30s) |
+| `api/site-metrics.js` | Auth'd: follow-up funnel, Google review score, GA4 traffic and lead-event counts, Search Console clicks/queries, Lighthouse/PSI, live site probe. `maxDuration: 60` |
 
 All write/auth endpoints get `Cache-Control: no-store` in `vercel.json`; the
 generic `/api/(.*)` rule caches for 6h with a 24h stale-while-revalidate window.
@@ -170,10 +170,14 @@ daily and mails the moment a tokenless quote is refused, and with
 behind those, and a backstop should be slow and quiet, or it drowns out the
 detectors in front of it.
 
-Dashboard-only, all optional — the matching card shows a setup hint instead of data:
-`GA4_PROPERTY_ID`, `GA4_CLIENT_EMAIL`, `GA4_PRIVATE_KEY` (service account with
-Viewer on the GA4 property; the PEM goes in with `\n` escapes) and
-`PAGESPEED_API_KEY` (PSI works unkeyed but is rate limited).
+Dashboard-only, all optional — the Command Center shows setup hints when a source
+is not connected. GA4 uses `GA4_PROPERTY_ID`, `GA4_CLIENT_EMAIL`, and
+`GA4_PRIVATE_KEY` (service account with Viewer access; PEM goes in with `\n`
+escapes). Search Console reuses the service-account key and needs `GSC_SITE_URL`
+plus access to that property. Google review rating/count uses
+`GOOGLE_PLACES_API_KEY` and `GOOGLE_PLACE_ID`. `PAGESPEED_API_KEY` raises the
+PageSpeed quota. GA4 events `click_to_call` and `mgs_quote_success` are counted
+as events; the owner must mark them as key events in GA4 if desired.
 
 The Turnstile **site** key is inlined in `assets/js/quote-form.js` and
 `assets/js/review-page.js` — change it in both when it rotates. Secrets stay in
@@ -232,16 +236,16 @@ lead" rule below, and it invites someone to re-fix what is already fixed.)
   delivery, not configuration.
 - **Graceful degradation** is the house style: reviews fall back to a static
   payload, chat degrades to phone/quote CTAs, and a quote the API cannot take
-  falls back rather than vanishing. **A fallback nobody wired up is worse than
-  none** — the quote forms carry no `action`, and for months `nativeFallback()`
-  posted them to the static page they sit on, so every 500/502/503 deleted the
-  lead in silence while the code claimed it went to Formspree. `quote-form.js`
-  now submits natively only when the form has an `action` that leaves the page;
-  otherwise it keeps the customer put and hands them their request back with a
-  phone number and a prefilled email. To turn the Formspree net on, put
-  `action="https://formspree.io/f/<id>"` on the five `#quote-form` forms.
-  Related: `form.dispatchEvent(new Event('submit'))` runs listeners but never
-  navigates — use `form.submit()` when you mean to post.
+  falls back rather than vanishing. The five `#quote-form` pages now carry the
+  external Formspree action `https://formspree.io/f/maqrkdvg`, so network
+  failures and API 401/403/404/5xx errors can fall back to a real endpoint
+  rather than posting back to the static page. Keep that action in sync with
+  the Formspree initialization in those pages;
+  `tools/form-required-check.py` asserts it is present. When there
+  is no external action, `quote-form.js` keeps the customer put and offers a
+  phone number plus a prefilled email. Related: `form.dispatchEvent(new
+  Event('submit'))` runs listeners but never navigates — use `form.submit()`
+  when you mean to post.
 - **The work is buildings and glass. Not vehicles, screen doors or skylights.**
   No auto glass, windshields or vehicle glass — that boundary is already stated
   in the page copy and the JSON-LD descriptions. Add to it: **they do not do

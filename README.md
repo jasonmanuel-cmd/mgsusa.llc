@@ -24,18 +24,15 @@ that hands returning visitors new markup with an old stylesheet.
 
 ## Quote form fallback
 
-The form posts to `/api/submit-quote`. If that fails, `quote-form.js` submits
-natively **only when the form carries an `action` that leaves the page**. The
-five `#quote-form` forms currently carry no `action`, so there is no Formspree
-net: instead the customer stays on the page with their answers intact and is
-given the phone number and a prefilled email. To turn the net on, add
-`action="https://formspree.io/f/<id>"` to those five forms.
-
-(An earlier version of this file claimed the form "auto-falls back to
-Formspree". It never did -- no endpoint was ever wired up, and a native submit
-with no action posts to the static page it sits on, which silently destroyed
-the lead. That is fixed; the note stays as a caution against trusting a
-fallback nobody has exercised.)
+The guided forms post to `/api/submit-quote`. All five `#quote-form` pages also
+carry the external action `https://formspree.io/f/maqrkdvg`; if the API is
+unreachable or returns 401/403/404 or a 5xx response, `quote-form.js` uses a
+native form submission to that endpoint instead of posting back to the static
+page. Without an external action, the customer stays on the page with their
+answers and gets a click-to-call link plus a prefilled email. `tools/form-required-check.py`
+checks that the fallback action stays wired on every quote form. The Formspree
+endpoint should still be tested after deployment because it is an external
+service.
 
 ## Google Reviews (serverless)
 
@@ -90,6 +87,27 @@ and `google_reviews_click`) with
 `business_name: "Master Glass Solutions"` and
 `button_location: "homepage_reviews_section"`.
 
+## Follow-Up Desk and performance dashboard
+
+The private owner dashboard at `/followup-desk` sends satisfaction requests and
+tracks responses. Every submitted rating receives the same optional Google
+review invitation; ratings/comments stay private, and low ratings or written
+comments also alert the owner. The former rating gate is retired. See
+`docs/FOLLOW-UP-DESK-DESIGN.md` for current behavior and account setup.
+
+The authenticated dashboard can show GA4 sessions/pages plus `click_to_call`
+and `mgs_quote_success` event counts, Search Console clicks/queries, the Google
+review score, and cached mobile PageSpeed scores. Phone-click events are intent,
+not completed calls; GA4 key-event settings still need to be configured in the
+property. Data sources show setup hints until credentials/property access are
+added in Vercel: `GA4_PROPERTY_ID`, `GA4_CLIENT_EMAIL`, `GA4_PRIVATE_KEY`,
+`GSC_SITE_URL`, `GOOGLE_PLACES_API_KEY`, `GOOGLE_PLACE_ID`, and optionally
+`PAGESPEED_API_KEY`.
+
+Local regression checks for the neutral review flow, single-path call event
+tracking, and the GA4/Search Console API requests are `tools/review-flow-check.cjs`,
+`tools/call-tracking-check.cjs`, and `tools/site-metrics-check.cjs`.
+
 ## CSS architecture
 
 - `assets/design-tokens.css` — design tokens (colors, type, spacing, motion). Source of truth,
@@ -120,8 +138,9 @@ no build step.
 - `assets/js/quote-form.js` — upgrades `#quote-form` into a step wizard,
   handles photo uploads and Turnstile, posts to `/api/submit-quote`, and emits
   GA4 `mgs_quote_*` events. Fields are moved (not cloned) into
-  `.quote-wizard__original`. On HTTP 503 (API not deployed) it redispatchs the
-  native submit so Formspree takes over.
+  `.quote-wizard__original`. On network errors or API 401/403/404/5xx responses,
+  it submits natively to the configured Formspree action. Without an action, it
+  keeps the visitor's answers on-page and offers phone/email rescue.
 - `assets/js/photo-upload.js` — client helper exposing `window.MGS.photoUpload`
   for the wizard's photo steps.
 - `assets/css/project-assistant.css` — all chat + wizard styles. The wizard
@@ -174,5 +193,5 @@ python3 -m http.server 8080
 ```
 
 The wizard and assistant load and render from static files. Quote submissions
-fall back to Formspree when `/api/submit-quote` returns 503 (API not deployed);
-the chat needs the deployed API to reply.
+fall back to the configured Formspree action when `/api/submit-quote` is
+unreachable or returns 401/403/404 or 5xx; the chat needs the deployed API to reply.

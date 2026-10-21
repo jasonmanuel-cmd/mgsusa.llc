@@ -27,7 +27,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <link rel="canonical" href="https://www.mgsusa.llc/followup-desk">
 <link rel="stylesheet" href="assets/styles.min.css?v=3">
 <link rel="stylesheet" href="assets/css/motion.css?v=5">
-<link rel="stylesheet" href="assets/css/followup-desk.css?v=5">
+<link rel="stylesheet" href="assets/css/followup-desk.css?v=6">
 <script>
   window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
 </script>
@@ -64,8 +64,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             the day a job wraps, watch the ratings land, and jump straight into the parts of your site you use most.</p>
           <ul class="desk-gate-points">
             <li><span class="desk-gate-tick" aria-hidden="true"></span>Email a customer a one-tap rating link</li>
-            <li><span class="desk-gate-tick" aria-hidden="true"></span>Happy customers get sent to your Google review page</li>
-            <li><span class="desk-gate-tick" aria-hidden="true"></span>Unhappy ones come straight to you first, privately</li>
+            <li><span class="desk-gate-tick" aria-hidden="true"></span>Every customer gets the same optional Google review link</li>
+            <li><span class="desk-gate-tick" aria-hidden="true"></span>Ratings and comments stay private; low scores or comments alert you</li>
             <li><span class="desk-gate-tick" aria-hidden="true"></span>Quick links to quotes, reviews, gallery and more</li>
           </ul>
         </div>
@@ -127,14 +127,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <p class="stat-meta">Emailed, not rated yet</p>
           </li>
           <li class="stat-tile stat-tile-good">
-            <p class="stat-label">Sent to Google</p>
+            <p class="stat-label">Review links sent</p>
             <p class="stat-value" id="stat-reviews">—</p>
-            <p class="stat-meta">Rated 4&ndash;5 stars</p>
+            <p class="stat-meta">Same optional link for every new rating</p>
           </li>
           <li class="stat-tile stat-tile-alert">
             <p class="stat-label">Needs attention</p>
             <p class="stat-value" id="stat-attention">—</p>
-            <p class="stat-meta">Rated 3 stars or less</p>
+            <p class="stat-meta">Low score or private-alert email issue</p>
           </li>
           <li class="stat-tile">
             <p class="stat-label">Average rating</p>
@@ -142,6 +142,99 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <p class="stat-meta" id="stat-average-meta">No ratings yet</p>
           </li>
         </ul>
+
+        <!-- Performance data: each source reports independently, so missing account access does not blank the desk. -->
+        <section class="desk-panel performance-panel" aria-labelledby="performance-title">
+          <div class="desk-panel-head">
+            <div>
+              <h2 id="performance-title">Website performance</h2>
+              <p class="desk-hint">Traffic, lead signals, search visibility and review health to guide the next marketing decision.</p>
+            </div>
+          </div>
+
+          <div class="performance-grid">
+            <article class="performance-source" aria-labelledby="ga-performance-title">
+              <h3 id="ga-performance-title">Website traffic &amp; lead signals</h3>
+              <p class="performance-status" id="ga-status" role="status">Loading GA4 data…</p>
+              <div id="ga-content" hidden>
+                <p class="performance-range" id="ga-range"></p>
+                <ul class="performance-stats">
+                  <li><span>Sessions</span><strong id="ga-sessions">—</strong></li>
+                  <li><span>Page views</span><strong id="ga-views">—</strong></li>
+                  <li><span>Call clicks</span><strong id="ga-call-clicks">—</strong></li>
+                  <li><span>Quote submissions</span><strong id="ga-quote-submissions">—</strong></li>
+                </ul>
+                <div class="performance-lists">
+                  <section>
+                    <h4>Top pages</h4>
+                    <ol id="ga-top-pages"></ol>
+                  </section>
+                  <section>
+                    <h4>Traffic channels</h4>
+                    <ol id="ga-channels"></ol>
+                  </section>
+                </div>
+                <p class="desk-note" id="ga-note">Call clicks are taps on a phone link, not confirmed phone calls.</p>
+              </div>
+            </article>
+
+            <article class="performance-source" aria-labelledby="search-performance-title">
+              <h3 id="search-performance-title">Google search visibility</h3>
+              <p class="performance-status" id="search-status" role="status">Loading Search Console data…</p>
+              <div id="search-content" hidden>
+                <p class="performance-range" id="search-range"></p>
+                <ul class="performance-stats">
+                  <li><span>Search clicks</span><strong id="search-clicks">—</strong></li>
+                  <li><span>Impressions</span><strong id="search-impressions">—</strong></li>
+                  <li><span>Click-through rate</span><strong id="search-ctr">—</strong></li>
+                  <li><span>Average position</span><strong id="search-position">—</strong></li>
+                </ul>
+                <div class="performance-lists">
+                  <section>
+                    <h4>Top search queries</h4>
+                    <ol id="search-queries"></ol>
+                  </section>
+                  <section>
+                    <h4>Top search landing pages</h4>
+                    <ol id="search-pages"></ol>
+                  </section>
+                </div>
+              </div>
+            </article>
+
+            <article class="performance-source" aria-labelledby="profile-performance-title">
+              <h3 id="profile-performance-title">Google review profile</h3>
+              <p class="performance-status" id="profile-status" role="status">Loading Google profile data…</p>
+              <div id="profile-content" hidden>
+                <p class="profile-rating"><strong id="profile-rating">—</strong><span> / 5</span></p>
+                <p class="performance-range"><span id="profile-review-count">—</span> Google reviews</p>
+                <a class="row-action" href="https://maps.google.com/?cid=6020472325090378650" target="_blank" rel="noopener">Open Google Business Profile</a>
+              </div>
+            </article>
+            <article class="performance-source" aria-labelledby="lighthouse-performance-title">
+              <h3 id="lighthouse-performance-title">Mobile PageSpeed</h3>
+              <p class="performance-status" id="lighthouse-status" role="status">Loading cached mobile checks…</p>
+              <div id="lighthouse-content" hidden>
+                <label class="performance-select-label" for="lighthouse-page">Page to test</label>
+                <div class="performance-run-row">
+                  <select id="lighthouse-page">
+                    <option value="/">Home</option>
+                    <option value="/request-quote">Request a quote</option>
+                    <option value="/residential-glass">Residential glass</option>
+                    <option value="/commercial-glass">Commercial glass</option>
+                    <option value="/san-antonio-tx">San Antonio, TX</option>
+                    <option value="/contact">Contact</option>
+                  </select>
+                  <button class="btn btn-dark btn-small" id="lighthouse-run-btn" type="button">Run test</button>
+                </div>
+                <p class="performance-status" id="lighthouse-run-status" role="status" hidden></p>
+                <ol class="performance-page-list" id="lighthouse-pages"></ol>
+                <p class="desk-note">Scores are cached for 12 hours. Run a test after important page or image changes.</p>
+              </div>
+            </article>
+          </div>
+          <p class="desk-note performance-disclaimer">GA4 event totals are lead signals, not confirmed calls. Search Console data and the Google review score appear only when their account access is configured. Google Business Profile call and discovery insights still need to be checked in the profile itself.</p>
+        </section>
 
         <!-- Quick actions -->
         <section class="desk-panel" aria-labelledby="quick-title">
@@ -176,7 +269,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <div class="quick-grid">
             <a class="quick-tile" href="https://g.page/r/CZoDFY2uA41TEAI/review" target="_blank" rel="noopener">
               <span class="quick-tile-title">Your Google review page <span class="quick-tile-ext" aria-hidden="true">&#8599;</span></span>
-              <span class="quick-tile-sub">The exact link happy customers get</span>
+              <span class="quick-tile-sub">The same optional link every customer receives</span>
             </a>
             <a class="quick-tile" href="https://maps.google.com/?cid=6020472325090378650" target="_blank" rel="noopener">
               <span class="quick-tile-title">Google Business Profile <span class="quick-tile-ext" aria-hidden="true">&#8599;</span></span>
@@ -247,8 +340,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               <p class="desk-error" id="add-error" role="alert" hidden></p>
               <button class="btn btn-dark btn-block" id="add-btn" type="submit">Send satisfaction email</button>
             </form>
-            <p class="desk-note desk-note-quiet">4&ndash;5 stars &rarr; they get your Google review link.
-              3 or fewer &rarr; you get a private heads-up before it goes public.</p>
+            <p class="desk-note desk-note-quiet">Every rating receives the same optional Google review invitation. Ratings and written comments are shared privately with you; a low rating or any written comment also sends you a private email alert.</p>
           </aside>
 
           <section class="desk-panel list-card" aria-labelledby="list-title">
@@ -267,7 +359,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <div class="filter-row" role="group" aria-label="Filter customers">
               <button class="filter-chip is-active" type="button" data-filter="all" aria-pressed="true">All <span data-count="all">0</span></button>
               <button class="filter-chip" type="button" data-filter="waiting" aria-pressed="false">Waiting <span data-count="waiting">0</span></button>
-              <button class="filter-chip" type="button" data-filter="reviewed" aria-pressed="false">Reviewed <span data-count="reviewed">0</span></button>
+              <button class="filter-chip" type="button" data-filter="invited" aria-pressed="false">Review link sent <span data-count="invited">0</span></button>
               <button class="filter-chip" type="button" data-filter="attention" aria-pressed="false">Needs attention <span data-count="attention">0</span></button>
             </div>
 
@@ -341,8 +433,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </footer>
 
 <script src="assets/scripts.min.js?v=1" defer></script>
-<script src="assets/js/sw-register.js?v=1" defer></script><script src="assets/js/call-tracking.js?v=1" defer></script><script src="assets/js/motion.js?v=5" defer></script>
-<script src="assets/js/followup-desk.js?v=5" defer></script>
+<script src="assets/js/sw-register.js?v=1" defer></script><script src="assets/js/call-tracking.js?v=2" defer></script><script src="assets/js/motion.js?v=5" defer></script>
+<script src="assets/js/followup-desk.js?v=6" defer></script>
 <!-- Start of HubSpot Embed Code -->
   <script type="text/javascript" id="hs-script-loader" async defer src="//js-na2.hs-scripts.com/246993365.js"></script>
 <!-- End of HubSpot Embed Code -->

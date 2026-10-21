@@ -7,12 +7,11 @@
    reused (moved, not cloned) so values and names always stay in sync with
    the DOM.
 
-   On failure it submits natively ONLY if the form carries an action pointing
-   somewhere off this page -- add action="https://formspree.io/f/<id>" to the
-   five quote forms to turn that safety net on. With no action, a native
-   submit posts to the static page itself and the lead disappears, so instead
-   the customer is kept on the page and handed their own request with a phone
-   number and a prefilled email. */
+   On API failure it submits natively only when the form has an action that
+   leaves this page. The five quote forms point to the existing Formspree form
+   (maqrkdvg); keep that action in sync with the Formspree setup below. If no
+   external action is available, the customer stays on the page with their
+   answers intact and gets a phone number plus a prefilled email. */
 
 (function () {
   'use strict';
@@ -946,11 +945,11 @@
         // The token was consumed by the failed attempt; issue a fresh one for the retry.
         resetTurnstile();
         // 422 is the customer's to fix, so it falls through to the message
-        // below. Everything else is ours -- API down, verification refused,
-        // an unhandled 500, or a 502 because the mail provider refused the
-        // send -- and a lead is worth more than a tidy error, so pass it to
-        // the fallback rather than losing it.
-        if (e && (e.status === 503 || e.status === 403 || e.status >= 500)) {
+        // below. Unreachable/malformed API responses, auth/refusal/missing
+        // route errors, and server failures are ours; try the external form
+        // action instead of making the customer re-enter their request.
+        var status = e && typeof e.status === 'number' ? e.status : 0;
+        if (status === 0 || status === 401 || status === 403 || status === 404 || status >= 500) {
           nativeFallback(payload);
           return;
         }

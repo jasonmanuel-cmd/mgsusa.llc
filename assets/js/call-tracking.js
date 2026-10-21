@@ -32,12 +32,12 @@
   function sourceOf(el) {
     if (el.closest('.mobile-call-fab')) return 'sticky_mobile_button';
     if (el.closest('.utility')) return 'utility_bar';
-    if (el.closest('.site-header')) return 'header';
     if (el.closest('.mobile-nav')) return 'mobile_nav';
-    if (el.closest('.inner-hero, .hero-home, .hero-actions')) return 'hero';
+    if (el.closest('.site-header')) return 'header';
     if (el.closest('.final-cta')) return 'final_cta';
-    if (el.closest('footer')) return 'footer';
     if (el.closest('.emergency-band-inline, .emergency-actions')) return 'emergency_band';
+    if (el.closest('.inner-hero, .hero-home')) return 'hero';
+    if (el.closest('footer')) return 'footer';
     return 'content';
   }
 
@@ -45,16 +45,20 @@
     return String(href || '').replace(/^tel:/i, '').replace(/[^0-9+]/g, '');
   }
 
-  /* Sent to every analytics layer that happens to be present. They are checked
-     independently rather than as a chain: whichever ones load, all of them get
-     it, and a thrown error in one cannot stop the others. */
+  /* Use exactly one GA4/GTM delivery path. When gtag is present it already
+     queues the event for Google's tag runtime; also pushing a custom dataLayer
+     event can make GTM send a second copy. A GTM-only page gets the custom
+     event as a fallback. Other analytics providers remain independent. */
   function send(params) {
-    try { if (window.gtag) window.gtag('event', EVENT, params); } catch (e) {}
-    try {
-      if (window.dataLayer && window.dataLayer.push) {
-        window.dataLayer.push(Object.assign({ event: EVENT }, params));
-      }
-    } catch (e) {}
+    if (window.gtag) {
+      try { window.gtag('event', EVENT, params); } catch (e) {}
+    } else {
+      try {
+        if (window.dataLayer && window.dataLayer.push) {
+          window.dataLayer.push(Object.assign({ event: EVENT }, params));
+        }
+      } catch (e) {}
+    }
     try { if (window.va) window.va('event', { name: EVENT, data: params }); } catch (e) {}
     try {
       if (window.sa_event) window.sa_event(EVENT, params);

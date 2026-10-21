@@ -137,6 +137,9 @@ module.exports = async function handler(req, res) {
     status: 'sent',
     rating: null,
     comments: null,
+    reviewLinkSentAt: null,
+    feedbackAlertStatus: 'not-needed',
+    feedbackAlertedAt: null,
     createdAt: now,
     emailedAt: null,
     ratedAt: null
