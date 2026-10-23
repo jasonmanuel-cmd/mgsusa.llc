@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en" data-resolution="landscape">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="gsap.min.js"></script>
+    <style>
+      /* Inter is vendored: fonts.googleapis.com is refused by this container's
+         egress proxy, and a webfont that 404s renders the whole video in a
+         fallback face that looks nothing like the site. */
+      @font-face { font-family: Inter; font-weight: 400; font-display: block;
+                   src: url(fonts/inter-latin-400-normal.woff2) format('woff2'); }
+      @font-face { font-family: Inter; font-weight: 700; font-display: block;
+                   src: url(fonts/inter-latin-700-normal.woff2) format('woff2'); }
+      @font-face { font-family: Inter; font-weight: 800; font-display: block;
+                   src: url(fonts/inter-latin-800-normal.woff2) format('woff2'); }
+
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+
+      :root {
+        /* Straight from assets/design-tokens.css. #E63946 is for fills and
+           large text only -- it fails AA as small text -- so every small label
+           below uses #D62828 or paper. */
+        --brand: #E63946;
+        --brand-hover: #D62828;
+        --ink: #0a0a0a;
+        --paper: #f4f4f5;
+        --muted: #9aa3a7;
+      }
+
+      html, body {
+        width: 1920px; height: 1080px; overflow: hidden;
+        background: var(--ink);
+      }
+      #root { width: 100%; height: 100%; position: relative;
+              font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+              background: var(--ink); }
+
+      .clip { position: absolute; inset: 0; opacity: 0; }
+
+      /* ---- shared scene layout: copy left, photograph right ---- */
+      .scene { display: grid; grid-template-columns: 900px 1fr;
+               align-items: center; gap: 90px; padding: 0 130px; height: 100%; }
+
+      .eyebrow { display: flex; align-items: center; gap: 18px;
+                 font-size: 23px; font-weight: 700; letter-spacing: .18em;
+                 text-transform: uppercase; color: var(--brand-hover); }
+      .eyebrow::before { content: ""; width: 54px; height: 3px;
+                         background: var(--brand); display: block; }
+
+      h2 { font-size: 78px; font-weight: 800; line-height: 1.04;
+           letter-spacing: -.035em; color: var(--paper); margin-top: 28px; }
+      .body { font-size: 32px; line-height: 1.5; color: var(--muted);
+              margin-top: 30px; max-width: 760px; }
+
+      .shot { position: relative; width: 100%; height: 760px;
+              border-radius: 10px; overflow: hidden; background: #141414; }
+      .shot img { width: 100%; height: 100%; object-fit: cover;
+                  transform-origin: center; }
+      /* A hairline edge so a dark photograph still reads as a panel against
+         a near-black background rather than bleeding into it. */
+      .shot::after { content: ""; position: absolute; inset: 0;
+                     border: 1px solid rgba(244,244,245,.14); border-radius: 10px; }
+
+      /* ---- open and end cards ---- */
+      .card { display: flex; flex-direction: column; align-items: center;
+              justify-content: center; height: 100%; text-align: center; }
+      .rule { width: 110px; height: 4px; background: var(--brand); }
+      .mark { font-size: 96px; font-weight: 800; letter-spacing: -.04em;
+              color: var(--paper); line-height: 1.05; }
+      .sub { font-size: 34px; color: var(--muted); margin-top: 26px;
+             letter-spacing: .01em; }
+      .logo { width: 420px; height: auto; display: block;
+              border-radius: 6px; }
+      .phone { font-size: 92px; font-weight: 800; color: var(--paper);
+               letter-spacing: -.03em; }
+      .site { font-size: 44px; font-weight: 700; color: var(--brand);
+              letter-spacing: .01em; margin-top: 10px; }
+      .scope { font-size: 25px; color: var(--muted); margin-top: 34px;
+               letter-spacing: .04em; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="30"
+         data-width="1920" data-height="1080" data-fps="30">
+
+      <!-- 0.0 – 4.2  open -->
+      <section class="clip" id="s0" data-start="0" data-duration="4.2" data-track-index="0">
+        <div class="card">
+          <div class="rule" id="s0-rule"></div>
+          <div class="mark" id="s0-mark" style="margin-top:34px">Architectural glass,<br />done properly.</div>
+          <div class="sub" id="s0-sub">San&nbsp;Antonio &amp; Boerne, Texas &middot; Since 2004</div>
+        </div>
+      </section>
+
+      <!-- 4.2 – 9.2  residential -->
+      <section class="clip" id="s1" data-start="4.2" data-duration="5" data-track-index="0">
+        <div class="scene">
+          <div>
+            <p class="eyebrow">Residential</p>
+            <h2>Shower enclosures,<br />mirrors and glass.</h2>
+            <p class="body">Frameless and custom enclosures, mirrors cut to the wall, and
+              replacement window glass for homes across the Hill Country.</p>
+          </div>
+          <div class="shot" data-layout-allow-overflow><img id="s1-img" src="img/Residential8.webp"
+            alt="Sliding glass shower with brushed-gold hardware" /></div>
+        </div>
+      </section>
+
+      <!-- 9.2 – 14.2  commercial -->
+      <section class="clip" id="s2" data-start="9.2" data-duration="5" data-track-index="0">
+        <div class="scene">
+          <div>
+            <p class="eyebrow">Commercial</p>
+            <h2>Storefronts and<br />architectural glazing.</h2>
+            <p class="body">Customer-facing glass specified for the job: tempered and
+              laminated storefront systems, entrances and doors that work all day.</p>
+          </div>
+          <div class="shot" data-layout-allow-overflow><img id="s2-img" src="img/Storefront6.webp"
+            alt="Retail center storefront glazing" /></div>
+        </div>
+      </section>
+
+      <!-- 14.2 – 18.9  interiors -->
+      <section class="clip" id="s3" data-start="14.2" data-duration="4.7" data-track-index="0">
+        <div class="scene">
+          <div>
+            <p class="eyebrow">Interiors</p>
+            <h2>Partitions and<br />glass office fronts.</h2>
+            <p class="body">Clear partitions that divide a floor without closing it in,
+              measured and fitted around a working building.</p>
+          </div>
+          <div class="shot" data-layout-allow-overflow><img id="s3-img" src="img/Commercial12.webp"
+            alt="Interior office partitions in clear glass" /></div>
+        </div>
+      </section>
+
+      <!-- 18.9 – 23.1  railings -->
+      <section class="clip" id="s4" data-start="18.9" data-duration="4.2" data-track-index="0">
+        <div class="scene">
+          <div>
+            <p class="eyebrow">Glass railings</p>
+            <h2>Guards that keep<br />the view.</h2>
+            <p class="body">Laminated glass balustrades for stairs, balconies and
+              mezzanines &mdash; a structural element first, a design choice second.</p>
+          </div>
+          <div class="shot" data-layout-allow-overflow><img id="s4-img" src="img/Stairs1.webp"
+            alt="Glass stair railing with wood handrail" /></div>
+        </div>
+      </section>
+
+      <!-- 23.1 – 26.6  emergency -->
+      <section class="clip" id="s5" data-start="23.1" data-duration="3.5" data-track-index="0">
+        <div class="scene">
+          <div>
+            <p class="eyebrow">24/7 emergency</p>
+            <h2>Boarded tonight.<br />Glazed after.</h2>
+            <p class="body">Broken glass is secured first so the property is safe, then
+              measured and replaced. Answered around the clock.</p>
+          </div>
+          <div class="shot" data-layout-allow-overflow><img id="s5-img" src="img/Emergency1.webp"
+            alt="Boarded opening after glass breakage" /></div>
+        </div>
+      </section>
+
+      <!-- 26.6 – 30.0  end card -->
+      <section class="clip" id="s6" data-start="26.6" data-duration="3.4" data-track-index="0">
+        <div class="card">
+          <img class="logo" id="s6-logo" src="img/logo.jpg" alt="Master Glass Solutions" />
+          <div class="phone" id="s6-phone" style="margin-top:44px">210-370-3700</div>
+          <div class="site" id="s6-site">mgsusa.llc</div>
+          <div class="scope" id="s6-scope">Buildings only &mdash; no auto glass</div>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      /* Everything is driven off one paused timeline. HyperFrames seeks it
+         frame by frame, so no CSS animation or transition may be used -- only
+         what GSAP has written onto the element at that exact time. */
+      const tl = gsap.timeline({ paused: true });
+
+      const SCENES = [
+        { id: '#s0', at: 0,    dur: 4.2 },
+        { id: '#s1', at: 4.2,  dur: 5   },
+        { id: '#s2', at: 9.2,  dur: 5   },
+        { id: '#s3', at: 14.2, dur: 4.7 },
+        { id: '#s4', at: 18.9, dur: 4.2 },
+        { id: '#s5', at: 23.1, dur: 3.5 },
+        { id: '#s6', at: 26.6, dur: 3.4 },
+      ];
+
+      const FADE = 0.45;
+
+      SCENES.forEach(function (s, i) {
+        // Hold each scene fully opaque for its whole span, cross-fading at the
+        // seams. The last scene does not fade out -- the video ends on it.
+        tl.fromTo(s.id, { opacity: 0 }, { opacity: 1, duration: FADE, ease: 'power2.out' }, s.at);
+        if (i < SCENES.length - 1) {
+          tl.to(s.id, { opacity: 0, duration: FADE, ease: 'power2.in' }, s.at + s.dur - FADE);
+        }
+      });
+
+      // Copy rises in behind the fade on each content scene.
+      ['#s1', '#s2', '#s3', '#s4', '#s5'].forEach(function (id, i) {
+        const at = SCENES[i + 1].at;
+        tl.fromTo(id + ' .eyebrow', { opacity: 0, x: -26 },
+                  { opacity: 1, x: 0, duration: .6, ease: 'power3.out' }, at + .08);
+        tl.fromTo(id + ' h2', { opacity: 0, y: 34 },
+                  { opacity: 1, y: 0, duration: .7, ease: 'power3.out' }, at + .18);
+        tl.fromTo(id + ' .body', { opacity: 0, y: 24 },
+                  { opacity: 1, y: 0, duration: .7, ease: 'power3.out' }, at + .3);
+      });
+
+      // Slow push on each photograph. Alternating direction stops six scenes
+      // of the same move reading as a single long drift.
+      [['#s1-img', 1.06, 1.0], ['#s2-img', 1.0, 1.07], ['#s3-img', 1.05, 1.0],
+       ['#s4-img', 1.0, 1.06], ['#s5-img', 1.05, 1.0]].forEach(function (p, i) {
+        const s = SCENES[i + 1];
+        tl.fromTo(p[0], { scale: p[1] }, { scale: p[2], duration: s.dur, ease: 'none' }, s.at);
+      });
+
+      // Open card.
+      tl.fromTo('#s0-rule', { scaleX: 0 }, { scaleX: 1, duration: .7, ease: 'power3.out' }, .15);
+      tl.fromTo('#s0-mark', { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: .9, ease: 'power3.out' }, .3);
+      tl.fromTo('#s0-sub',  { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: .8, ease: 'power3.out' }, .6);
+
+      // End card.
+      tl.fromTo('#s6-logo',  { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: .7, ease: 'power3.out' }, 26.75);
+      tl.fromTo('#s6-phone', { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: .7, ease: 'power3.out' }, 26.95);
+      tl.fromTo('#s6-site',  { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: .7, ease: 'power3.out' }, 27.1);
+      tl.fromTo('#s6-scope', { opacity: 0 },        { opacity: 1, duration: .7, ease: 'power2.out' }, 27.45);
+
+      window.__timelines['main'] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>
