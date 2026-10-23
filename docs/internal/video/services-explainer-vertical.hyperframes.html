@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="gsap.min.js"></script>
+    <style>
+      /* Vendored: fonts.googleapis.com and cdn.jsdelivr.net are both refused
+         by this container's egress proxy. */
+      @font-face { font-family: Inter; font-weight: 400; font-display: block;
+                   src: url(fonts/inter-latin-400-normal.woff2) format('woff2'); }
+      @font-face { font-family: Inter; font-weight: 700; font-display: block;
+                   src: url(fonts/inter-latin-700-normal.woff2) format('woff2'); }
+      @font-face { font-family: Inter; font-weight: 800; font-display: block;
+                   src: url(fonts/inter-latin-800-normal.woff2) format('woff2'); }
+
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      :root { --brand: #E63946; --brand-hover: #D62828;
+              --ink: #0a0a0a; --paper: #f4f4f5; --muted: #9aa3a7; }
+
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: var(--ink); }
+      #root { width: 100%; height: 100%; position: relative; background: var(--ink);
+              font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+      .clip { position: absolute; inset: 0; opacity: 0; }
+
+      /* Stacked, not a reframe: a 16:9 split layout rotated into 9:16 leaves
+         the photograph a letterbox strip. Photo on top, copy beneath. */
+      .scene { display: flex; flex-direction: column; height: 100%;
+               justify-content: center; padding: 120px 80px 150px; }
+      .shot { position: relative; width: 100%; height: 1000px; flex: none;
+              border-radius: 12px; overflow: hidden; background: #141414; }
+      .shot img { width: 100%; height: 100%; object-fit: cover; transform-origin: center; }
+      .shot::after { content: ""; position: absolute; inset: 0;
+                     border: 1px solid rgba(244,244,245,.14); border-radius: 12px; }
+
+      .copy { margin-top: 76px; }
+      .eyebrow { display: flex; align-items: center; gap: 18px;
+                 font-size: 30px; font-weight: 700; letter-spacing: .18em;
+                 text-transform: uppercase; color: var(--brand-hover); }
+      .eyebrow::before { content: ""; width: 58px; height: 4px;
+                         background: var(--brand); display: block; }
+      h2 { font-size: 92px; font-weight: 800; line-height: 1.04;
+           letter-spacing: -.035em; color: var(--paper); margin-top: 30px; }
+      .body { font-size: 38px; line-height: 1.5; color: var(--muted); margin-top: 32px; }
+
+      .card { display: flex; flex-direction: column; align-items: center;
+              justify-content: center; height: 100%; text-align: center; padding: 0 90px; }
+      .rule { width: 130px; height: 5px; background: var(--brand); }
+      .mark { font-size: 108px; font-weight: 800; letter-spacing: -.04em;
+              color: var(--paper); line-height: 1.06; margin-top: 44px; }
+      .sub { font-size: 42px; color: var(--muted); margin-top: 36px; line-height: 1.4; }
+      .logo { width: 520px; height: auto; display: block; border-radius: 8px; }
+      .phone { font-size: 110px; font-weight: 800; color: var(--paper);
+               letter-spacing: -.03em; margin-top: 60px; }
+      .site { font-size: 56px; font-weight: 700; color: var(--brand); margin-top: 16px; }
+      .scope { font-size: 32px; color: var(--muted); margin-top: 46px; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="29.14"
+         data-width="1080" data-height="1920" data-fps="30">
+
+      <section class="clip" id="s0" data-start="0" data-duration="5.55" data-track-index="0">
+        <div class="card">
+          <div class="rule" id="s0-rule"></div>
+          <div class="mark" id="s0-mark">Architectural<br />glass,<br />done properly.</div>
+          <div class="sub" id="s0-sub">San&nbsp;Antonio &amp; Boerne, Texas<br />Since 2004</div>
+        </div>
+      </section>
+
+      <section class="clip" id="s1" data-start="5.55" data-duration="5.81" data-track-index="0">
+        <div class="scene">
+          <div class="shot" data-layout-allow-overflow><img id="s1-img" src="img/Residential8.webp"
+            alt="Sliding glass shower with brushed-gold hardware" /></div>
+          <div class="copy">
+            <p class="eyebrow">Residential</p>
+            <h2>Showers, mirrors<br />and glass.</h2>
+            <p class="body">Frameless enclosures, mirrors cut to the wall,
+              replacement window glass.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="clip" id="s2" data-start="11.36" data-duration="4.01" data-track-index="0">
+        <div class="scene">
+          <div class="shot" data-layout-allow-overflow><img id="s2-img" src="img/Storefront6.webp"
+            alt="Retail center storefront glazing" /></div>
+          <div class="copy">
+            <p class="eyebrow">Commercial</p>
+            <h2>Storefronts<br />and entrances.</h2>
+            <p class="body">Tempered and laminated glass, built to work all day.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="clip" id="s3" data-start="15.37" data-duration="5.59" data-track-index="0">
+        <div class="scene">
+          <div class="shot" data-layout-allow-overflow><img id="s3-img" src="img/Stairs1.webp"
+            alt="Glass stair railing with wood handrail" /></div>
+          <div class="copy">
+            <p class="eyebrow">Glass railings</p>
+            <h2>Guards that<br />keep the view.</h2>
+            <p class="body">Laminated balustrades for stairs, balconies and mezzanines.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="clip" id="s4" data-start="20.96" data-duration="3.59" data-track-index="0">
+        <div class="scene">
+          <div class="shot" data-layout-allow-overflow><img id="s4-img" src="img/Emergency1.webp"
+            alt="Boarded opening after glass breakage" /></div>
+          <div class="copy">
+            <p class="eyebrow">24/7 emergency</p>
+            <h2>Boarded tonight.<br />Glazed after.</h2>
+            <p class="body">Secured first so the property is safe. Answered any hour.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="clip" id="s5" data-start="24.55" data-duration="4.59" data-track-index="0">
+        <div class="card">
+          <img class="logo" id="s5-logo" src="img/logo.jpg" alt="Master Glass Solutions" />
+          <div class="phone" id="s5-phone">210-370-3700</div>
+          <div class="site" id="s5-site">mgsusa.llc</div>
+          <div class="scope" id="s5-scope">Buildings only &mdash; no auto glass</div>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      const tl = gsap.timeline({ paused: true });
+      const SCENES = [
+        { id: '#s0', at: 0,     dur: 5.55 },
+        { id: '#s1', at: 5.55,  dur: 5.81 },
+        { id: '#s2', at: 11.36, dur: 4.01 },
+        { id: '#s3', at: 15.37, dur: 5.59 },
+        { id: '#s4', at: 20.96, dur: 3.59 },
+        { id: '#s5', at: 24.55, dur: 4.59 },
+      ];
+      const FADE = 0.45;
+
+      SCENES.forEach(function (s, i) {
+        tl.fromTo(s.id, { opacity: 0 }, { opacity: 1, duration: FADE, ease: 'power2.out' }, s.at);
+        if (i < SCENES.length - 1) {
+          tl.to(s.id, { opacity: 0, duration: FADE, ease: 'power2.in' }, s.at + s.dur - FADE);
+        }
+      });
+
+      ['#s1', '#s2', '#s3', '#s4'].forEach(function (id, i) {
+        const at = SCENES[i + 1].at;
+        tl.fromTo(id + ' .eyebrow', { opacity: 0, x: -26 },
+                  { opacity: 1, x: 0, duration: .6, ease: 'power3.out' }, at + .08);
+        tl.fromTo(id + ' h2', { opacity: 0, y: 36 },
+                  { opacity: 1, y: 0, duration: .7, ease: 'power3.out' }, at + .18);
+        tl.fromTo(id + ' .body', { opacity: 0, y: 26 },
+                  { opacity: 1, y: 0, duration: .7, ease: 'power3.out' }, at + .3);
+      });
+
+      [['#s1-img', 1.06, 1.0], ['#s2-img', 1.0, 1.06],
+       ['#s3-img', 1.05, 1.0], ['#s4-img', 1.0, 1.05]].forEach(function (p, i) {
+        const s = SCENES[i + 1];
+        tl.fromTo(p[0], { scale: p[1] }, { scale: p[2], duration: s.dur, ease: 'none' }, s.at);
+      });
+
+      tl.fromTo('#s0-rule', { scaleX: 0 }, { scaleX: 1, duration: .7, ease: 'power3.out' }, .15);
+      tl.fromTo('#s0-mark', { opacity: 0, y: 44 }, { opacity: 1, y: 0, duration: .9, ease: 'power3.out' }, .3);
+      tl.fromTo('#s0-sub',  { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: .8, ease: 'power3.out' }, .6);
+
+      tl.fromTo('#s5-logo',  { opacity: 0, y: 32 }, { opacity: 1, y: 0, duration: .7, ease: 'power3.out' }, 24.7);
+      tl.fromTo('#s5-phone', { opacity: 0, y: 28 }, { opacity: 1, y: 0, duration: .7, ease: 'power3.out' }, 24.9);
+      tl.fromTo('#s5-site',  { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: .7, ease: 'power3.out' }, 25.05);
+      tl.fromTo('#s5-scope', { opacity: 0 },        { opacity: 1, duration: .7, ease: 'power2.out' }, 25.4);
+
+      window.__timelines['main'] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>
