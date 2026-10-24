@@ -199,8 +199,19 @@ lead" rule below, and it invites someone to re-fix what is already fixed.)
 ## Conventions
 
 - **CSS:** edit `assets/design-tokens.css` (source of truth) and
-  `assets/styles.css`, then re-inline tokens and regenerate `assets/styles.min.css`
-  — that's what pages actually load. Never patch the `.min` file directly.
+  `assets/styles.css`, then regenerate `assets/styles.min.css` with
+  `tools/build_styles_min.py --apply` — that's what pages actually load. Never
+  patch the `.min` file directly. **Until 2026-10-24 that tool did not exist**,
+  so the only way to obey this instruction was to hand-edit both files and hope
+  they stayed in step; they happened to, which is luck, not process. The
+  difference between the two files is comment-stripping and whitespace, nothing
+  more. Two things the tool is careful about, both learned by getting them
+  wrong: **declaration values are copied through verbatim**, because a custom
+  property keeps its token stream as written (`--font-sans:Inter,ui-sans-serif`
+  and `--font-sans: Inter, ui-sans-serif` are different strings to the CSSOM)
+  and `calc(100% - 32px)` needs its spaces; and it **verifies by parsing both
+  files in Chromium and diffing the rule lists**, not by diffing text. Text
+  only proves the script did as it was told.
 - **Bump the service worker on any CSS or JS change.** `service-worker.js`
   caches by version; raise `CACHE_NAME` *and* `ASSETS_CACHE` together. HTML is
   network-first, so skipping this hands returning visitors new markup with an
@@ -288,6 +299,40 @@ lead" rule below, and it invites someone to re-fix what is already fixed.)
   with `tools/motion-inview.cjs` (measures in-viewport, as a visitor sees it);
   `tools/motion-check.cjs` covers the JS-off and reduced-motion cases, where
   nothing may ever be hidden.
+
+  **"Purely additive" was not true, and it cost every inner page its hero
+  photograph.** `motion.css` lifted the content above its decorative wash with
+  `.inner-hero > *, .final-cta > * { position: relative; z-index: 1 }`. That
+  `*` also caught `.inner-hero-image`, which must stay `position: absolute` to
+  fill the hero. Forced into flow it becomes a flex item of an
+  `align-items: end` container whose only content is an absolutely positioned
+  `<img>` — no in-flow content, so it computes 0×0, and the `<img>` sized
+  `inset: 0` against it collapses too. All 58 `.inner-hero` pages downloaded
+  their hero photo at `fetchpriority="high"` and painted nothing; the heroes
+  looked like a deliberate flat-black design. `styles.css` carries the same
+  stacking idea on `.section > *` and excludes the four image wrappers by name
+  — `.hero-image`, `.hero-scrim`, `.emergency-image`, `.inner-hero-image`. The
+  motion copy was written without them. **Keep the two exclusion lists
+  identical.**
+
+  Three things worth keeping from it. The bug lived inside
+  `@media (prefers-reduced-motion: no-preference)`, so the hero rendered
+  *correctly* for anyone who had asked for reduced motion — which is the one
+  state a careless check is most likely to run in, so check all three.
+  The wash itself had been designed against the bug it caused: its comment
+  said these heroes are "already solid --ink", which was only true because the
+  photo was not painting. And restoring the photo exposed a contrast failure
+  that had been masked for as long as the bug existed — the scrim runs
+  left-to-right, which works while the copy sits in the left half of a wide
+  hero and fails below ~900px where the copy spans the width and every line
+  ends over the 20%-alpha tail. Body copy measured 1.6:1 to 4.3:1 against AA's
+  4.5 on ten pages at 390px. There is now a vertical scrim under
+  `@media(max-width:900px)`. **Fixing a rendering bug can uncover a second
+  problem that only existed in theory while nothing was drawn — re-run the
+  contrast check after anything starts painting that was not painting before,
+  and measure under the glyphs (`Range.getClientRects()`), not the element
+  box: a block `<p>` spans the whole column while its text occupies half of
+  it, and sampling the empty remainder reported nine false failures.**
 - **Review markup must match what the page shows.** `data/reviews-baseline.js`
   holds the rating and count the JSON-LD declares, and both review endpoints
   read from it, so the visible block and the structured data agree even when

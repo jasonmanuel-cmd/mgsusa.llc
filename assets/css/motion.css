@@ -90,13 +90,22 @@
 /* ---------------------------------------------------------------- *
  * Depth on the dark sections
  *
- * .inner-hero and .final-cta are already solid --ink. A pair of very slow,
- * very low-contrast radial washes gives them some life without touching the
- * type sitting on top. Both are ::before/::after on existing elements, so no
- * markup changes and nothing intercepts a click.
+ * .final-cta is solid --ink. A pair of very slow, very low-contrast radial
+ * washes gives it some life without touching the type sitting on top. It is
+ * an ::after on an existing element, so no markup changes and nothing
+ * intercepts a click.
+ *
+ * `.inner-hero` used to be in here too, on the premise that it is "already
+ * solid --ink". It is not: all 58 of them carry a photograph. They *looked*
+ * solid --ink because the stacking rule that came with this wash was itself
+ * blanking the photo (see below), so the effect was designed against the bug
+ * it had caused. With the photo painting again the wash sits entirely behind
+ * an opaque, full-bleed image and draws nothing, and in front of one it would
+ * be coloured gradients drifting over a photograph -- which the rule this
+ * file is built on forbids: the motion layer changes no colour. So the hero
+ * is out of the wash. Its motion is the slow scale on the photograph below.
  * ---------------------------------------------------------------- */
 @media (prefers-reduced-motion: no-preference) {
-  .inner-hero::after,
   .final-cta::after {
     content: "";
     position: absolute;
@@ -108,8 +117,26 @@
       radial-gradient(34% 40% at 78% 68%, rgba(70,130,200,.13), transparent 72%);
     animation: mgs-drift 26s ease-in-out infinite alternate;
   }
-  .inner-hero > *,
-  .final-cta > * { position: relative; z-index: 1; }
+  /* Lift the content above the wash -- but never an image wrapper, which has
+     to keep `position: absolute` to fill its section.
+
+     This rule read `.inner-hero > *, .final-cta > *` and that is what blanked
+     the hero photograph on all 58 pages carrying an `.inner-hero`. Forced
+     in-flow, `.inner-hero-image` becomes a flex item of an `align-items: end`
+     flex container whose only content is an absolutely positioned `<img>`, so
+     it has no in-flow content, computes 0x0, and the `<img>` sized `inset: 0`
+     against it collapses to 0x0 as well. The photo was downloaded at
+     `fetchpriority="high"` on every page load and painted nothing.
+
+     `styles.css` carries this same stacking idea on `.section > *` and
+     already excludes these four wrappers by name; this copy was written
+     without them. Keep the two lists identical -- `.final-cta` has no image
+     wrapper today, and the exclusion is here so that adding one later cannot
+     reintroduce this. */
+  .final-cta > *:not(.hero-image):not(.hero-scrim):not(.emergency-image):not(.inner-hero-image) {
+    position: relative;
+    z-index: 1;
+  }
 }
 @keyframes mgs-drift {
   from { transform: translate3d(-2%, -1%, 0) scale(1); }
