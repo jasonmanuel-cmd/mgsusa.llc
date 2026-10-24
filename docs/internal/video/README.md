@@ -47,6 +47,12 @@ Voice is **Kokoro-82M `af_heart` at speed 1.0**, run locally and offline
 through `hyperframes tts`. Four voices were auditioned on the opening line:
 `af_heart` 5.14s, `am_adam` 5.12s, `af_nova` 5.57s, `am_michael` 6.19s.
 
+**`af_heart` is settled — the owner listened to all four and chose it on
+2026-10-24.** That is worth recording because this container cannot hear
+audio: the shortlist was built on measured pace alone, and a future session
+comparing durations would have no reason not to re-open a question a person
+has already answered by ear. Do not re-audition without being asked.
+
 ```bash
 HYPERFRAMES_PYTHON=/usr/local/bin/python3 \
   hyperframes tts --voice af_heart --speed 1.0 -o v0.wav \
