@@ -57,18 +57,18 @@
     </style>
   </head>
   <body>
-    <div id="root" data-composition-id="main" data-start="0" data-duration="29.14"
+    <div id="root" data-composition-id="main" data-start="0" data-duration="29.45"
          data-width="1080" data-height="1920" data-fps="30">
 
-      <section class="clip" id="s0" data-start="0" data-duration="5.55" data-track-index="0">
+      <section class="clip" id="s0" data-start="0.0" data-duration="5.79" data-track-index="0">
         <div class="card">
           <div class="rule" id="s0-rule"></div>
           <div class="mark" id="s0-mark">Architectural<br />glass,<br />done properly.</div>
-          <div class="sub" id="s0-sub">San&nbsp;Antonio &amp; Boerne, Texas<br />Since 2004</div>
+          <div class="sub" id="s0-sub">San&nbsp;Antonio, Texas<br />Since 2004</div>
         </div>
       </section>
 
-      <section class="clip" id="s1" data-start="5.55" data-duration="5.81" data-track-index="0">
+      <section class="clip" id="s1" data-start="5.79" data-duration="6.41" data-track-index="0">
         <div class="scene">
           <div class="shot" data-layout-allow-overflow><img id="s1-img" src="img/Residential8.webp"
             alt="Sliding glass shower with brushed-gold hardware" /></div>
@@ -81,7 +81,7 @@
         </div>
       </section>
 
-      <section class="clip" id="s2" data-start="11.36" data-duration="4.01" data-track-index="0">
+      <section class="clip" id="s2" data-start="12.2" data-duration="5.47" data-track-index="0">
         <div class="scene">
           <div class="shot" data-layout-allow-overflow><img id="s2-img" src="img/Storefront6.webp"
             alt="Retail center storefront glazing" /></div>
@@ -93,7 +93,7 @@
         </div>
       </section>
 
-      <section class="clip" id="s3" data-start="15.37" data-duration="5.59" data-track-index="0">
+      <section class="clip" id="s3" data-start="17.67" data-duration="4.6" data-track-index="0">
         <div class="scene">
           <div class="shot" data-layout-allow-overflow><img id="s3-img" src="img/Stairs1.webp"
             alt="Glass stair railing with wood handrail" /></div>
@@ -105,7 +105,7 @@
         </div>
       </section>
 
-      <section class="clip" id="s4" data-start="20.96" data-duration="3.59" data-track-index="0">
+      <section class="clip" id="s4" data-start="22.27" data-duration="4.06" data-track-index="0">
         <div class="scene">
           <div class="shot" data-layout-allow-overflow><img id="s4-img" src="img/Emergency1.webp"
             alt="Boarded opening after glass breakage" /></div>
@@ -117,12 +117,12 @@
         </div>
       </section>
 
-      <section class="clip" id="s5" data-start="24.55" data-duration="4.59" data-track-index="0">
+      <section class="clip" id="s5" data-start="26.33" data-duration="3.12" data-track-index="0">
         <div class="card">
           <img class="logo" id="s5-logo" src="img/logo.jpg" alt="Master Glass Solutions" />
           <div class="phone" id="s5-phone">210-370-3700</div>
           <div class="site" id="s5-site">mgsusa.llc</div>
-          <div class="scope" id="s5-scope">Buildings only &mdash; no auto glass</div>
+          
         </div>
       </section>
     </div>
@@ -130,12 +130,12 @@
     <script>
       const tl = gsap.timeline({ paused: true });
       const SCENES = [
-        { id: '#s0', at: 0,     dur: 5.55 },
-        { id: '#s1', at: 5.55,  dur: 5.81 },
-        { id: '#s2', at: 11.36, dur: 4.01 },
-        { id: '#s3', at: 15.37, dur: 5.59 },
-        { id: '#s4', at: 20.96, dur: 3.59 },
-        { id: '#s5', at: 24.55, dur: 4.59 },
+        { id: '#s0', at: 0.0, dur: 5.79 },
+        { id: '#s1', at: 5.79, dur: 6.41 },
+        { id: '#s2', at: 12.2, dur: 5.47 },
+        { id: '#s3', at: 17.67, dur: 4.6 },
+        { id: '#s4', at: 22.27, dur: 4.06 },
+        { id: '#s5', at: 26.33, dur: 3.12 },
       ];
       const FADE = 0.45;
 
@@ -166,11 +166,10 @@
       tl.fromTo('#s0-mark', { opacity: 0, y: 44 }, { opacity: 1, y: 0, duration: .9, ease: 'power3.out' }, .3);
       tl.fromTo('#s0-sub',  { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: .8, ease: 'power3.out' }, .6);
 
-      tl.fromTo('#s5-logo',  { opacity: 0, y: 32 }, { opacity: 1, y: 0, duration: .7, ease: 'power3.out' }, 24.7);
-      tl.fromTo('#s5-phone', { opacity: 0, y: 28 }, { opacity: 1, y: 0, duration: .7, ease: 'power3.out' }, 24.9);
-      tl.fromTo('#s5-site',  { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: .7, ease: 'power3.out' }, 25.05);
-      tl.fromTo('#s5-scope', { opacity: 0 },        { opacity: 1, duration: .7, ease: 'power2.out' }, 25.4);
-
+      tl.fromTo('#s5-logo',  { opacity: 0, y: 32 }, { opacity: 1, y: 0, duration: .7, ease: 'power3.out' }, 26.48);
+      tl.fromTo('#s5-phone', { opacity: 0, y: 28 }, { opacity: 1, y: 0, duration: .7, ease: 'power3.out' }, 26.68);
+      tl.fromTo('#s5-site',  { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: .7, ease: 'power3.out' }, 26.83);
+      
       window.__timelines['main'] = tl;
       tl.seek(0);
     </script>

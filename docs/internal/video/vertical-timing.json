@@ -1,53 +1,53 @@
 {
- "total": 29.14,
+ "total": 29.45,
  "scenes": [
   {
    "n": 0,
    "src": 0,
    "start": 0.0,
-   "dur": 5.55,
-   "audio_at": 0.45,
-   "speech": 4.65
+   "dur": 5.79,
+   "audio_at": 0.35,
+   "speech": 5.14
   },
   {
    "n": 1,
    "src": 1,
-   "start": 5.55,
-   "dur": 5.81,
-   "audio_at": 6.0,
-   "speech": 4.91
+   "start": 5.79,
+   "dur": 6.41,
+   "audio_at": 6.14,
+   "speech": 5.76
   },
   {
    "n": 2,
    "src": 2,
-   "start": 11.36,
-   "dur": 4.01,
-   "audio_at": 11.81,
-   "speech": 3.11
+   "start": 12.2,
+   "dur": 5.47,
+   "audio_at": 12.55,
+   "speech": 4.82
   },
   {
    "n": 3,
    "src": 4,
-   "start": 15.37,
-   "dur": 5.59,
-   "audio_at": 15.82,
-   "speech": 4.69
+   "start": 17.67,
+   "dur": 4.6,
+   "audio_at": 18.02,
+   "speech": 3.95
   },
   {
    "n": 4,
    "src": 5,
-   "start": 20.96,
-   "dur": 3.59,
-   "audio_at": 21.41,
-   "speech": 2.69
+   "start": 22.27,
+   "dur": 4.06,
+   "audio_at": 22.62,
+   "speech": 3.41
   },
   {
    "n": 5,
    "src": 6,
-   "start": 24.55,
-   "dur": 4.59,
-   "audio_at": 25.0,
-   "speech": 3.69
+   "start": 26.33,
+   "dur": 3.12,
+   "audio_at": 26.68,
+   "speech": 2.47
   }
  ]
 }

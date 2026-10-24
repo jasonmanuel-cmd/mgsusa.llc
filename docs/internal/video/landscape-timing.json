@@ -1,0 +1,54 @@
+{
+ "total": 36.14,
+ "scenes": [
+  {
+   "i": 0,
+   "start": 0.0,
+   "dur": 6.04,
+   "audio_at": 0.45,
+   "speech": 5.14
+  },
+  {
+   "i": 1,
+   "start": 6.04,
+   "dur": 6.66,
+   "audio_at": 6.49,
+   "speech": 5.76
+  },
+  {
+   "i": 2,
+   "start": 12.7,
+   "dur": 5.72,
+   "audio_at": 13.15,
+   "speech": 4.82
+  },
+  {
+   "i": 3,
+   "start": 18.42,
+   "dur": 5.19,
+   "audio_at": 18.87,
+   "speech": 4.29
+  },
+  {
+   "i": 4,
+   "start": 23.61,
+   "dur": 4.85,
+   "audio_at": 24.06,
+   "speech": 3.95
+  },
+  {
+   "i": 5,
+   "start": 28.46,
+   "dur": 4.31,
+   "audio_at": 28.91,
+   "speech": 3.41
+  },
+  {
+   "i": 6,
+   "start": 32.77,
+   "dur": 3.37,
+   "audio_at": 33.22,
+   "speech": 2.47
+  }
+ ]
+}

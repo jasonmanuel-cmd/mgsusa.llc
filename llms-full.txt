@@ -87,6 +87,10 @@ Master Glass Solutions pairs project-minded planning with the hands-on precision
 
 Meet the standard behind the work
 
+THIRTY-SIX SECONDS
+
+### What we actually do.
+
 START WITH YOUR PROJECT
 
 ### Choose one path. Get the right quote questions.
@@ -3434,5 +3438,5 @@ the summaries here are those pages’ own descriptions.
 
 ---
 
-Last updated: 2026-10-21
+Last updated: 2026-10-24
 Generated from the site by tools/build_llms_full.py — do not hand-edit below the Scope of Work section.
