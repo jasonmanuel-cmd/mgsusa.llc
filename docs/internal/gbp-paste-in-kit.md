@@ -106,16 +106,63 @@ get mojibake in the rendered profile.
 
 ---
 
-## 3. Service areas — add all 21
+## 3. Service areas — the nearest 20, not all 28
+
+**Revised 2026-10-25.** This section used to say "add all 21" and list the 21
+city pages that existed then. Two things are wrong with that now.
+
+**Google caps a profile at 20 service areas.** So "all of them" was never an
+instruction that could be followed — it was already one over the cap when it
+was written, and the site now has 28 city pages. Something has to be left out,
+and choosing deliberately beats letting Google's "suggested updates" choose.
+(The cap is widely reported rather than documented by Google; the dashboard
+settles it the moment you try to add a 21st.)
+
+**A service area and a city page are different instruments.** The profile's
+areas feed the map pack. A city page ranks organically on its own and does not
+need the profile to claim its town. So dropping Stockdale from the profile
+does not delete `/stockdale-tx` or cost it anything — the page keeps working.
+**Do not delete pages to match this list.**
+
+### Paste these 20
 
 ```
-San Antonio, Boerne, Alamo Heights, Leon Valley, Helotes, Converse, Schertz,
-Comfort, Timberwood Park, Canyon Lake, Wimberley, Blanco, New Braunfels,
-Seguin, La Vernia, Stockdale, Lakehills, Castroville, Lytle, Natalia, Somerset
+San Antonio, Stone Oak, Alamo Heights, Leon Valley, Helotes, Timberwood Park,
+Live Oak, Alamo Ranch, Converse, Bulverde, Selma, Fair Oaks Ranch,
+Garden Ridge, Schertz, Boerne, Somerset, Lakehills, Castroville,
+New Braunfels, Canyon Lake
 ```
 
-These match the 21 city pages on the site exactly. Keep the two lists in step —
-if a city is added to one, add it to the other.
+That is the 20 nearest towns to the office, every one of which has a page
+behind it. Straight-line distance from `4949 N Loop 1604 W`, computed from each
+page's own `Place` geo:
+
+| | mi | | mi | | mi | | mi |
+|---|---|---|---|---|---|---|---|
+| Stone Oak | 5.5 | Live Oak | 11.8 | Selma | 13.7 | Boerne | 20.1 |
+| Alamo Heights | 6.5 | Alamo Ranch | 12.7 | Fair Oaks Ranch | 14.1 | Somerset | 24.3 |
+| Leon Valley | 6.7 | Converse | 13.3 | Garden Ridge | 14.7 | Lakehills | 24.9 |
+| Helotes | 9.5 | Bulverde | 13.5 | Schertz | 15.8 | Castroville | 25.2 |
+| San Antonio | 9.7 | Timberwood Park | 9.8 | | | New Braunfels | 26.4 |
+| | | | | | | Canyon Lake | 27.1 |
+
+### The eight left off, and why
+
+Lytle 27.7 · La Vernia 28.9 · Natalia 32.4 · Seguin 34.1 · Comfort 36.0 ·
+Blanco 37.7 · Wimberley 39.9 · Stockdale 41.1
+
+All of them are further out than everything on the list, and the cut has to
+fall somewhere. Stockdale is 41 miles away with under 1,500 people; Stone Oak
+is 5.5 miles away, dense and affluent, and until this month had no page at all.
+That asymmetry is the whole reason the page set was rebuilt — see CLAUDE.md.
+Their pages stay live and keep ranking organically.
+
+### Keeping the three lists in step
+
+The city pages, `service-areas.html` and this list are three separate things
+and only the first two are automatic. If a town is added, add a page **and**
+decide whether it displaces one of the 20 here. The site may list more towns
+than the profile does; that is fine and expected now that there is a cap.
 
 ---
 
@@ -280,8 +327,15 @@ These are written for October–November; adjust the season when reusing.
 
 ## 8. Reviews
 
-76 reviews at 4.4 is a real asset and the thing most likely to move the map
-pack further. Two actions:
+**5 reviews averaging 5.0** (corrected 2026-10-20 — this section said "76
+reviews at 4.4" until then, a number that was in the site's `aggregateRating`
+on 54 pages and matched nothing on the profile). Five perfect reviews is a
+thin but clean base, and the thing most likely to move the map pack is simply
+having more of them. It also raises the stakes on everything else in this
+document: at five reviews, one angry customer is 17% of the rating, which is
+why no service gets advertised here that the company does not perform.
+
+Two actions:
 
 1. **Respond to the recent ones.** Thank by name, name the service, name the
    city — "Thanks David — glad the storefront in Schertz came out well."

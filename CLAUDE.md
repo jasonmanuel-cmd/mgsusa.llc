@@ -390,8 +390,23 @@ lead" rule below, and it invites someone to re-fix what is already fixed.)
   rather than in JSON, which a JSON-shaped search will never find. **Fix a
   published fact with a walk of the whole repo and two greps: one for the
   markup form, one for the prose form.** The only copies that keep the old
-  numbers are the narrative ones in this file and in
-  `data/reviews-baseline.js`, which exist to explain the correction.
+  numbers are the narrative ones in this file, in `data/reviews-baseline.js`
+  and in `docs/internal/citation-correction-request.md`, which exist to explain
+  the correction.
+
+  **It took a third pass, on 2026-10-25.** The whole-repo walk fixed the pages
+  and the published text files and still left six stale claims in
+  `docs/internal/` — in `SEO-checklist.md`, `MAPS-ANALYSIS-mgsusa-llc.md` and
+  `gbp-paste-in-kit.md`, which opens with "everything here is ready to paste
+  into the GBP dashboard". Worst was `citation-correction-request.md`, whose
+  table of *correct values* read `Rating | 4.4 from 5 Google reviews`: a
+  half-finished edit that had taken the count down to 5 and left the average
+  at 4.4, in the one document whose job is to tell other directories what is
+  true. The rating row is now gone rather than corrected — a rating is not NAP
+  data, directories do not want one from us, and a number that moves with the
+  next review has no business in a template that sits on disk for months.
+  **The lesson: `docs/internal/` is not documentation about the site, it is
+  instructions people act on. Sweep it like a page.**
 - **The address is whatever the Google Business Profile says, to the letter.**
   `4949 N Loop 1604 W Bldg 5 Suite 501, San Antonio, TX 78249`. The site read
   `4949 N Loop 1604 West, Suite 501` until 2026-10-20 — missing `Bldg 5`, and
@@ -405,6 +420,17 @@ lead" rule below, and it invites someone to re-fix what is already fixed.)
   do: it is the template for telling other directories the correct address, so
   a stale copy there propagates the error outward rather than just sitting
   there.
+- **The profile's service areas are capped at 20; the site has 28 city pages.**
+  Those two lists were meant to match exactly, and `gbp-paste-in-kit.md` said
+  "add all 21" — an instruction that was already one over the cap the day it
+  was written. They cannot match now and should not: a service area feeds the
+  map pack, a city page ranks organically on its own and needs nothing from the
+  profile. So the profile claims **the nearest 20**, and the eight beyond them
+  (Lytle, La Vernia, Natalia, Seguin, Comfort, Blanco, Wimberley, Stockdale —
+  all 27+ miles out) keep their pages and are simply not claimed. **Never
+  delete a city page to make the lists agree.** Section 3 of the kit carries
+  the list and the distances. The cap is widely reported but not in Google's
+  own docs; the dashboard settles it when you try to add a 21st.
 - **A city page's `Place` is the city; its `LocalBusiness` is the company.**
   `LocalBusiness` geo is the San Antonio office (29.5604, -98.5322) and must
   match `postalAddress`. `Place` geo is that city's own coordinates and must

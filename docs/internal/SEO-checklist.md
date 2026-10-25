@@ -32,7 +32,7 @@ The GBP is the #1 local-pack and map-pack ranking signal. These items need the G
 ### 1.3 Reviews management
 
 - [ ] **Enable the review link**: `https://search.google.com/local/writereview?placeid=ChIJ...` (get the place ID from the GBP dashboard). Put this link in the site's review page and request-quote thank-you page.
-- [ ] **Respond to all existing reviews**: There are 76 reviews with a 4.4 average. Respond to the most recent 20 if not already done — Google favors businesses that actively respond.
+- [ ] **Respond to all existing reviews**: There are 5 reviews averaging 5.0 (corrected 2026-10-20; this line read "76 reviews with a 4.4 average" until then). Respond to every one of them — at five reviews that is an afternoon, and Google favors businesses that actively respond.
 - [ ] **Review response template (positive)**: Thank them by name, mention the specific service, mention the city to reinforce local relevance.
 - [ ] **Review response template (critical/1-3 star)**: Acknowledge, apologize, offer to take it offline. Do NOT argue publicly.
 - [ ] **Set up review request automation**: The `api/review-submit.js` endpoint already exists — verify it sends the Google review link email. Test it with a real submission.
@@ -221,7 +221,7 @@ After every push to main, wait for the Vercel deploy to complete (typically 1-2 
 - [ ] **Review new Google reviews** within 48 hours of posting; respond to each.
 - [ ] **Check GBP insights**: Track how many views, searches, and actions the listing gets. Look for trends month over month.
 - [ ] **Check Search Console** for queries bringing traffic, indexing status, and any manual actions.
-- [ ] **Update aggregateRating** in all schema blocks if the review count changes (currently 76 reviews, 4.4 rating — must stay in sync with visible reviews).
+- [ ] **Update aggregateRating** in all schema blocks if the review count changes (currently 5 reviews, 5.0 rating, held in `data/reviews-baseline.js`). It must stay in sync with the **Google Business Profile**, not merely with another copy in the repo — the 4.4/76 this line used to quote agreed with the markup and with nothing real.
 - [ ] **Add 1-2 new Google Posts** per month.
 - [ ] **Add project photos** from recent jobs — either via the photo pipeline or manually.
 

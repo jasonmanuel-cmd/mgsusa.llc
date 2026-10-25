@@ -112,7 +112,7 @@ The website already includes strong LocalBusiness schema implementation:
   - telephone: +1-210-370-3700
   - address, geo, foundingDate, founders
   - areaServed: 21 cities listed
-  - aggregateRating: 4.4 (76 reviews) — **NOTE: Verify this is current data**
+  - aggregateRating: 5.0 (5 reviews) — corrected 2026-10-20 from 4.4/76, which was never verified against the profile
   ```
 
 - **Place + LocalBusiness schema** on 21 service area pages (`san-antonio-tx.html`, etc.)  
@@ -133,7 +133,7 @@ The website already includes strong LocalBusiness schema implementation:
 | Gap | Current | Recommended |
 |-----|---------|-------------|
 | **OpeningHoursSpecification** | Set to 24/7 (00:00–23:59) | Break into actual hours + emergency note in description |
-| **AggregateRating source** | Shows 4.4/5 (76 reviews) | Verify this matches Google Reviews count; add `@context` reference |
+| **AggregateRating source** | Shows 5.0/5 (5 reviews) | Corrected 2026-10-20; verify against the profile itself, never against another copy in the repo |
 | **LocalBusiness subtypes** | Using parent class | Consider more specific: `ServiceBusiness`, `ProfessionalService` |
 | **Review markup** | Not present | Can't mark up third-party reviews from business site; review reply markup in GBP only |
 | **priceRange** | "$$" | Specify actual price ranges for service categories (residential vs. commercial) |
@@ -350,7 +350,7 @@ Extend beyond `areaServed` list to specify radius:
 ```
 
 **Priority 4 — Verify `aggregateRating` source:**  
-Ensure the 4.4 rating (76 reviews) matches the current Google review count. If reviews have changed, update the schema to reflect current data.
+Ensure the 5.0 rating (5 reviews) matches the current Google review count. If reviews have changed, update `data/reviews-baseline.js` and every page's JSON-LD together, or use the `REVIEWS_BASELINE_*` env overrides.
 
 **Priority 5 — Add `sameAs` social profiles:**  
 Already present: Facebook, Instagram, Google. Ensure all social URLs are current.

@@ -29,9 +29,19 @@ interest in fixing.
 | Website | https://www.mgsusa.llc/ |
 | Email | masterglassllc@aol.com |
 | Google listing | https://maps.google.com/?cid=6020472325090378650 |
-| Rating | 4.4 from 5 Google reviews |
 
-## What the listing shows instead
+> **No rating row, deliberately.** This table used to carry
+> `Rating | 4.4 from 5 Google reviews` — a half-finished correction, since the
+> count had been fixed to 5 and the average left at the old 4.4. The real
+> figure is 5.0 from 5.
+>
+> It is gone rather than corrected, for two reasons. A rating is not NAP data:
+> directories compute or mirror their own, so nobody here is waiting to be told
+> one, and asserting a number to a third party invites them to publish a figure
+> on our word. And a rating moves — the next review changes it — while a phone
+> number and an address do not. A template that goes stale between the day it
+> is written and the day it is sent is a liability in a document whose entire
+> job is to propagate correct facts outward.
 
 | Field | Listed (wrong) | Correct |
 |---|---|---|
