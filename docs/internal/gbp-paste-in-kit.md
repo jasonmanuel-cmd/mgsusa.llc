@@ -168,9 +168,34 @@ than the profile does; that is fine and expected now that there is a cap.
 
 ## 4. Services
 
-GBP lets you list services under each category. Add these; each one is a
-separate chance to match a query. Descriptions are optional but worth adding
-for the top five.
+### First: remove the four that are not real
+
+Before adding anything, delete these if they are still listed:
+
+```
+Screen door installation · Screen door repair
+Skylight installation · Skylight repair
+```
+
+They were on the profile on 2026-10-20. Nobody claimed them — they came from
+Google's *suggested services* for the "Glass shop" category, which the
+dashboard offers in one tap and which look harmless. This company does not do
+screen doors or skylights, and the site has never mentioned either.
+
+The trap is the direction of the fix. Anyone comparing the profile against the
+site finds four services on Google with no page behind them and is tempted to
+"complete" the site to match. **That is backwards: the site is right and the
+listing was wrong.** A service advertised but not performed books a visit
+nobody can carry out, and at five reviews a single one-star for wasting
+someone's afternoon is 17% of the rating.
+
+The same caution applies to every suggestion Google offers here. Accept one
+only if there is a page on the site behind it.
+
+### Then: add these thirteen
+
+GBP lets you list services under each category. Each one is a separate chance
+to match a query. Descriptions are optional but worth adding for the top five.
 
 | Service | Short description |
 |---|---|
@@ -288,6 +313,16 @@ office interior, good for the "team"/"interior" slot).
 
 Set the **logo** and a **cover photo**. The cover is what shows in the map pack.
 
+**Video.** GBP accepts video, and there is one ready: the vertical cut of the
+services explainer, 1080x1920 and 29.45s. It is deliberately **not** in the
+repo — nothing on the site requests it, and a 3.8 MB file that ships to
+production and is never fetched is dead weight — so re-render it from
+`docs/internal/video/services-explainer-vertical.hyperframes.html` when it is
+needed. `docs/internal/video/README.md` has the steps.
+
+Mind the cap: Google rejects profile video over 30 seconds, and that cut has
+0.55s of headroom. Lengthen the narration and it stops being uploadable.
+
 ---
 
 ## 7. Posts — first month
@@ -361,7 +396,7 @@ from three years ago.
 1. Primary category — five minutes, biggest effect
 2. Name, phone, website, address exactly as above
 3. Description
-4. 21 service areas
+4. 20 service areas (section 3 — the cap is 20, not all 28 pages)
 5. Photos, logo, cover
 6. Services list
 7. Ten Q&A pairs
