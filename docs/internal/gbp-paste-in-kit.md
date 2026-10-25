@@ -262,10 +262,23 @@ Answers below are condensed from the site's own FAQ so the two never disagree.
 > since fabrication lead time depends on the glass and hardware.
 
 **Q: What areas do you serve?**
-> San Antonio, Boerne and the surrounding Hill Country, including Schertz,
-> Converse, Helotes, Leon Valley, Alamo Heights, New Braunfels, Seguin, Canyon
-> Lake, Wimberley, Blanco, Comfort and more. Call 210-370-3700 to confirm your
-> location.
+> San Antonio and the surrounding area, including Stone Oak, Alamo Heights,
+> Leon Valley, Helotes, Timberwood Park, Alamo Ranch, Live Oak, Converse,
+> Schertz, Selma, Bulverde, Fair Oaks Ranch, Garden Ridge, Boerne, New
+> Braunfels and Canyon Lake. Call 210-370-3700 to confirm your location.
+
+> **Rewritten 2026-10-25, and the reason generalises.** The old answer named
+> Seguin, Wimberley, Blanco and Comfort — four of the eight towns the profile
+> deliberately does *not* claim under the 20-area cap (section 3) — and left
+> out Stone Oak, the nearest and densest area of the lot. So the profile would
+> have answered a question about its own service areas with a list that
+> contradicted its service areas.
+>
+> **Any answer here that restates a field set elsewhere on the profile has to
+> be re-read when that field changes.** This one duplicates section 3; the
+> hours answers duplicate the opening hours; the auto-glass answer duplicates
+> the services list. They are worth having anyway — each is another chance to
+> match a query in plain words — but duplication is what goes stale.
 
 **Q: How long does a glass installation take?**
 > A simple window or mirror is often a few hours. Custom shower enclosures and
