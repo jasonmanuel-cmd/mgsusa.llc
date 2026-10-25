@@ -16,7 +16,8 @@
  *            Turnstile verdict without putting a fake lead in the inbox. Set
  *            HEALTH_PROBE_EMAIL and the probe also performs a real Resend
  *            send to that address, which is the only way to prove delivery
- *            end to end.
+ *            end to end -- weekly, not daily, so a success report does not
+ *            arrive every morning (HEALTH_PROBE_SEND_DAYS, default 7).
  *
  *   sending  Asks Resend whether the domain in LEAD_FROM_EMAIL is verified on
  *            the account. Added after a second silent outage with the same
@@ -46,6 +47,8 @@
  *      LEAD_DROUGHT_REPEAT_DAYS (default 30; how often the drought notice
  *      repeats while it lasts),
  *      HEALTH_PROBE_EMAIL (optional; enables the probe's real send),
+ *      HEALTH_PROBE_SEND_DAYS (default 7; how often that real send happens.
+ *      The tokenless POST runs daily regardless -- this is only the message),
  *      FOLLOWUP_BLOB_READ_WRITE_TOKEN for the drought check.
  */
 
@@ -76,6 +79,28 @@ var DEFAULT_DROUGHT_REPEAT_DAYS = 30;
 var PROBE_TIMEOUT_MS = 15000;
 var FALLBACK_SENDER = 'onboarding@resend.dev';
 
+/* The tokenless POST runs every day. The *real send* does not, and the reason
+   is the same one the drought threshold was raised for.
+
+   A probe that mails `[probe] quote funnel check` every morning puts a message
+   in the owner's inbox 365 times a year that means "everything is fine". The
+   endpoint's whole promise is that an arriving message means something needs
+   attention, and a daily success report spends that promise -- in the same
+   mailbox, from the same sender, as "customers cannot submit a quote right
+   now". It is the lead-drought mistake with the sign flipped: that one alerted
+   daily on a condition nobody could act on, this one reports daily on a
+   condition nobody needs to know about.
+
+   What the daily send actually bought is also smaller than it looks. The
+   failure it exists to catch -- an unverified From domain -- is checked every
+   day by the sending-domain check, which costs one GET and no mail at all. The
+   real send covers what that cannot see: a revoked or over-quota key, a
+   suppression list entry, Resend itself being down. Those are worth proving,
+   and they are not worth proving twice in one week.
+
+   Weekly, then, with the daily tokenless POST unchanged in front of it. */
+var DEFAULT_PROBE_SEND_DAYS = 7;
+
 function siteUrl() {
   return (process.env.SITE_URL || DEFAULT_SITE).replace(/\/+$/, '');
 }
@@ -88,6 +113,25 @@ function droughtDays() {
 function droughtRepeatDays() {
   var n = parseInt(process.env.LEAD_DROUGHT_REPEAT_DAYS || '', 10);
   return Number.isFinite(n) && n > 0 ? n : DEFAULT_DROUGHT_REPEAT_DAYS;
+}
+
+function probeSendDays() {
+  var n = parseInt(process.env.HEALTH_PROBE_SEND_DAYS || '', 10);
+  return Number.isFinite(n) && n > 0 ? n : DEFAULT_PROBE_SEND_DAYS;
+}
+
+/* Stateless, like droughtShouldNotify above and for the same reason: the cron
+   runs once a day, so counting whole days since the epoch gives a fixed
+   cadence with nothing to store and nothing to get out of step.
+
+   Day 0 of the epoch was a Thursday, so the default of 7 lands on Thursdays.
+   That it is always the same weekday is the point -- a send that wanders is one
+   the owner cannot recognise on sight. Set HEALTH_PROBE_SEND_DAYS=1 to restore
+   the daily send. */
+function probeShouldSend(now) {
+  var n = probeSendDays();
+  if (n <= 1) return true;
+  return Math.floor((now == null ? Date.now() : now) / 86400000) % n === 0;
 }
 
 /* The cron carries CRON_SECRET as a bearer token. Without the check anyone
@@ -103,10 +147,14 @@ function authorized(req) {
 /* A submission that is valid in every way except that Turnstile gave us
    nothing -- which is precisely what a customer sends when the widget fails
    to load, and precisely what used to be refused. */
-function probePayload() {
+function probePayload(send) {
   return {
     kind: 'quote',
     probe: true,
+    /* Whether submit-quote should actually put a message through Resend on
+       this run. Absent means "send", so a probe POSTed by hand still proves
+       delivery -- it is the scheduled caller that opts out, not the default. */
+    probeSend: send !== false,
     'first-name': 'Health',
     'last-name': 'Check',
     email: 'health-check@mgsusa.llc',
@@ -120,15 +168,16 @@ function probePayload() {
   };
 }
 
-async function checkFunnel() {
+async function checkFunnel(now) {
   var url = siteUrl() + '/api/submit-quote';
+  var sendToday = probeShouldSend(now);
   var controller = new AbortController();
   var timer = setTimeout(function () { controller.abort(); }, PROBE_TIMEOUT_MS);
   try {
     var r = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(probePayload()),
+      body: JSON.stringify(probePayload(sendToday)),
       signal: controller.signal
     });
     var data = null;
@@ -153,9 +202,17 @@ async function checkFunnel() {
        reporting the second as the first sends the owner after the wrong one. */
     var accepted = 'Tokenless submission accepted (Turnstile verdict: ' + (data.turnstile || 'unknown') + ').';
     if (data.emailChecked === false) {
+      /* Two very different reasons to have sent nothing, and conflating them
+         is how an owner gets told to configure something that is already
+         configured. `schedule` means the real send is working and simply is
+         not due today; anything else means it was never set up. */
+      var scheduled = data.emailSkipped === 'schedule';
       return {
         ok: true,
-        detail: accepted + ' Delivery was not exercised: set HEALTH_PROBE_EMAIL to have the probe send a real message.',
+        detail: accepted + (scheduled
+          ? ' Delivery is proven by a real send every ' + probeSendDays() +
+            ' days; today was not one of them.'
+          : ' Delivery was not exercised: set HEALTH_PROBE_EMAIL to have the probe send a real message.'),
         turnstile: data.turnstile || null
       };
     }
@@ -448,7 +505,10 @@ function renderHtml(p) {
     : 'Everything the monitor can see is working';
 
   var probeLine = cfg.probeEmail
-    ? 'Set. The daily probe sends a real message through Resend, so delivery is proven end to end.'
+    ? 'Set. The form is POSTed every day; a real message goes through Resend every '
+      + esc(String(probeSendDays())) + ' days, which proves delivery end to end '
+      + 'without putting a "everything is fine" mail in the inbox each morning. '
+      + 'Set HEALTH_PROBE_SEND_DAYS=1 to go back to daily.'
     : 'Not set. The probe confirms the form accepts a submission, but never sends a message '
       + '— so it cannot prove email actually arrives. Add HEALTH_PROBE_EMAIL in Vercel, '
       + 'targeting Production, then redeploy.';

@@ -125,6 +125,54 @@ var scenarios = [
     expectHtml: { contains: ['Probe email'] },
     mustNotAppear: 'secret-probe@example.com',
     fetch: healthyExceptDrought },
+  /* The real send is weekly, not daily. It was arriving every morning saying
+     "[probe] quote funnel check" -- a success report, from the same sender and
+     into the same mailbox as "customers cannot submit a quote right now". The
+     daily tokenless POST is what detects the August failure and it is
+     unchanged; only the message is on a cadence. These pin both halves, since
+     throttling the POST as well would quietly delete the detector.
+
+     DAY_SEND is a day where epochDay % 7 === 0 (7 * 2858 = 20006), DAY_QUIET
+     the day after. */
+  { name: 'probe: on a send day the real send is requested',
+    expectOk: true, atMs: 20006 * 86400000,
+    env: { HEALTH_PROBE_EMAIL: 'probe@example.com' },
+    expectProbeSend: true,
+    fetch: healthyExceptDrought },
+  { name: 'probe: on a quiet day the POST still runs but asks for no send',
+    expectOk: true, atMs: 20007 * 86400000,
+    env: { HEALTH_PROBE_EMAIL: 'probe@example.com' },
+    expectProbeSend: false, expectProbePosted: true,
+    fetch: healthyExceptDroughtNoSend },
+  { name: 'probe: HEALTH_PROBE_SEND_DAYS=1 restores the daily send',
+    expectOk: true, atMs: 20007 * 86400000,
+    env: { HEALTH_PROBE_EMAIL: 'probe@example.com', HEALTH_PROBE_SEND_DAYS: '1' },
+    expectProbeSend: true,
+    fetch: healthyExceptDrought },
+  { name: 'probe: a skipped send must not advise setting a variable already set',
+    expectOk: true, atMs: 20007 * 86400000,
+    env: { HEALTH_PROBE_EMAIL: 'probe@example.com' },
+    expectDetail: 'every 7 days', expectNotDetail: 'set HEALTH_PROBE_EMAIL',
+    fetch: healthyExceptDroughtNoSend },
+  { name: 'probe: genuinely unset still says to set HEALTH_PROBE_EMAIL',
+    expectOk: true, atMs: 20007 * 86400000,
+    expectDetail: 'set HEALTH_PROBE_EMAIL',
+    fetch: function (u) {
+      if (/submit-quote/.test(u)) return j(200, Object.assign({}, okProbe,
+        { emailChecked: false, emailSkipped: 'unset' }));
+      if (/domains/.test(u)) return j(200, { data: [{ name: 'mgsusa.llc', status: 'verified' }] });
+      return j(200, { id: 'x' });
+    } },
+  { name: 'REGRESSION: a quiet probe day must not mute a broken funnel',
+    expectOk: false, atMs: 20007 * 86400000,
+    env: { HEALTH_PROBE_EMAIL: 'probe@example.com' },
+    expectAlerted: true,
+    fetch: function (u) {
+      if (/submit-quote/.test(u)) return j(503, { error: 'nope' });
+      if (/domains/.test(u)) return j(200, { data: [{ name: 'mgsusa.llc', status: 'verified' }] });
+      return j(200, { id: 'x' });
+    } },
+
   { name: 'html: REGRESSION Resend error text must be escaped, not rendered',
     expectOk: false, url: '/api/health-check?format=html',
     expectHtml: { contains: ['&lt;script&gt;'] },
@@ -140,6 +188,16 @@ var scenarios = [
 
 function healthyExceptDrought(u) {
   if (/submit-quote/.test(u)) return j(200, Object.assign({}, okProbe, { emailChecked: true, emailStatus: 200 }));
+  if (/domains/.test(u)) return j(200, { data: [{ name: 'mgsusa.llc', status: 'verified' }] });
+  return j(200, { id: 'x' });
+}
+
+/* What submit-quote answers on a day the caller asked it not to send: the
+   funnel was exercised, no message went out, and the reason is the schedule
+   rather than a missing variable. */
+function healthyExceptDroughtNoSend(u) {
+  if (/submit-quote/.test(u)) return j(200, Object.assign({}, okProbe,
+    { emailChecked: false, emailSkipped: 'schedule' }));
   if (/domains/.test(u)) return j(200, { data: [{ name: 'mgsusa.llc', status: 'verified' }] });
   return j(200, { id: 'x' });
 }
@@ -176,13 +234,56 @@ function stubDrought(ageDays) {
     // wrong reason.
     var envKeys = Object.keys(s.env || {});
     envKeys.forEach(function (k) { process.env[k] = s.env[k]; });
-    global.fetch = s.fetch;
+
+    /* Record what was actually POSTed to submit-quote. The probe cadence is
+       decided here and acted on there, so asserting only on the response would
+       pass even if the flag were never sent -- the stub answers the same
+       either way. */
+    var probeBody = null;
+    global.fetch = function (u, opts) {
+      if (/submit-quote/.test(u) && opts && opts.body) {
+        try { probeBody = JSON.parse(opts.body); } catch (e) { probeBody = 'unparseable'; }
+      }
+      return s.fetch(u, opts);
+    };
+
+    /* A fixed clock, because "is today a send day" is a function of the date.
+       Left real for every other scenario so none of them silently depends on
+       one. */
+    var realNow = Date.now;
+    if (s.atMs != null) Date.now = function () { return s.atMs; };
+
     var handler = require(path);
     var r = res();
-    await handler({ method: 'GET', headers: {}, url: s.url || '/api/health-check' }, r);
+    try {
+      await handler({ method: 'GET', headers: {}, url: s.url || '/api/health-check' }, r);
+    } finally {
+      Date.now = realNow;
+    }
 
     var why = [];
     var html = r._body;
+
+    if (s.expectProbePosted && !probeBody) {
+      why.push('no POST reached submit-quote at all');
+    }
+    if (s.expectProbeSend != null) {
+      if (!probeBody) why.push('no probe body captured');
+      else if (probeBody.probeSend !== s.expectProbeSend) {
+        why.push('probeSend=' + probeBody.probeSend + ' wanted ' + s.expectProbeSend);
+      }
+    }
+    if (s.expectDetail || s.expectNotDetail) {
+      var funnelDetail = ((r._json && r._json.checks || []).filter(
+        function (c) { return c.name === 'funnel'; })[0] || {}).detail || '';
+      if (s.expectDetail && funnelDetail.indexOf(s.expectDetail) === -1) {
+        why.push('funnel detail missing "' + s.expectDetail + '" (got: ' +
+                 funnelDetail.slice(0, 120) + ')');
+      }
+      if (s.expectNotDetail && funnelDetail.indexOf(s.expectNotDetail) !== -1) {
+        why.push('funnel detail wrongly contains "' + s.expectNotDetail + '"');
+      }
+    }
 
     if (s.expectHtml) {
       // HTML mode: nothing should have gone out as JSON, or the default flipped

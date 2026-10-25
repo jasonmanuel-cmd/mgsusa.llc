@@ -140,9 +140,10 @@ Monitoring, all optional — the cron degrades rather than failing: `CRON_SECRET
 fine for preview but not production), `SITE_URL` (default
 `https://www.mgsusa.llc`), `LEAD_DROUGHT_DAYS` (default 30),
 `LEAD_DROUGHT_REPEAT_DAYS` (default 30), `HEALTH_PROBE_EMAIL`
-(an address that is safe to receive a daily test message; setting it makes the
+(an address that is safe to receive a test message; setting it makes the
 funnel probe perform a real Resend send instead of only reporting that a key
-exists — the difference between "configured" and "actually delivers").
+exists — the difference between "configured" and "actually delivers"),
+`HEALTH_PROBE_SEND_DAYS` (default 7; how often that real send happens).
 
 **Not every failing check should email.** `health-check` keeps "this check
 failed" and "this is worth an email" apart, and a check opts out by returning
@@ -157,6 +158,22 @@ the promise the endpoint makes — an arriving message always means something
 needs attention. A daily alert nobody can act on spends that promise, and it
 spends it on the same subject line that carries "customers cannot submit a
 quote right now".
+
+**The same rule applies to a check that succeeds.** With `HEALTH_PROBE_EMAIL`
+set, the probe's real Resend send put `[probe] quote funnel check` in the
+owner's inbox every single morning — a success report, from the same sender,
+in the same mailbox, as "customers cannot submit a quote right now". That is
+the lead-drought mistake with the sign flipped: one alerted daily on something
+nobody could act on, the other reported daily on something nobody needed to
+know. The **tokenless POST still runs every day** — that is the detector, and
+throttling it would delete the thing this endpoint exists for — but the real
+send is now weekly (`HEALTH_PROBE_SEND_DAYS`, default 7, Thursdays; set it to
+1 for the old behaviour). The daily sending-domain check already covers the
+failure the send was mainly guarding, at the cost of one GET and no mail;
+the send covers what that cannot see — a revoked or over-quota key, a
+suppression entry, Resend down — and those do not need proving twice a week.
+Scheduling is stateless, derived from the day number exactly as the drought's
+is, so there is nothing stored to fall out of step.
 
 The threshold itself went 7 → 30 days for the same reason. Seven was picked
 before anyone measured how often a lead actually arrives here, and they arrive

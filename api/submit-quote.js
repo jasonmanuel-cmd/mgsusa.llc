@@ -367,7 +367,19 @@ module.exports = async function handler(req, res) {
     };
     if (!probeTo) {
       out.emailChecked = false;
+      out.emailSkipped = 'unset';
       out.emailNote = 'HEALTH_PROBE_EMAIL is not set, so delivery was not exercised.';
+      return res.status(200).json(out);
+    }
+    /* The caller decides whether today is a send day. Everything above still
+       ran -- routing, validation, the Turnstile verdict, building the mail --
+       so the check that matters daily is unaffected; only the message is
+       withheld. Absent means send, so a hand-POSTed probe still proves
+       delivery and only the scheduled caller opts out. */
+    if (body.probeSend === false) {
+      out.emailChecked = false;
+      out.emailSkipped = 'schedule';
+      out.emailNote = 'Real send not scheduled for this run; the funnel itself was still exercised.';
       return res.status(200).json(out);
     }
     try {
