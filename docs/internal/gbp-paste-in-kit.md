@@ -292,7 +292,38 @@ Answers below are condensed from the site's own FAQ so the two never disagree.
 ## 6. Photos
 
 Ten minimum, and GBP photo views correlate with calls more than most owners
-expect. The site's optimised images are the source — `assets/` has them.
+expect. The site's photos are the source, but **they cannot be uploaded as
+they are.**
+
+> **Google takes JPG and PNG. Every photo in `assets/` is WebP.**
+> The dashboard simply refuses the file, which reads as "the upload is broken"
+> rather than "wrong format". Convert first:
+>
+> ```bash
+> ffmpeg -i assets/<Name>.webp -q:v 2 <descriptive-name>.jpg
+> ```
+>
+> The other limits worth knowing before you pick: 10 KB–5 MB per file, and
+> 720×720 recommended. **Only 43 of the site's photos clear 720 on the short
+> edge** — several of the obvious picks do not, including `Commercial1` at
+> 861×652 and `Residential17` at 690×864, so check before converting rather
+> than after.
+
+Fifteen already converted and named are in this session's scratchpad; the
+sources, chosen from the gallery captions rather than the filenames, were:
+
+| Slot | Source | Slot | Source |
+|---|---|---|---|
+| **Cover** | `Commercial2` | Shower | `Residential7`, `Residential8` |
+| Storefront | `Storefront8`, `Storefront4` | Mirrors | `Residential22` |
+| Architectural | `Commercial3` | Railings | `Stairs3` |
+| In progress | `Commercial11` | Emergency | `Emergency2`, `Emergency4` |
+| Partitions | `Commercial13` | Custom | `Residential6` |
+| Healthcare | `SpineClinic1` | Interior | `insidemgs` |
+
+**Not `Commercial4`.** It is captioned "Balcony rail and window glazing detail"
+and the rail in it is *metal* — the same photo that once sent a search for
+railing pictures down the wrong path. It is a poor advertisement for glass.
 
 Rename before uploading; the filename is a small signal and costs nothing:
 
