@@ -16,8 +16,8 @@
  *            Turnstile verdict without putting a fake lead in the inbox. Set
  *            HEALTH_PROBE_EMAIL and the probe also performs a real Resend
  *            send to that address, which is the only way to prove delivery
- *            end to end -- weekly, not daily, so a success report does not
- *            arrive every morning (HEALTH_PROBE_SEND_DAYS, default 7).
+ *            end to end -- monthly, not daily, so a success report does not
+ *            arrive every morning (HEALTH_PROBE_SEND_DAYS, default 30).
  *
  *   sending  Asks Resend whether the domain in LEAD_FROM_EMAIL is verified on
  *            the account. Added after a second silent outage with the same
@@ -47,7 +47,7 @@
  *      LEAD_DROUGHT_REPEAT_DAYS (default 30; how often the drought notice
  *      repeats while it lasts),
  *      HEALTH_PROBE_EMAIL (optional; enables the probe's real send),
- *      HEALTH_PROBE_SEND_DAYS (default 7; how often that real send happens.
+ *      HEALTH_PROBE_SEND_DAYS (default 30; how often that real send happens.
  *      The tokenless POST runs daily regardless -- this is only the message),
  *      FOLLOWUP_BLOB_READ_WRITE_TOKEN for the drought check.
  */
@@ -98,8 +98,11 @@ var FALLBACK_SENDER = 'onboarding@resend.dev';
    suppression list entry, Resend itself being down. Those are worth proving,
    and they are not worth proving twice in one week.
 
-   Weekly, then, with the daily tokenless POST unchanged in front of it. */
-var DEFAULT_PROBE_SEND_DAYS = 7;
+   Monthly, then, with the daily tokenless POST unchanged in front of it.
+   Same interval as the drought's repeat, and for the same reason: this is a
+   backstop behind two daily detectors, and a backstop should be slow and
+   quiet or it drowns out the things in front of it. */
+var DEFAULT_PROBE_SEND_DAYS = 30;
 
 function siteUrl() {
   return (process.env.SITE_URL || DEFAULT_SITE).replace(/\/+$/, '');
@@ -124,10 +127,14 @@ function probeSendDays() {
    runs once a day, so counting whole days since the epoch gives a fixed
    cadence with nothing to store and nothing to get out of step.
 
-   Day 0 of the epoch was a Thursday, so the default of 7 lands on Thursdays.
-   That it is always the same weekday is the point -- a send that wanders is one
-   the owner cannot recognise on sight. Set HEALTH_PROBE_SEND_DAYS=1 to restore
-   the daily send. */
+   Counting from the epoch rather than from a calendar month is deliberate: a
+   "first of the month" rule has to decide what to do about a missed run, and
+   every answer to that needs state. Every 30th day needs none, and the cost is
+   only that the date drifts through the month -- which matters for something
+   the owner is meant to recognise on sight, and not at all for something that
+   is silent unless it fails.
+
+   Set HEALTH_PROBE_SEND_DAYS=1 to restore the daily send, or 7 for weekly. */
 function probeShouldSend(now) {
   var n = probeSendDays();
   if (n <= 1) return true;
@@ -507,8 +514,8 @@ function renderHtml(p) {
   var probeLine = cfg.probeEmail
     ? 'Set. The form is POSTed every day; a real message goes through Resend every '
       + esc(String(probeSendDays())) + ' days, which proves delivery end to end '
-      + 'without putting a "everything is fine" mail in the inbox each morning. '
-      + 'Set HEALTH_PROBE_SEND_DAYS=1 to go back to daily.'
+      + 'without putting an "everything is fine" mail in the inbox each morning. '
+      + 'Set HEALTH_PROBE_SEND_DAYS=7 for weekly, or 1 for daily.'
     : 'Not set. The probe confirms the form accepts a submission, but never sends a message '
       + '— so it cannot prove email actually arrives. Add HEALTH_PROBE_EMAIL in Vercel, '
       + 'targeting Production, then redeploy.';

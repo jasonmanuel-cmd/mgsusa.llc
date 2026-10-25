@@ -132,30 +132,43 @@ var scenarios = [
      unchanged; only the message is on a cadence. These pin both halves, since
      throttling the POST as well would quietly delete the detector.
 
-     DAY_SEND is a day where epochDay % 7 === 0 (7 * 2858 = 20006), DAY_QUIET
-     the day after. */
-  { name: 'probe: on a send day the real send is requested',
-    expectOk: true, atMs: 20006 * 86400000,
+     Days are picked to divide exactly: 30 * 667 = 20010 for the default
+     cadence, 7 * 2858 = 20006 for the weekly one. The scenarios that exercise
+     the mechanism set HEALTH_PROBE_SEND_DAYS explicitly so they keep testing
+     the mechanism when the default moves -- it has already moved once, 7 to
+     30 -- and two separate cases pin what the default currently is. */
+  { name: 'probe: default cadence sends on day 20010 (30 * 667)',
+    expectOk: true, atMs: 20010 * 86400000,
     env: { HEALTH_PROBE_EMAIL: 'probe@example.com' },
     expectProbeSend: true,
     fetch: healthyExceptDrought },
-  { name: 'probe: on a quiet day the POST still runs but asks for no send',
-    expectOk: true, atMs: 20007 * 86400000,
+  { name: 'probe: default cadence stays quiet the next day',
+    expectOk: true, atMs: 20011 * 86400000,
     env: { HEALTH_PROBE_EMAIL: 'probe@example.com' },
     expectProbeSend: false, expectProbePosted: true,
     fetch: healthyExceptDroughtNoSend },
+  { name: 'probe: the daily POST still goes out on a quiet day',
+    expectOk: true, atMs: 20007 * 86400000,
+    env: { HEALTH_PROBE_EMAIL: 'probe@example.com', HEALTH_PROBE_SEND_DAYS: '7' },
+    expectProbeSend: false, expectProbePosted: true,
+    fetch: healthyExceptDroughtNoSend },
+  { name: 'probe: HEALTH_PROBE_SEND_DAYS=7 sends on its own day',
+    expectOk: true, atMs: 20006 * 86400000,
+    env: { HEALTH_PROBE_EMAIL: 'probe@example.com', HEALTH_PROBE_SEND_DAYS: '7' },
+    expectProbeSend: true,
+    fetch: healthyExceptDrought },
   { name: 'probe: HEALTH_PROBE_SEND_DAYS=1 restores the daily send',
     expectOk: true, atMs: 20007 * 86400000,
     env: { HEALTH_PROBE_EMAIL: 'probe@example.com', HEALTH_PROBE_SEND_DAYS: '1' },
     expectProbeSend: true,
     fetch: healthyExceptDrought },
   { name: 'probe: a skipped send must not advise setting a variable already set',
-    expectOk: true, atMs: 20007 * 86400000,
+    expectOk: true, atMs: 20011 * 86400000,
     env: { HEALTH_PROBE_EMAIL: 'probe@example.com' },
-    expectDetail: 'every 7 days', expectNotDetail: 'set HEALTH_PROBE_EMAIL',
+    expectDetail: 'every 30 days', expectNotDetail: 'set HEALTH_PROBE_EMAIL',
     fetch: healthyExceptDroughtNoSend },
   { name: 'probe: genuinely unset still says to set HEALTH_PROBE_EMAIL',
-    expectOk: true, atMs: 20007 * 86400000,
+    expectOk: true, atMs: 20011 * 86400000,
     expectDetail: 'set HEALTH_PROBE_EMAIL',
     fetch: function (u) {
       if (/submit-quote/.test(u)) return j(200, Object.assign({}, okProbe,
@@ -164,7 +177,7 @@ var scenarios = [
       return j(200, { id: 'x' });
     } },
   { name: 'REGRESSION: a quiet probe day must not mute a broken funnel',
-    expectOk: false, atMs: 20007 * 86400000,
+    expectOk: false, atMs: 20011 * 86400000,
     env: { HEALTH_PROBE_EMAIL: 'probe@example.com' },
     expectAlerted: true,
     fetch: function (u) {

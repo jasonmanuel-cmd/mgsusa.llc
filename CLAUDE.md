@@ -143,7 +143,7 @@ fine for preview but not production), `SITE_URL` (default
 (an address that is safe to receive a test message; setting it makes the
 funnel probe perform a real Resend send instead of only reporting that a key
 exists — the difference between "configured" and "actually delivers"),
-`HEALTH_PROBE_SEND_DAYS` (default 7; how often that real send happens).
+`HEALTH_PROBE_SEND_DAYS` (default 30; how often that real send happens).
 
 **Not every failing check should email.** `health-check` keeps "this check
 failed" and "this is worth an email" apart, and a check opts out by returning
@@ -167,13 +167,21 @@ the lead-drought mistake with the sign flipped: one alerted daily on something
 nobody could act on, the other reported daily on something nobody needed to
 know. The **tokenless POST still runs every day** — that is the detector, and
 throttling it would delete the thing this endpoint exists for — but the real
-send is now weekly (`HEALTH_PROBE_SEND_DAYS`, default 7, Thursdays; set it to
-1 for the old behaviour). The daily sending-domain check already covers the
-failure the send was mainly guarding, at the cost of one GET and no mail;
-the send covers what that cannot see — a revoked or over-quota key, a
-suppression entry, Resend down — and those do not need proving twice a week.
+send is on a cadence: `HEALTH_PROBE_SEND_DAYS`, **default 30** (set it to 7
+for weekly or 1 for the old daily behaviour). The daily sending-domain check
+already covers the failure the send was mainly guarding, at the cost of one
+GET and no mail; the send covers only what that cannot see — a revoked or
+over-quota key, a suppression entry, Resend down. That makes it a backstop
+behind two daily detectors, and it gets the same interval as the drought's
+repeat for the same stated reason: a backstop should be slow and quiet or it
+drowns out the things in front of it.
+
 Scheduling is stateless, derived from the day number exactly as the drought's
-is, so there is nothing stored to fall out of step.
+is, so there is nothing stored to fall out of step. It counts every 30th day
+from the epoch rather than landing on a calendar date, because "the 1st of the
+month" has to decide what to do about a missed run and every answer to that
+needs state. The cost is that the date drifts through the month, which does
+not matter for something that is silent unless it fails.
 
 The threshold itself went 7 → 30 days for the same reason. Seven was picked
 before anyone measured how often a lead actually arrives here, and they arrive
